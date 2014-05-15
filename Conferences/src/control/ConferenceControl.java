@@ -26,14 +26,15 @@ public class ConferenceControl {
 		// Do Nothing (stop trying to create me)
 	}
 	
-	public static int createConference(Conference theConference) throws ClassNotFoundException {
+	public static int createConference(Conference theConference) {
 
 		// WARNING: This code does not yet work so please don't try to use it.
-		
-		Class.forName("org.sqlite.JDBC");
 
 		Connection connection = null;
 		try {
+			// Must be called so that a suitable driver is found for the DirverManager below
+			Class.forName("org.sqlite.JDBC");
+			
 			// create a database connection
 			connection = DriverManager.getConnection("jdbc:sqlite:ConferenceDB.sqlite");
 			Statement statement = connection.createStatement();
@@ -50,17 +51,19 @@ public class ConferenceControl {
 			pstmt.setDate(5, theConference.getPaperStart());
 			pstmt.setDate(6, theConference.getConfStart());
 			pstmt.setDate(7, theConference.getConfEnd());
-			pstmt.executeQuery();
+			pstmt.executeUpdate();
 
 //			statement.executeUpdate("INSERT INTO conferences (name, email) VALUES (?, ?)");
 //			statement.value(1, theName);
 //			query.value(2, theEmail);
 
 			ResultSet rs = statement.executeQuery("select last_insert_rowid()");
-			return rs.getInt("select last_insert_rowid()");
+			System.out.println("The ID of this conference is: " + rs.getInt("last_insert_rowid()"));
+			return rs.getInt("last_insert_rowid()");
+			
 			
 		}
-		catch(SQLException e)
+		catch(SQLException | ClassNotFoundException e)
 		{
 			// if the error message is "out of memory", 
 			// it probably means no database file is found

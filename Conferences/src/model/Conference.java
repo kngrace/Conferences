@@ -4,9 +4,11 @@ import java.sql.Date;
 
 public class Conference {
 
+	public String name = "Tester";
+	
 	public String getName() {
 		// TODO Auto-generated method stub
-		return null;
+		return name;
 	}
 	//dummy class
 
