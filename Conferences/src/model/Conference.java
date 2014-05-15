@@ -9,6 +9,7 @@ public class Conference {
 	public String getName() {
 		// TODO Auto-generated method stub
 		System.out.println("I'm testing forking and pull requests.");
+		System.out.println("This is yet another test.");
 		return name;
 	}
 	//dummy class
