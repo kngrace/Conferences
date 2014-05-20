@@ -63,8 +63,8 @@ public class User {
 		my_address = the_address;
 		
 		// Create empty structures for conferences and access to be filled later.
-		my_conferences = new ArrayList<Conference>();
-		my_access = new HashMap<Conference, AccessLevel>();
+		my_conferences = new ArrayList<Conference>();    // = null;
+		my_access = new HashMap<Conference, AccessLevel>();  // = null;
 	}
 	
 	/**
@@ -74,13 +74,14 @@ public class User {
 	 * @param the_level The access level to this conference that the user will gain.
 	 */
 	public void setAccess(final Conference the_con, final AccessLevel the_level) {	
-		if (!my_conferences.contains(the_con)) {
+		if (!my_conferences.contains(the_con)) { // if you're updating, does it matter if you check?
 			my_conferences.add(the_con);
 			my_access.put(the_con, the_level);
 		} else {
-			my_access.remove(the_con);
+			my_access.remove(the_con);  // do you have to remove first??
 			my_access.put(the_con, the_level);
 		}
+		// Once you update, you need to update the database too. we need to come up with something here...
 	}
 	
 	/**
@@ -100,6 +101,8 @@ public class User {
 			my_conferences.remove(the_con);
 			my_access.remove(the_con);
 		}
+		
+		// same as updating, need to update database..
 	}
 	
 	/**
@@ -143,22 +146,27 @@ public class User {
 	}
 	
 	public List<Conference> getConferences() {
-		return my_conferences;
+		return my_conferences;  // check if conferences is null, if so - request from ConferenceControl via 
+		// getConferences(User)  (so it'd be getConferences(This) )
 	}
 	
 	public void setFirstName(final String the_name) {
 		my_firstname = the_name;
+		//update database
 	}
 	
 	public void setLastName(final String the_name) {
 		my_firstname = the_name;
+		//update database
 	}
 	
 	public void setEmail(final String the_mail) {
 		my_email = the_mail;
+		//update database
 	}
 	
 	public void setAddress(final String the_address) {
 		my_address = the_address;
+		//update database
 	}
 }
