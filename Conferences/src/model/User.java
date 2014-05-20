@@ -85,6 +85,7 @@ public class User {
 			my_access.put(the_con, the_level);
 		}
 		// Once you update, you need to update the database too. we need to come up with something here...
+		UserControl.updateUser(this);
 	}
 	
 	/**
