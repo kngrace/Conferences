@@ -30,6 +30,7 @@ public class ControllerExample
 	public static void main(String[] args) throws ClassNotFoundException
 	{
 		test1();
+		test1();
 /*		
 		// load the sqlite-JDBC driver using the current class loader
 		Class.forName("org.sqlite.JDBC");
