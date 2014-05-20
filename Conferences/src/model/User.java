@@ -21,8 +21,13 @@ public class User {
 	/**
 	 * User's full name.
 	 */
-	private String my_name;
+	private String my_firstname;
 
+	/**
+	 * User's full name.
+	 */
+	private String my_lastname;
+	
 	/**
 	 * User's primary e-mail.
 	 */
@@ -50,10 +55,11 @@ public class User {
 	 * @param the_name User's full name.
 	 * @param the_address User's home address.
 	 */
-	public User(final int the_id, final String the_email, final String the_name, final String the_address) {
+	public User(final int the_id, final String the_email, final String the_first, final String the_last, final String the_address) {
 		my_id = the_id;
 		my_email = the_email;
-		my_name = the_name;
+		my_firstname = the_first;
+		my_lastname = the_last;
 		my_address = the_address;
 		
 		// Create empty structures for conferences and access to be filled later.
@@ -105,11 +111,19 @@ public class User {
 	}
 	
 	/**
-	 * 'Getter' class to retrieve the user's full name.
-	 * @return User's full name. Format: "First (Middle) Last."
+	 * 'Getter' class to retrieve the user's first name.
+	 * @return User's first name.
 	 */
-	public String getName() {
-		return my_name;
+	public String getFirstName() {
+		return my_firstname;
+	}
+	
+	/**
+	 * 'Getter' class to retrieve the user's last name.
+	 * @return User's last name.
+	 */
+	public String getLastName() {
+		return my_lastname;
 	}
 	
 	/**
@@ -126,5 +140,25 @@ public class User {
 	 */
 	public String getAddress() {
 		return my_address;
+	}
+	
+	public List<Conference> getConferences() {
+		return my_conferences;
+	}
+	
+	public void setFirstName(final String the_name) {
+		my_firstname = the_name;
+	}
+	
+	public void setLastName(final String the_name) {
+		my_firstname = the_name;
+	}
+	
+	public void setEmail(final String the_mail) {
+		my_email = the_mail;
+	}
+	
+	public void setAddress(final String the_address) {
+		my_address = the_address;
 	}
 }
