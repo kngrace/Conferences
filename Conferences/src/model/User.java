@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * A class designed to model a user for our conference management system.
  * @author Eric Miller
- * @version 0.2
+ * @version 0.3
  * @date 5/19/14
  */
 public class User {
@@ -41,7 +41,7 @@ public class User {
 	/**
 	 * User's access level to each conference.
 	 */
-	private Map<Conference, List<AccessLevel>> my_access;
+	private Map<Conference, AccessLevel> my_access;
 	
 	/**
 	 * Instantiate the user with all required fields pre-filled.
@@ -58,7 +58,7 @@ public class User {
 		
 		// Create empty structures for conferences and access to be filled later.
 		my_conferences = new ArrayList<Conference>();
-		my_access = new HashMap<Conference, List<AccessLevel>>();
+		my_access = new HashMap<Conference, AccessLevel>();
 	}
 	
 	/**
@@ -70,18 +70,10 @@ public class User {
 	public void setAccess(final Conference the_con, final AccessLevel the_level) {	
 		if (!my_conferences.contains(the_con)) {
 			my_conferences.add(the_con);
-			
-			List<AccessLevel> arr = new ArrayList<AccessLevel>();
-			arr.add(the_level);
-			my_access.put(the_con, arr);
+			my_access.put(the_con, the_level);
 		} else {
-			List<AccessLevel> prev = my_access.get(the_con);
-			
-			List<AccessLevel> arr = new ArrayList<AccessLevel>();
-			arr.addAll(prev);
-			arr.add(the_level);
 			my_access.remove(the_con);
-			my_access.put(the_con, arr);
+			my_access.put(the_con, the_level);
 		}
 	}
 	
@@ -96,26 +88,12 @@ public class User {
 		if (!my_conferences.contains(the_con)) {
 			//If the user is not assigned to the conference to begin with, we have nothing to do here.
 			return;
-		} else if(my_access.get(the_con).size() <= 1) {
+		} else {
 			//If the user only has one assigned duty to the conference, remove the conference from
 			//their list entirely.
-			removeAllAccess(the_con);
-		} else {
-			List<AccessLevel> prev = my_access.get(the_con);		
-			prev.remove(prev.indexOf(the_level));
+			my_conferences.remove(the_con);
 			my_access.remove(the_con);
-			my_access.put(the_con, prev);
-			
 		}
-	}
-	
-	/**
-	 * Strips the user of all access to a given conference.
-	 * @param the_con Conference to remove.
-	 */
-	public void removeAllAccess(final Conference the_con) {
-		my_conferences.remove(the_con);
-		my_access.remove(the_con);
 	}
 	
 	/**
