@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import control.ConferenceControl;
+import control.UserControl;
+
 /**
  * A class designed to model a user for our conference management system.
  * @author Eric Miller
@@ -102,7 +105,10 @@ public class User {
 			my_access.remove(the_con);
 		}
 		
-		// same as updating, need to update database..
+		/*
+		 * 
+		 */
+		UserControl.updateUser(this);
 	}
 	
 	/**
@@ -146,27 +152,47 @@ public class User {
 	}
 	
 	public List<Conference> getConferences() {
-		return my_conferences;  // check if conferences is null, if so - request from ConferenceControl via 
-		// getConferences(User)  (so it'd be getConferences(This) )
+		List<Conference> conf;
+		if (my_conferences == null || my_conferences.size() < 1) {
+			conf = my_conferences;
+		} else {
+			conf = ConferenceControl.getConferences(this);
+		}
+		return conf;
 	}
 	
 	public void setFirstName(final String the_name) {
 		my_firstname = the_name;
-		//update database
+		UserControl.updateUser(this);
 	}
 	
 	public void setLastName(final String the_name) {
 		my_firstname = the_name;
-		//update database
+		UserControl.updateUser(this);
 	}
 	
 	public void setEmail(final String the_mail) {
 		my_email = the_mail;
-		//update database
+		UserControl.updateUser(this);
 	}
 	
 	public void setAddress(final String the_address) {
 		my_address = the_address;
-		//update database
+		UserControl.updateUser(this);
+	}
+	
+	public boolean equals(final Object o) {
+		boolean equal = false;
+		if (o instanceof User) {
+			User u = (User) o;
+			if (u.getId() == my_id) {
+				equal = true;
+			}
+		}
+		return equal;
+	}
+	
+	public int hashCode() {
+		return (my_id + 1337) * 42;
 	}
 }
