@@ -24,7 +24,7 @@ public class ConferenceControl {
 
 	private ConferenceControl() {
 		// Do Nothing (stop trying to create me)
-		System.out.println("I did nothing~");
+		System.out.println("I did nothing~ 2");
 	}
 	
 	public static int createConference(Conference theConference) {
