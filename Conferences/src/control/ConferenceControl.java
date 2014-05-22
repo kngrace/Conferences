@@ -22,6 +22,7 @@ import model.User;
 
 public class ConferenceControl {
 
+	
 	private static Connection connection = null;
 	
 	private ConferenceControl() {
