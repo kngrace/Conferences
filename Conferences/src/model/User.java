@@ -148,15 +148,4 @@ public class User {
 	public String getAddress() {
 		return my_address;
 	}
-	
-	/**
-	 * User for testing by the TestUser class, Author: Nikhila Potharaj
-	 */
-	public boolean isAccessConferences(final Conference the_con, final AccessLevel the_level) {
-		if(my_access.containsKey(the_con)) {
-			return true;
-		} else {
-			return false; 
-		}
-	}
 }
