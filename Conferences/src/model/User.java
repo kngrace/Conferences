@@ -5,10 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import control.ConferenceControl;
+import control.UserControl;
+
 /**
  * A class designed to model a user for our conference management system.
  * @author Eric Miller
- * @version 0.2
+ * @version 0.4
  * @date 5/19/14
  */
 public class User {
@@ -21,8 +24,13 @@ public class User {
 	/**
 	 * User's full name.
 	 */
-	private String my_name;
+	private String my_firstname;
 
+	/**
+	 * User's full name.
+	 */
+	private String my_lastname;
+	
 	/**
 	 * User's primary e-mail.
 	 */
@@ -41,7 +49,7 @@ public class User {
 	/**
 	 * User's access level to each conference.
 	 */
-	private Map<Conference, List<AccessLevel>> my_access;
+	private Map<Conference, AccessLevel> my_access;
 	
 	/**
 	 * Instantiate the user with all required fields pre-filled.
@@ -50,15 +58,16 @@ public class User {
 	 * @param the_name User's full name.
 	 * @param the_address User's home address.
 	 */
-	public User(final int the_id, final String the_email, final String the_name, final String the_address) {
+	public User(final int the_id, final String the_email, final String the_first, final String the_last, final String the_address) {
 		my_id = the_id;
 		my_email = the_email;
-		my_name = the_name;
+		my_firstname = the_first;
+		my_lastname = the_last;
 		my_address = the_address;
 		
 		// Create empty structures for conferences and access to be filled later.
-		my_conferences = new ArrayList<Conference>();
-		my_access = new HashMap<Conference, List<AccessLevel>>();
+		my_conferences = new ArrayList<Conference>();    // = null;
+		my_access = new HashMap<Conference, AccessLevel>();  // = null;
 	}
 	
 	/**
@@ -68,21 +77,15 @@ public class User {
 	 * @param the_level The access level to this conference that the user will gain.
 	 */
 	public void setAccess(final Conference the_con, final AccessLevel the_level) {	
-		if (!my_conferences.contains(the_con)) {
+		if (!my_conferences.contains(the_con)) { // if you're updating, does it matter if you check?
 			my_conferences.add(the_con);
-			
-			List<AccessLevel> arr = new ArrayList<AccessLevel>();
-			arr.add(the_level);
-			my_access.put(the_con, arr);
+			my_access.put(the_con, the_level);
 		} else {
-			List<AccessLevel> prev = my_access.get(the_con);
-			
-			List<AccessLevel> arr = new ArrayList<AccessLevel>();
-			arr.addAll(prev);
-			arr.add(the_level);
-			my_access.remove(the_con);
-			my_access.put(the_con, arr);
+			my_access.remove(the_con);  // do you have to remove first??
+			my_access.put(the_con, the_level);
 		}
+		// Once you update, you need to update the database too. we need to come up with something here...
+		UserControl.updateUser(this);
 	}
 	
 	/**
@@ -95,26 +98,18 @@ public class User {
 	public void removeAccess(final Conference the_con, final AccessLevel the_level) {
 		if (!my_conferences.contains(the_con)) {
 			//If the user is not assigned to the conference to begin with, we have nothing to do here.
-		} else if(my_access.get(the_con).size() <= 1) {
+			return;
+		} else {
 			//If the user only has one assigned duty to the conference, remove the conference from
 			//their list entirely.
-			removeAllAccess(the_con);
-		} else {
-			List<AccessLevel> prev = my_access.get(the_con);		
-			prev.remove(prev.indexOf(the_level));
+			my_conferences.remove(the_con);
 			my_access.remove(the_con);
-			my_access.put(the_con, prev);
-			
 		}
-	}
-	
-	/**
-	 * Strips the user of all access to a given conference.
-	 * @param the_con Conference to remove.
-	 */
-	public void removeAllAccess(final Conference the_con) {
-		my_conferences.remove(the_con);
-		my_access.remove(the_con);
+		
+		/*
+		 * 
+		 */
+		UserControl.updateUser(this);
 	}
 	
 	/**
@@ -126,11 +121,19 @@ public class User {
 	}
 	
 	/**
-	 * 'Getter' class to retrieve the user's full name.
-	 * @return User's full name. Format: "First (Middle) Last."
+	 * 'Getter' class to retrieve the user's first name.
+	 * @return User's first name.
 	 */
-	public String getName() {
-		return my_name;
+	public String getFirstName() {
+		return my_firstname;
+	}
+	
+	/**
+	 * 'Getter' class to retrieve the user's last name.
+	 * @return User's last name.
+	 */
+	public String getLastName() {
+		return my_lastname;
 	}
 	
 	/**
@@ -147,5 +150,50 @@ public class User {
 	 */
 	public String getAddress() {
 		return my_address;
+	}
+	
+	public List<Conference> getConferences() {
+		List<Conference> conf;
+		if (my_conferences == null || my_conferences.size() < 1) {
+			conf = my_conferences;
+		} else {
+			conf = ConferenceControl.getConferences(this);
+		}
+		return conf;
+	}
+	
+	public void setFirstName(final String the_name) {
+		my_firstname = the_name;
+		UserControl.updateUser(this);
+	}
+	
+	public void setLastName(final String the_name) {
+		my_firstname = the_name;
+		UserControl.updateUser(this);
+	}
+	
+	public void setEmail(final String the_mail) {
+		my_email = the_mail;
+		UserControl.updateUser(this);
+	}
+	
+	public void setAddress(final String the_address) {
+		my_address = the_address;
+		UserControl.updateUser(this);
+	}
+	
+	public boolean equals(final Object o) {
+		boolean equal = false;
+		if (o instanceof User) {
+			User u = (User) o;
+			if (u.getId() == my_id) {
+				equal = true;
+			}
+		}
+		return equal;
+	}
+	
+	public int hashCode() {
+		return (my_id + 1337) * 42;
 	}
 }
