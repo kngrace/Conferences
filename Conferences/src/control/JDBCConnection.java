@@ -7,7 +7,6 @@
  * @version 5.15.14
  */
 
-
 package control;
 
 import java.sql.Connection;
