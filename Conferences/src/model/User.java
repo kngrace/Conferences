@@ -95,7 +95,6 @@ public class User {
 	public void removeAccess(final Conference the_con, final AccessLevel the_level) {
 		if (!my_conferences.contains(the_con)) {
 			//If the user is not assigned to the conference to begin with, we have nothing to do here.
-			return;
 		} else if(my_access.get(the_con).size() <= 1) {
 			//If the user only has one assigned duty to the conference, remove the conference from
 			//their list entirely.
@@ -148,5 +147,16 @@ public class User {
 	 */
 	public String getAddress() {
 		return my_address;
+	}
+	
+	/**
+	 * User for testing by the TestUser class, Author: Nikhila Potharaj
+	 */
+	public boolean isAccessConferences(final Conference the_con, final AccessLevel the_level) {
+		if(my_access.containsKey(the_con)) {
+			return true;
+		} else {
+			return false; 
+		}
 	}
 }
