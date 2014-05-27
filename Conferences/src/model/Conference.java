@@ -3,6 +3,8 @@ package model;
 import java.util.Observable;
 import java.util.Random;
 
+import control.ConferenceControl;
+
 public class Conference extends Observable {
 	
 	/**
