@@ -39,7 +39,7 @@ public class ConferenceControl {
 
 		//Connection connection = null;
 		try {
-			// Must be called so that a suitable driver is found for the DirverManager below
+			// Must be called so that a suitable driver is found for the DriverManager below
 		//	Class.forName("org.sqlite.JDBC");
 
 			// create a database connection
