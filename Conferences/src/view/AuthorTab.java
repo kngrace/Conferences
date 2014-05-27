@@ -2,10 +2,14 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 
+import model.Conference;
+
 
 public class AuthorTab {
 
 	private JFrame frame;
+	
+	private Conference conference;
 
 	/**
 	 * Launch the application.
