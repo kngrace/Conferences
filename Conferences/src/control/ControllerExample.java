@@ -1,5 +1,4 @@
 
-
 /**
  * The following code is a copy of the Sample.java file posted on the website:
  * 

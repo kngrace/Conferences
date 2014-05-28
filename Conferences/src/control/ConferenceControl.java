@@ -1,3 +1,4 @@
+
 /**
  * Class that communicates with the database to store/retrieve data.
  * The Connection object this class uses is globally shared and thus
