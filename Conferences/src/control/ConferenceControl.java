@@ -133,6 +133,13 @@ public class ConferenceControl {
 	}
 
 	// NOT DONE YET!!
+	/**
+	 * This method returns a List of ALL conferences within the system.
+	 * 
+	 * WARNING: This method may change because it constructors conferences 
+	 * and the conference constructor is subject to change as of today.
+	 * @return a list of all conferences that exist
+	 */
 	public static List<Conference> getConferences(){
 		// Establish a connection if one does not exist
 		if(connection == null) {
@@ -144,33 +151,44 @@ public class ConferenceControl {
 			// Load all of the conferences from the database into a ResultSet 
 			Statement statement = connection.createStatement();
 			statement.setQueryTimeout(30);  // set timeout to 30 sec.
-			ResultSet rs = statement.executeQuery("SELECT * FROM conferences AS c JOIN users AS u ON c.program_chair=u.id");
+			ResultSet rs = statement.executeQuery("SELECT c.*, u.id AS user_id, u.email,"
+					+ "u.first_name, u.last_name, u.address "
+					+ "FROM conferences AS c JOIN users AS u ON c.program_chair=u.id");
 			
 			// Iterate through ResultSet, creating/adding each conference to the List
 			while (rs.next()){
-//				result.add(new Conference(rs.getString("name"), new User(rs.getInt("program_chair"), null, null, null, null)), ,
-//				name program_chair  description  accept_papers_start  accept_papers_end conference_start conference_end 
-//				pstmt.setString(1, theConference.getName());
-//				pstmt.setInt(2, theConference.getProgramChair().getId());  
-//				pstmt.setString(3, theConference.getDescription());
-//				pstmt.setDate(4, theConference.getPaperStart());
-//				pstmt.setDate(5, theConference.getPaperStart());
-//				pstmt.setDate(6, theConference.getConferenceStart());
-//				pstmt.setDate(7, theConference.getConferenceEnd());
-//				pstmt.setInt(8, theConference.getId());
+				result.add(
+						new Conference(
+								new Conference.ConferenceBuilder(
+										rs.getInt("id"), 
+										rs.getString("name"), 
+										new User(
+												rs.getInt("user_id"), 
+												rs.getString("email"), 
+												rs.getString("first_name"), 
+												rs.getString("last_name"), 
+												rs.getString("address")
+										)
+								).description(rs.getString("description"))
+								.conferenceEnd(rs.getDate("conference_end"))
+								.conferenceStart(rs.getDate("conference_start"))
+								.paperStart(rs.getDate("accept_papers_start"))
+								.paperEnd(rs.getDate("accept_papers_end"))
+								.location(rs.getString("location")),
+						null
+						)
+				);
 			}
-//			AccessLevel al = AccessLevel.valueOf(rs.getInt("access_level"));
-//			
-//			return al;
+			return result;
 
 		}catch(SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
 			
 			// Do not print error if the error is because no results were found
-		//	if (!e.getMessage().equals("ResultSet closed")){ 
+			if (!e.getMessage().equals("ResultSet closed")){ 
 				System.err.println("SQL Error: " + e.getMessage());
-			//}
+			}
 		}
 
 		return null;
