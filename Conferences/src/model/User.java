@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 import control.ConferenceControl;
 import control.UserControl;
 
@@ -51,19 +52,28 @@ public class User {
 	 */
 	private Map<Conference, AccessLevel> my_access;
 	
+	private String my_username;
+	
+	private String my_password;
+	
+	
 	/**
 	 * Instantiate the user with all required fields pre-filled.
 	 * @param the_id Unique identifier for this specific user.
+	 * @param the_user Unique string identifier for the user account.
+	 * @param the_pass Password used to authenticate user's session.
 	 * @param the_email User's primary e-mail address.
 	 * @param the_name User's full name.
 	 * @param the_address User's home address.
 	 */
-	public User(final int the_id, final String the_email, final String the_first, final String the_last, final String the_address) {
+	public User(final int the_id, final String the_user, final String the_pass, final String the_email, final String the_first, final String the_last, final String the_address) {
 		my_id = the_id;
 		my_email = the_email;
 		my_firstname = the_first;
 		my_lastname = the_last;
 		my_address = the_address;
+		my_username = the_user;
+		my_password = the_pass;
 		
 		// Create empty structures for conferences and access to be filled later.
 		my_conferences = new ArrayList<Conference>();    // = null;
@@ -142,6 +152,18 @@ public class User {
 	 */
 	public String getEmail() {
 		return my_email;
+	}
+	
+	public boolean authenticate(final String the_user, final String the_pass) {
+		boolean result = false;
+		if (the_user.equals(my_username) && the_pass.equals(my_password)) {
+			result = true;
+		}
+		return result;
+	}
+	
+	public String getUsername() {
+		return my_username;
 	}
 	
 	/**
