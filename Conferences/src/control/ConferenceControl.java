@@ -10,15 +10,12 @@
 package control;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
 import model.AccessLevel;
 import model.Conference;
 import model.User;
@@ -164,6 +161,8 @@ public class ConferenceControl {
 										rs.getString("name"), 
 										new User(
 												rs.getInt("user_id"), 
+												rs.getString("username"),
+												rs.getString("password"),
 												rs.getString("email"), 
 												rs.getString("first_name"), 
 												rs.getString("last_name"), 
