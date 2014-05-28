@@ -15,6 +15,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -131,7 +132,47 @@ public class ConferenceControl {
 		return null; // no error
 	}
 
+	// NOT DONE YET!!
 	public static List<Conference> getConferences(){
+		// Establish a connection if one does not exist
+		if(connection == null) {
+			connection = JDBCConnection.getConnection();
+		}
+		 
+		List<Conference> result = new ArrayList<Conference>(); // Create the empty list
+		try {
+			// Load all of the conferences from the database into a ResultSet 
+			Statement statement = connection.createStatement();
+			statement.setQueryTimeout(30);  // set timeout to 30 sec.
+			ResultSet rs = statement.executeQuery("SELECT * FROM conferences AS c JOIN users AS u ON c.program_chair=u.id");
+			
+			// Iterate through ResultSet, creating/adding each conference to the List
+			while (rs.next()){
+//				result.add(new Conference(rs.getString("name"), new User(rs.getInt("program_chair"), null, null, null, null)), ,
+//				name program_chair  description  accept_papers_start  accept_papers_end conference_start conference_end 
+//				pstmt.setString(1, theConference.getName());
+//				pstmt.setInt(2, theConference.getProgramChair().getId());  
+//				pstmt.setString(3, theConference.getDescription());
+//				pstmt.setDate(4, theConference.getPaperStart());
+//				pstmt.setDate(5, theConference.getPaperStart());
+//				pstmt.setDate(6, theConference.getConferenceStart());
+//				pstmt.setDate(7, theConference.getConferenceEnd());
+//				pstmt.setInt(8, theConference.getId());
+			}
+//			AccessLevel al = AccessLevel.valueOf(rs.getInt("access_level"));
+//			
+//			return al;
+
+		}catch(SQLException e) {
+			// if the error message is "out of memory", 
+			// it probably means no database file is found
+			
+			// Do not print error if the error is because no results were found
+		//	if (!e.getMessage().equals("ResultSet closed")){ 
+				System.err.println("SQL Error: " + e.getMessage());
+			//}
+		}
+
 		return null;
 	}
 
@@ -189,8 +230,5 @@ public class ConferenceControl {
 		
 		return AccessLevel.AUTHOR; // No entry existed in the table
 	}
-
-
-
 
 }
