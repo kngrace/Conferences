@@ -66,7 +66,8 @@ public class User {
 	 * @param the_name User's full name.
 	 * @param the_address User's home address.
 	 */
-	public User(final int the_id, final String the_user, final String the_pass, final String the_email, final String the_first, final String the_last, final String the_address) {
+	public User(final int the_id, final String the_user, final String the_pass, final String the_email, 
+			final String the_first, final String the_last, final String the_address) {
 		my_id = the_id;
 		my_email = the_email;
 		my_firstname = the_first;
@@ -79,6 +80,31 @@ public class User {
 		my_conferences = new ArrayList<Conference>();    // = null;
 		my_access = new HashMap<Conference, AccessLevel>();  // = null;
 	}
+	
+	/**
+	 * Instantiate the user with all required fields pre-filled.
+	 * @param the_user Unique string identifier for the user account.
+	 * @param the_pass Password used to authenticate user's session.
+	 * @param the_email User's primary e-mail address.
+	 * @param the_name User's full name.
+	 * @param the_address User's home address.
+	 */
+	public User(final String the_user, final String the_pass, final String the_email, 
+			final String the_first, final String the_last, final String the_address) {
+		my_email = the_email;
+		my_firstname = the_first;
+		my_lastname = the_last;
+		my_address = the_address;
+		my_username = the_user;
+		my_password = the_pass;
+		
+		// Create empty structures for conferences and access to be filled later.
+		my_conferences = new ArrayList<Conference>();    // = null;
+		my_access = new HashMap<Conference, AccessLevel>();  // = null;
+		
+		my_id = UserControl.createUser(this);
+	}
+	
 	
 	/**
 	 * Assigns the user an access level for a given conference. If the conference is not
@@ -202,6 +228,11 @@ public class User {
 	public void setAddress(final String the_address) {
 		my_address = the_address;
 		UserControl.updateUser(this);
+	}
+	
+	//I hate that I had to make this. :(
+	public String getPassword() {
+		return my_password;
 	}
 	
 	public boolean equals(final Object o) {
