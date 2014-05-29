@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.TextEvent;
+import java.awt.event.TextListener;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
@@ -12,6 +14,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import model.Session;
 import model.User;
@@ -78,6 +82,7 @@ public class Login {
 		JButton loginSubmit = new JButton("Submit");
 		loginSubmit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				System.out.println(username + " " + password);
 				User test = UserControl.authenticate(username, password);
 				if(test == null) {
 					lblNewLabel = new JLabel("The username or password is incorrect please try again!");
@@ -129,9 +134,21 @@ public class Login {
 		panel.add(newUserButton);
 		
 		usernameField = new JTextField();
-		usernameField.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		usernameField.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				//do nothing
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent arg0) {
 				username = usernameField.getText();
+				
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent arg0) {
+				username = usernameField.getText();
+				
 			}
 		});
 		usernameField.setBounds(328, 153, 112, 20);
@@ -147,11 +164,22 @@ public class Login {
 		panel.add(lblPassword);
 		
 		passwordField = new JPasswordField();
-		passwordField.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				password = passwordField.getPassword().toString();
+		passwordField.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				// do nothing
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent arg0) {
+				password = new String(passwordField.getPassword());		
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent arg0) {
+				password = new String(passwordField.getPassword());	
 			}
 		});
+	
 		passwordField.setBounds(328, 184, 112, 20);
 		panel.add(passwordField);
 		
