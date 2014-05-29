@@ -1,5 +1,18 @@
 package view;
+import java.awt.Color;
 import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+import control.UserControl;
+import model.User;
 
 
 public class NewUser {
@@ -19,6 +32,7 @@ public class NewUser {
 	private String user_email;
 	private String user_address;
 	private String username; 
+	private String password;
 	private JButton submitButton;
 	private JLabel lblNewLabel;
 
@@ -97,6 +111,11 @@ public class NewUser {
 		add.setColumns(10);
 		
 		textField_2 = new JTextField();
+		textField_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				password = textField_2.getText();
+			}
+		});
 		textField_2.setColumns(10);
 		textField_2.setBounds(78, 331, 86, 20);
 		panel_1.add(textField_2);
@@ -157,20 +176,22 @@ public class NewUser {
 		panel.setBackground(new Color(176, 196, 222));
 		panel.setBounds(0, 0, 690, 82);
 		panel_1.add(panel);
-		
-		submitButton = new JButton("Submit Form");
-		submitButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				System.out.println("working!!!");
-				//User new_user = new User(id, email, user_first, user_last, user_address);
-				//UserControl.createUser(new_user);
-			}
-		});
-		submitButton.setBounds(78, 374, 144, 23);
-		panel_1.add(submitButton);
-		
+			
 	
 	}
+	
+	public ArrayList<String> getInfo() {
+		ArrayList<String> info = new ArrayList<String>();
+		info.add(username);
+		info.add(password);
+		info.add(user_email);
+		info.add(user_first);
+		info.add(user_last);
+		info.add(user_address);
+		return info; 
+		
+	}
+	
 	public JPanel getPanel_1() {
 		return panel_1;
 	}

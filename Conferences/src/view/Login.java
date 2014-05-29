@@ -1,5 +1,21 @@
 package view;
+import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+
+import model.Session;
+import model.User;
+import control.UserControl;
 
 
 public class Login {
@@ -12,6 +28,9 @@ public class Login {
 	private JPanel banner;
 	private JPanel panel;
 	private JLabel lblNewLabel;
+	
+	private String username;
+	private String password;
 
 	/**
 	 * Launch the application.
@@ -53,26 +72,21 @@ public class Login {
 		JButton loginSubmit = new JButton("Submit");
 		loginSubmit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				/**
-				 * User test = searchUser(username, password);
-				 * if(test == null) {
-				 * 	lblNewLabel = new JLabel("The username or password is incorrect please try again!");
-				 * 	lblNewLabel.setForeground(Color.RED);
-		         * 	lblNewLabel.setBounds(227, 128, 322, 14);
-		         * 	panel.add(lblNewLabel);
-		         * 	Session newUser = new Session(test);
-		         * 	frame.getContentPane().add(panel);
-				 * 	frame.repaint();
-				 * } else {
-				 * 	frame.remove(panel);
-				 * 	UserBoard home = new UserBoard();
-				 * 	frame.getContentPane().add(home.getPanel());
-				 * 	frame.repaint();
-				 * }
-				 * 
-				 * if not null, get the user to go to the main page
-				 * if null, repeat with an added label. 
-				 */
+				User test = UserControl.authenticate(username, password);
+				if(test == null) {
+					lblNewLabel = new JLabel("The username or password is incorrect please try again!");
+					lblNewLabel.setForeground(Color.RED);
+		          	lblNewLabel.setBounds(227, 128, 322, 14);
+		          	panel.add(lblNewLabel);
+		          	Session newUser = new Session(test);
+		          	frame.getContentPane().add(panel);
+				  	frame.repaint();
+				  } else {
+				  	frame.remove(panel);
+				  	UserBorder home = new UserBorder();
+				 	frame.getContentPane().add(home.getPanel());
+				  	frame.repaint();
+				  }
 			}
 
 		});
@@ -89,6 +103,11 @@ public class Login {
 				JButton OkButton = new JButton("Submit Form");
 				OkButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent arg0) {
+						ArrayList<String> temp = user.getInfo();
+						User new_user = new User(temp.get(0), temp.get(1), temp.get(2), 
+								temp.get(3), temp.get(4), temp.get(5));
+						UserControl.createUser(new_user);
+				
 						frame.remove(user.getPanel_1());
 						frame.getContentPane().add(panel);
 						frame.repaint();
@@ -104,6 +123,11 @@ public class Login {
 		panel.add(newUserButton);
 		
 		usernameField = new JTextField();
+		usernameField.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				username = usernameField.getText();
+			}
+		});
 		usernameField.setBounds(328, 153, 112, 20);
 		panel.add(usernameField);
 		usernameField.setColumns(10);
@@ -117,6 +141,11 @@ public class Login {
 		panel.add(lblPassword);
 		
 		passwordField = new JPasswordField();
+		passwordField.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				password = passwordField.getPassword().toString();
+			}
+		});
 		passwordField.setBounds(328, 184, 112, 20);
 		panel.add(passwordField);
 		
