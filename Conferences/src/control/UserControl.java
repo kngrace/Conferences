@@ -126,7 +126,7 @@ public class UserControl {
 				
 				// Iterate through ResultSet, creating/adding each conference to the List
 							login = new User(
-										rs.getInt("user_id"), 
+										rs.getInt("id"), 
 										rs.getString("username"),
 										rs.getString("password"),
 										rs.getString("email"), 
