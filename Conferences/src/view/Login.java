@@ -30,6 +30,10 @@ import control.UserControl;
  */
 public class Login {
 	
+	/**
+	 * Test comment
+	 */
+	
 	
 
 	private JFrame frame;
