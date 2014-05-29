@@ -12,7 +12,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-
+/**
+ * 
+ * @author pothnik
+ * @version 05/28
+ */
 public class UserBorder {
 
 	private JFrame frame;

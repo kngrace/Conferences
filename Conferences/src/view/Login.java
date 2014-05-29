@@ -18,6 +18,12 @@ import model.User;
 import control.UserControl;
 
 
+/**
+ * 
+ * @author Nikhila and Marilyn
+ * @version 05/28/2014
+ *
+ */
 public class Login {
 	
 	

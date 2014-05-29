@@ -14,7 +14,12 @@ import javax.swing.JTextField;
 import control.UserControl;
 import model.User;
 
-
+/**
+ * 
+ * @author Nikhila and Marilyn
+ * @version 05/28/2014
+ *
+ */
 public class NewUser {
 
 	private JFrame frame;
