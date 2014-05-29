@@ -1,7 +1,7 @@
 /**
  * Class that communicates with the database to store/retrieve data.
  * 
- * @author Kirsten Grace
+ * @author Eric Miller, Kirsten Grace
  * @version 5.12.14
  */
 
@@ -86,7 +86,7 @@ public class UserControl {
 					while (rs.next()){
 						result.add(
 								new User(
-											rs.getInt("user_id"), 
+											rs.getInt("id"), 
 											rs.getString("username"),
 											rs.getString("password"),
 											rs.getString("email"), 
