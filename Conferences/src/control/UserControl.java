@@ -43,15 +43,14 @@ public class UserControl {
 
 				// Add the conference to the database
 				PreparedStatement pstmt = connection.prepareStatement("INSERT INTO users "
-						+ "(id, email, first_name, last_name, address, username, password"
-						+ ") VALUES (?, ?, ?, ?, ?, ?, ?)");
-				pstmt.setInt(1, theUser.getId());
-				pstmt.setString(2, theUser.getEmail());  
-				pstmt.setString(3, theUser.getFirstName());
-				pstmt.setString(4, theUser.getLastName());
-				pstmt.setString(5, theUser.getAddress());
-				pstmt.setString(6, theUser.getUsername());
-				pstmt.setString(7, theUser.getPassword()); //:(
+						+ "(email, first_name, last_name, address, username, password"
+						+ ") VALUES (?, ?, ?, ?, ?, ?)");
+				pstmt.setString(1, theUser.getEmail());  
+				pstmt.setString(2, theUser.getFirstName());
+				pstmt.setString(3, theUser.getLastName());
+				pstmt.setString(4, theUser.getAddress());
+				pstmt.setString(5, theUser.getUsername());
+				pstmt.setString(6, theUser.getPassword()); //:(
 				pstmt.executeUpdate();
 
 				// Retrieve the ID from the database for the recently inserted conference
