@@ -246,6 +246,14 @@ public class User {
 		return equal;
 	}
 	
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(my_id);
+		sb.append(", Username: ");
+		sb.append(my_username);
+		return sb.toString();
+	}
+	
 	public int hashCode() {
 		return (my_id + 1337) * 42;
 	}
