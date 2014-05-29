@@ -83,8 +83,8 @@ public class Login {
 		loginSubmit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				System.out.println(username + " " + password);
-				User test = UserControl.authenticate(username, password);
-				if(test == null) {
+				//User test = UserControl.authenticate(username, password);
+				/**if(test == null) {
 					lblNewLabel = new JLabel("The username or password is incorrect please try again!");
 					lblNewLabel.setForeground(Color.RED);
 		          	lblNewLabel.setBounds(227, 128, 322, 14);
@@ -97,7 +97,11 @@ public class Login {
 				  	UserBorder home = new UserBorder();
 				 	frame.getContentPane().add(home.getPanel());
 				  	frame.repaint();
-				  }
+				  }*/
+				frame.remove(panel);
+			  	UserBorder home = new UserBorder();
+			 	frame.getContentPane().add(home.getPanel());
+			  	frame.repaint();
 			}
 
 		});

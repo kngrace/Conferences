@@ -98,7 +98,9 @@ public class NewUser {
 		email = new JTextField();
 		email.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				user_email = email.getText();
+				if(email.getText() != null) {
+					user_email = email.getText();
+				}
 			}
 		});
 		email.setBounds(78, 183, 209, 20);
