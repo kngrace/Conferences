@@ -17,21 +17,54 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import model.AccessLevel;
 import model.Conference;
+import model.User;
 
 public class ControllerExample
 {
 	
 	private static void test1() throws ClassNotFoundException {
-		Conference testConference = new Conference();
-		ConferenceControl.createConference(testConference);
+		User testUser = new User(3, null, null, null, null, null, null);
+		Conference testConference = new Conference(new Conference.ConferenceBuilder(0, "Conference 2.0", 
+				testUser), null);
+		testConference.setName(null, "Testing Access Levels");
+		ConferenceControl.updateConference(testConference);
+		
+		
+		System.out.println("The access level for this user is: " 
+				+ ConferenceControl.getAccessLevel(testConference , testUser));
+		
+		System.out.println("The access level for the wrong user is: " 
+				+ ConferenceControl.getAccessLevel(testConference , new User(16, null, null, null, null, null, null)));
+		
 	}
 	
+
+	
+	private static void test2() throws ClassNotFoundException {
+		System.out.println("The conferences:" + ConferenceControl.getConferences());
+	}
+	
+	private static void test3() throws ClassNotFoundException {
+		//System.out.println(UserControl.getUsers());
+		
+		System.out.println(UserControl.authenticate("kngrace", "password"));
+		System.out.println(UserControl.authenticate("kngrace", "password2"));
+		
+//		System.out.println("ID is " +  new User("hoopla2", "banana", "kirkisajerk@space.com", 
+//				"Captain", "Spock", "Enterprise"));
+	}
 	
 	public static void main(String[] args) throws ClassNotFoundException
 	{
-		test1();
-		test1();
+		
+		//.out.println(AccessLevel.PROGRAMCHAIR);
+		//System.out.println(AccessLevel.valueOf("PROGRAMCHAIR"));
+
+		//test1();
+		//test2();
+		test3();
 /*		
 		// load the sqlite-JDBC driver using the current class loader
 		Class.forName("org.sqlite.JDBC");
