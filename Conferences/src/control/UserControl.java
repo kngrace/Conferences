@@ -42,7 +42,7 @@ public class UserControl {
 			//https://developer.salesforce.com/page/Secure_Coding_SQL_Injection
 
 				// Add the conference to the database
-				PreparedStatement pstmt = connection.prepareStatement("INSERT INTO conferences "
+				PreparedStatement pstmt = connection.prepareStatement("INSERT INTO users "
 						+ "(id, email, first_name, last_name, address, username, password"
 						+ ") VALUES (?, ?, ?, ?, ?, ?, ?)");
 				pstmt.setInt(1, theUser.getId());
