@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Observable;
+import control.*;
 
 public class Manuscript extends Observable {
 	
@@ -33,6 +34,59 @@ public class Manuscript extends Observable {
 		// Call this control method AFTER fields have been assigned
 		// to ensure proper data is saved in database.
 		ManuscriptControl.createManuscript(this);
+	}
+	
+	/**
+	 * Constructor creates Manuscript object that currently has persistent data in
+	 * the database i.e. this Manuscript has been created before in a previous Session.
+	 * Therefore, it accepts an ID as a parameter rather than having to create a new
+	 * one.
+	 * @param theID
+	 * @param theAuthor
+	 * @param theConference
+	 * @param theFileName
+	 * @param theFile
+	 * @param theSPC
+	 */
+	public Manuscript(int theID, User theAuthor, Conference theConference, 
+			String theFileName, File theFile, User theSPC) {
+		myID = theID;
+		myAuthor = theAuthor;
+		myConference = theConference;
+		myFileName = theFileName;
+		myFile = new File(myFileName);
+		myRecommendStatus = Status.UNDECIDED;
+		myFinalStatus = Status.UNDECIDED;
+		mySPC = theSPC;
+		isSubmitted = true;
+	}
+	
+	/**
+	 * Constructor creates Manuscript object that currently has does not have
+	 * persistent data in the database i.e. this Manuscript is being created for 
+	 * the first time. Therefore, an ID must be generated and assigned. This is 
+	 * done by calling the createConference() method from ManuscriptControl, which
+	 * returns an integer, representing the Manuscript's ID.
+	 * @param theID
+	 * @param theAuthor
+	 * @param theConference
+	 * @param theFileName
+	 * @param theFile
+	 * @param theSPC
+	 */
+	public Manuscript(User theAuthor, Conference theConference, 
+			String theFileName, File theFile, User theSPC) {
+		myAuthor = theAuthor;
+		myConference = theConference;
+		myFileName = theFileName;
+		myFile = new File(myFileName);
+		myRecommendStatus = Status.UNDECIDED;
+		myFinalStatus = Status.UNDECIDED;
+		mySPC = theSPC;
+		isSubmitted = true;
+		// assign ID AFTER field have been initialized, so that all fields
+		// get stored in the database.
+		myID = ManuscriptControl.createManuscript(this);
 	}
 	
 	public int getId() {
@@ -75,7 +129,7 @@ public class Manuscript extends Observable {
 		}
 	}
 	
-	public List<Reviewer> getReviewers(Session theSession) {
+	public List<User> getReviewers(Session theSession) {
 		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)) {
 		    return myReviewers;
 		} else {
@@ -107,12 +161,13 @@ public class Manuscript extends Observable {
 	 */
 	public List<Review> getReviews(Session theSession) {
 		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)) {
-		    return ManuscriptControl.getReviews(this);
+		    return ManuscriptControl.getReviews(this, theSession.getCurrentUser());
 		} else {
 			throw new IllegalStateException("User does not have access to get reviews!");
 		}
 	}
 	
+    
 	public boolean addReview(Review theReview, Session theSession) {
 		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)) {
 		    if (this.getReviews(theSession).size() < 4) {
@@ -127,9 +182,8 @@ public class Manuscript extends Observable {
 			throw new IllegalStateException("User does not have access to add review!");
 			return false;
 		}
-	}
-	
-	public void setRecommendStatus(Status theStatus) {
+	} 
+	public void setRecommendStatus(Status theStatus, Session theSession) {
 		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)) {
 		    myRecommendStatus = theStatus;
 		    notifyObservers();
@@ -150,7 +204,7 @@ public class Manuscript extends Observable {
 	
 	public void assignSPC(User theSPC, Session theSession) {
 		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)) {
-		    mySPC = theSCP;
+		    mySPC = theSPC;
 		    notifyObservers();
 		} else {
 			throw new IllegalStateException("User does not have access to set subprogramchair"
@@ -192,7 +246,7 @@ public class Manuscript extends Observable {
 	 * @return true if this Session at this Conference has at least this AccessLevel, 
 	 * false otherwise.
 	 */
-	private static boolean sessionHasAccessLevelOf(AccessLevel theAccessLevel, Session theSession) {
+	private boolean sessionHasAccessLevelOf(AccessLevel theAccessLevel, Session theSession) {
 		return ConferenceControl.getAccessLevel(this.getConference(), theSession.getCurrentUser()).
 				compareTo(theAccessLevel) >= 0;
 	}
@@ -214,11 +268,7 @@ public class Manuscript extends Observable {
 			// required fields
 			myID = theID;
 			myAuthor = theAuthor;
-			try {
-				myFile = new File(theFileName);
-			} catch (FileNotFoundException fnfe) {
-				System.err.println("File name input not found!");
-			}
+		    myFile = new File(theFileName);
 		}
 		
 		public ManuscriptBuilder conference(Conference theConference) {
@@ -250,7 +300,7 @@ public class Manuscript extends Observable {
 			myReviewers = theReviewers;
 			return this;
 		}
-		public Manuscript build(Session theSession) {
+		public Manuscript build() {
 			return new Manuscript(this);
 		}
 	}

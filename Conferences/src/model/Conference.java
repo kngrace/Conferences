@@ -4,6 +4,7 @@ import java.util.Observable;
 import java.util.Random;
 
 import control.ConferenceControl;
+import java.sql.Date;
 
 public class Conference extends Observable {
 	
@@ -31,22 +32,22 @@ public class Conference extends Observable {
 	/**
 	 * The Conference's start date and time for Manuscript and Review submission.
 	 */
-	private DateTime myPaperStart;
+	private Date myPaperStart;
 	
 	/**
 	 * The Conference's end date and time for Manuscript and Review submission.
 	 */
-	private DateTime myPaperEnd;
+	private Date myPaperEnd;
 	
 	/**
 	 * The Conference's start date and time.
 	 */
-	private DateTime myConferenceStart;
+	private Date myConferenceStart;
 	
 	/**
 	 * The Conference's end date and time.
 	 */
-	private DateTime myConferenceEnd;
+	private Date myConferenceEnd;
 	
 	/**
 	 * The conference's location.
@@ -81,6 +82,78 @@ public class Conference extends Observable {
 		}
 	}
 	
+	/**
+	 * Constructor for Conference that already exists in database. For example, the Conference
+	 * was created in a previous Session and has an ID as persistent date in the database.
+	 * When a User logs off, then logs on again sometime later, this Conference object 
+	 * needs to be recreated (Conference objects are not persistent).
+	 * @param theID the Conference's ID
+	 * @param theName the Conference's name
+	 * @param theProgramChair the Conference's Program Chair
+	 * @param thePaperStart the Conference's Date for accepting Manuscripts.
+	 * @param thePaperEnd the Conference's Date for no longer accepting Manuscripts.
+	 * @param theConferenceStart the Conference's start Date.
+	 * @param theConferenceEnd the Conference's end Date.
+	 * @param theLocation the Conference's location.
+	 * @param theSession the current Session. Used for security as Users with AccessLevel
+	 * less than that of a Program Chair cannot create a Conference.
+	 */
+	public Conference(int theID, String theName, User theProgramChair, Date thePaperStart,
+			Date thePaperEnd, Date theConferenceStart, Date theConferenceEnd,
+			String theLocation, Session theSession) {
+		
+		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)) {
+			myID = theID;
+			myName = theName;
+			myProgramChair = theProgramChair;
+			myPaperStart = thePaperStart;
+			myPaperEnd = thePaperEnd;
+			myConferenceStart = theConferenceStart;
+			myConferenceEnd = theConferenceEnd;
+			myLocation = theLocation;
+		} else {
+			throw new IllegalStateException("User attempting to create new Conference without"
+					+ "the proper access level!");		
+		}
+	}
+	
+	/**
+	 * Constructor for a Conference being created for the first time. In other words,
+	 * there is no persistent date representing this Conference in the database. 
+	 * In this case, the Constructor's ID is not passed as a parameter (it does
+	 * not yet exist) but rather is generated and assigned by calling the method
+	 * createConference() from the ConferenceControl class.
+	 * @param theName the Conference's name
+	 * @param theProgramChair the Conference's Program Chair
+	 * @param thePaperStart the Conference's Date for accepting Manuscripts.
+	 * @param thePaperEnd the Conference's Date for no longer accepting Manuscripts.
+	 * @param theConferenceStart the Conference's start Date.
+	 * @param theConferenceEnd the Conference's end Date.
+	 * @param theLocation the Conference's location.
+	 * @param theSession the current Session. Used for security as Users with AccessLevel
+	 * less than that of a Program Chair cannot create a Conference.
+	 */
+	public Conference(String theName, User theProgramChair, Date thePaperStart,
+			Date thePaperEnd, Date theConferenceStart, Date theConferenceEnd,
+			String theLocation, Session theSession) {
+		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)) {
+			myName = theName;
+			myProgramChair = theProgramChair;
+			myPaperStart = thePaperStart;
+			myPaperEnd = thePaperEnd;
+			myConferenceStart = theConferenceStart;
+			myConferenceEnd = theConferenceEnd;
+			myLocation = theLocation;
+			// assign ID AFTER fields are initialized, so they get stored in the
+			// database.
+			myID = ConferenceControl.createConference(this);
+		} else {
+			throw new IllegalStateException("User attempting to create new Conference without"
+					+ "the proper access level!");		
+		}
+		
+	}
+	
 	public int getId() {
 		return myID;
 	}
@@ -97,19 +170,19 @@ public class Conference extends Observable {
 		return myDescription;
 	}
 	
-	public DateTime getPaperStart() {
+	public Date getPaperStart() {
 		return myPaperStart;
 	}
 	
-	public DateTime getPaperEnd() {
+	public Date getPaperEnd() {
 		return myPaperEnd;
 	}
 	
-	public DateTime getConferenceStart() {
+	public Date getConferenceStart() {
 		return myConferenceStart;
 	}
 	
-	public DateTime getConferenceEnd() {
+	public Date getConferenceEnd() {
 		return myConferenceEnd;
 	}
 	
@@ -128,7 +201,6 @@ public class Conference extends Observable {
 		    notifyObservers();
 		    return true;
 		} else {
-			throw new IllegalStateException("User not authorized to set names!");
 			return false;
 		}
 	}
@@ -139,51 +211,46 @@ public class Conference extends Observable {
 		    notifyObservers();
 		    return true;
 		} else {
-			throw new IllegalStateException("User not authorized to set names!");
 			return false;
 		}
 	}
 	
-	public boolean setPaperStart(Session theSession, DateTime thePaperStart) {
+	public boolean setPaperStart(Session theSession, Date thePaperStart) {
 		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)) {
 		    myPaperStart = thePaperStart;
 		    notifyObservers();
 		    return true;
 		} else {
-			throw new IllegalStateException("User not authorized to set paper start!");
 			return false;
 		}
 	}
 	
-	public boolean setPaperEnd(Session theSession, DateTime thePaperEnd) {
+	public boolean setPaperEnd(Session theSession, Date thePaperEnd) {
 		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)) {
 		    myPaperStart = thePaperEnd;
 		    notifyObservers();
 		    return true;
 		} else {
-			throw new IllegalStateException("User not authorized to set paper end!");
 			return false;
 		}
 	}
 	
-	public boolean setConferenceStart(Session theSession, DateTime theConferenceStart) {
+	public boolean setConferenceStart(Session theSession, Date theConferenceStart) {
 		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)) {
 		    myConferenceStart = theConferenceStart;
 		    notifyObservers();
 		    return true;
 		} else {
-			throw new IllegalStateException("User not authorized to set conference start!");
 			return false;
 		}
 	}
 	
-    public boolean setConferenceEnd(Session theSession, DateTime theConferenceEnd) {
+    public boolean setConferenceEnd(Session theSession, Date theConferenceEnd) {
 		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)) {
 		    myConferenceEnd = theConferenceEnd;
 		    notifyObservers();
 		    return true;
 		} else {
-			throw new IllegalStateException("User not authorized to set conference end!");
 			return false;
 		}
 	}
@@ -194,7 +261,6 @@ public class Conference extends Observable {
 		    notifyObservers();
 		    return true;
 		} else {
-			throw new IllegalStateException("User not authorized to set location!");
 			return false;
 		}
 	}
@@ -219,10 +285,10 @@ public class Conference extends Observable {
 		private String myName;
 		private User myProgramChair;
 		private String myDescription;
-		private DateTime myPaperStart;
-		private DateTime myPaperEnd;
-		private DateTime myConferenceStart;
-		private DateTime myConferenceEnd;
+		private Date myPaperStart;
+		private Date myPaperEnd;
+		private Date myConferenceStart;
+		private Date myConferenceEnd;
 		private String myLocation;
 		
 		public ConferenceBuilder(int theID, String theName, User theProgramChair) {
@@ -236,22 +302,22 @@ public class Conference extends Observable {
 			return this;
 		}
 		
-		public ConferenceBuilder paperStart(DateTime thePaperStart) {
-			myDateTime = theDateTime;
+		public ConferenceBuilder paperStart(Date thePaperStart) {
+			myPaperStart = thePaperStart;
 			return this;
 		}
 		
-		public ConferenceBuilder paperEnd(DateTime thePaperEnd) {
+		public ConferenceBuilder paperEnd(Date thePaperEnd) {
 			myPaperEnd = thePaperEnd;
 			return this;
 		}
 		
-		public ConferenceBuilder conferenceStart(DateTime theConferenceStart) {
+		public ConferenceBuilder conferenceStart(Date theConferenceStart) {
 			myConferenceStart = theConferenceStart;
 			return this;
 		}
 		
-		public ConferenceBuilder conferenceEnd(DateTime theConferenceEnd) {
+		public ConferenceBuilder conferenceEnd(Date theConferenceEnd) {
 			myConferenceEnd = theConferenceEnd;
 			return this;
 		}
@@ -261,8 +327,8 @@ public class Conference extends Observable {
 			return this;
 		}
 		
-		public Conference build() {
-			return new Conference(this);
+		public Conference build(Session theSession) {
+			return new Conference(this, theSession);
 		}
 	}
 

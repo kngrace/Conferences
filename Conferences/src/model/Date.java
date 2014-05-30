@@ -1,6 +1,6 @@
 package model;
 
-public class DateTime implements Comparable<DateTime> {
+public class Date implements Comparable<Date> {
 	
 	private int myYear;
 	private int myMonth;
@@ -8,7 +8,7 @@ public class DateTime implements Comparable<DateTime> {
 	private int myHour;
 	private int myMinute;
 	
-	public DateTime(int theYear, int theMonth, int theDay, int theHour, int theMinute) {
+	public Date(int theYear, int theMonth, int theDay, int theHour, int theMinute) {
 		myYear = theYear;
 		myMonth = theMonth;
 		myDay = theDay;
@@ -16,7 +16,7 @@ public class DateTime implements Comparable<DateTime> {
 		myMinute = theMinute;
 	}
 	
-	public int compareTo(DateTime other) {
+	public int compareTo(Date other) {
 		if (this.equals(other)) {
 			return 0;
 		} else {
