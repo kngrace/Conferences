@@ -1,7 +1,8 @@
 /**
  * Class that communicates with the database to store/retrieve data.
  * The Connection object this class uses is globally shared and thus
- * is retrieved via JDBCConnection.
+ * is retrieved via JDBCConnection. (UNDER TEST: Also stores a Map of all 
+ * Conference objects already loaded into memory to prevent duplication.)
  * 
  * @author Kirsten Grace
  * @version 5.28.14
@@ -15,7 +16,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import model.AccessLevel;
 import model.Conference;
 import model.User;
@@ -25,6 +29,10 @@ public class ConferenceControl {
 	/** The connection object this class uses to connect with the database. */
 	private static Connection connection = null;
 
+	/** The map of reference for all Conference objects currently loaded into memory. */
+	private static Map<Integer, Conference> conferenceMap = 
+			new HashMap<Integer, Conference>();
+	
 	/**
 	 * Private constructor to prevent instantiation. 
 	 */
@@ -42,11 +50,7 @@ public class ConferenceControl {
 	 * @return The unique ID of the newly added conference.
 	 */
 	public static int createConference(Conference theConference) {
-		// Establish a connection if one does not exist
-		if(connection == null) {
-			connection = JDBCConnection.getConnection();
-		}
-
+		checkConnection();
 		try {
 //			https://developer.salesforce.com/page/Secure_Coding_SQL_Injection
 			
@@ -77,6 +81,9 @@ public class ConferenceControl {
 			pstmt.setInt(3, AccessLevel.PROGRAMCHAIR.value());
 			pstmt.executeUpdate();
 			
+			// Add this conference to the Map
+			conferenceMap.put(conferenceID, theConference);
+			
 			return conferenceID;
 		} catch(SQLException e){
 			// if the error message is "out of memory", 
@@ -87,7 +94,6 @@ public class ConferenceControl {
 		return -1;
 	}
 
-	
 	/**
 	 * Use this method to update a conference in the database after one of it's 
 	 * fields has been changed. The conference MUST have its ID number correctly
@@ -98,13 +104,8 @@ public class ConferenceControl {
 	 * @return The error message encountered or null if no error is encountered
 	 */
 	public static String updateConference(Conference theConference){
-		// Establish a connection if one does not exist
-		if(connection == null) {
-			connection = JDBCConnection.getConnection();
-		}
-
+		checkConnection();
 		try {
-
 			// Update the conference within the database
 //			https://developer.salesforce.com/page/Secure_Coding_SQL_Injection
 			PreparedStatement pstmt = connection.prepareStatement("UPDATE conferences SET name=?, "
@@ -129,56 +130,22 @@ public class ConferenceControl {
 		return null; // no error
 	}
 
-	// NOT DONE YET!!
 	/**
-	 * This method returns a List of ALL conferences within the system.
+	 * This method returns a List<Conference> of ALL conferences within the database.
+	 * This method returns a null pointer if no results are found.
 	 * 
-	 * WARNING: This method may change because it constructors conferences 
-	 * and the conference constructor is subject to change as of today.
-	 * @return a list of all conferences that exist
+	 * @return a list of all conferences that are saved within the database
 	 */
 	public static List<Conference> getConferences(){
-		// Establish a connection if one does not exist
-		if(connection == null) {
-			connection = JDBCConnection.getConnection();
-		}
-		 
-		List<Conference> result = new ArrayList<Conference>(); // Create the empty list
+		checkConnection();		 
 		try {
 			// Load all of the conferences from the database into a ResultSet 
 			Statement statement = connection.createStatement();
 			statement.setQueryTimeout(30);  // set timeout to 30 sec.
-			ResultSet rs = statement.executeQuery("SELECT c.*, u.id AS user_id, u.email,"
-					+ "u.first_name, u.last_name, u.address "
+			ResultSet rs = statement.executeQuery("SELECT c.*, u.id AS user_id, u.email, "
+					+ "u.username, u.password, u.first_name, u.last_name, u.address "
 					+ "FROM conferences AS c JOIN users AS u ON c.program_chair=u.id");
-			
-			// Iterate through ResultSet, creating/adding each conference to the List
-			while (rs.next()){
-				result.add(
-						new Conference(
-								new Conference.ConferenceBuilder(
-										rs.getInt("id"), 
-										rs.getString("name"), 
-										new User(
-												rs.getInt("user_id"), 
-												rs.getString("username"),
-												rs.getString("password"),
-												rs.getString("email"), 
-												rs.getString("first_name"), 
-												rs.getString("last_name"), 
-												rs.getString("address")
-										)
-								).description(rs.getString("description"))
-								.conferenceEnd(rs.getDate("conference_end"))
-								.conferenceStart(rs.getDate("conference_start"))
-								.paperStart(rs.getDate("accept_papers_start"))
-								.paperEnd(rs.getDate("accept_papers_end"))
-								.location(rs.getString("location")),
-						null
-						)
-				);
-			}
-			return result;
+			return iterateResults(rs);
 
 		}catch(SQLException e) {
 			// if the error message is "out of memory", 
@@ -193,15 +160,104 @@ public class ConferenceControl {
 		return null;
 	}
 
+	/**
+	 * Builds and returns a List of the Conference objects that only include 
+	 * those Conferences that the User has a recorded AccessLevel for. (This should
+	 * only return Conferences that the User has direct ties to, ie: they have submitted
+	 * a paper, are assigned as a reviewer, sub program chair or program chair). 
+	 * This method returns a null pointer if no results are found.
+	 * 
+	 * @param theUser The User being used as search condition for the Conferences
+	 * @return A List of all Conferences the User is a part of
+	 */
 	public static List<Conference> getConferences(User theUser){
+		checkConnection();
+		try {
+			// Load all conferences from the database that have a relation to specified User
+			PreparedStatement pstmt = connection.prepareStatement("SELECT c.*, u.id AS user_id, "
+					+ "u.email, u.first_name, u.last_name, u.address FROM conferences AS c "
+					+ "JOIN users_conferences AS uc ON c.id=uc.conference_id "
+					+ "JOIN users AS u ON c.program_chair=u.id WHERE uc.user_id=?");
+			pstmt.setInt(1, theUser.getId());
+			ResultSet rs = pstmt.executeQuery();
+			return iterateResults(rs);
+			
+		} catch(SQLException e) {
+			// if the error message is "out of memory", 
+			// it probably means no database file is found
+			
+			// Do not print error if the error is because no results were found
+			if (!e.getMessage().equals("ResultSet closed")){ 
+				System.err.println("SQL Error: " + e.getMessage());
+			}
+		}
+
 		return null;
 	}
 
-	public static List<Conference> getConferences(User theUser, AccessLevel access){
+	/**
+	 * Builds and returns a List of the Conference objects that only include 
+	 * those Conferences that the User has the specific AccessLevel for. 
+	 * This method returns a null pointer if no results are found.
+	 * 
+	 * @param theUser The User being used to filter the results
+	 * @param theAccess The specific AccessLevel to filter results
+	 * @return A List of conferences that the specific user has a specific access level for
+	 */
+	public static List<Conference> getConferences(User theUser, AccessLevel theAccess){
+		checkConnection();
+		try {
+			// Load all conferences from the database that this user has this access level for
+			PreparedStatement pstmt = connection.prepareStatement("SELECT c.*, u.id AS user_id, "
+					+ "u.email, u.first_name, u.last_name, u.address FROM conferences AS c "
+					+ "JOIN users_conferences AS uc ON c.id=uc.conference_id "
+					+ "JOIN users AS u ON c.program_chair=u.id WHERE uc.user_id=? "
+					+ "AND uc.access_level=?");
+			pstmt.setInt(1, theUser.getId());
+			pstmt.setInt(2, theAccess.value());
+			ResultSet rs = pstmt.executeQuery();
+			return iterateResults(rs);
+
+		} catch(SQLException e) {
+			// if the error message is "out of memory", 
+			// it probably means no database file is found
+			
+			// Do not print error if the error is because no results were found
+			if (!e.getMessage().equals("ResultSet closed")){ 
+				System.err.println("SQL Error: " + e.getMessage());
+			}
+		}
 		return null;
 	}
 
+	/**
+	 * Returns a List of Conferences that have the given String as part of their name 
+	 * field. For example, if there is a conference named "Happy Days" it will be found 
+	 * with ANY of the full or partial search Strings: "Day" "Days" "Happy" "Happy Days".
+	 * This method returns a null pointer if no results are found.
+	 * 
+	 * @param searchString The full or partial search string of the conference name
+	 * @return A list of all conferences matching the given search string
+	 */
 	public static List<Conference> searchConferences(String searchString) {
+		checkConnection();
+		try {
+			// Load all conferences from the database that match the search string
+			PreparedStatement pstmt = connection.prepareStatement("SELECT * FROM "
+					+ "conferences WHERE name LIKE \"%?%\"");
+			pstmt.setString(1, searchString);
+			ResultSet rs = pstmt.executeQuery();
+			return iterateResults(rs);
+
+		}catch(SQLException e) {
+			// if the error message is "out of memory", 
+			// it probably means no database file is found
+			
+			// Do not print error if the error is because no results were found
+			if (!e.getMessage().equals("ResultSet closed")){ 
+				System.err.println("SQL Error: " + e.getMessage());
+			}
+		}
 		return null;
 	}
 
@@ -215,11 +271,7 @@ public class ConferenceControl {
 	 * @return The AccessLevel of a specific user conference combination
 	 */
 	public static AccessLevel getAccessLevel(Conference theCon, User theUser){
-		// Establish a connection if one does not exist
-		if(connection == null) {
-			connection = JDBCConnection.getConnection();
-		}
-		
+		checkConnection();
 		// Request the AccessLevel from the database users_conferences
 		try {
 			int conferenceID = theCon.getId();
@@ -227,8 +279,8 @@ public class ConferenceControl {
 
 			Statement statement = connection.createStatement();
 			statement.setQueryTimeout(30);  // set timeout to 30 sec.
-			ResultSet rs = statement.executeQuery("SELECT access_level FROM users_conferences WHERE conference_id=" 
-					+ conferenceID + " AND user_id=" + userID);
+			ResultSet rs = statement.executeQuery("SELECT access_level FROM users_conferences "
+					+ "WHERE conference_id=" + conferenceID + " AND user_id=" + userID);
 			
 		//	System.out.println("The value is: " + rs.getInt("access_level"));
 			AccessLevel al = AccessLevel.valueOf(rs.getInt("access_level"));
@@ -247,5 +299,56 @@ public class ConferenceControl {
 		
 		return AccessLevel.AUTHOR; // No entry existed in the table
 	}
+	
+	/**
+	 * Private helper method that establishes a connection to the database
+	 * if one does not already exist.
+	 */
+	private static void checkConnection(){
+		if(connection == null) {
+			connection = JDBCConnection.getConnection();
+		}
+	}
 
+	/**
+	 * Private helper method that will iterate over a ResultSet and construct the
+	 * Conference and User objects needed then returns the List<Conference> back.
+	 * 
+	 * @param rs The ResultSet to be iterated over.
+	 * @return The completed List<Conference> constructed from the given ResultSet
+	 * @throws SQLException The exception encountered from the ResultSet
+	 */
+	private static List<Conference> iterateResults(ResultSet rs) throws SQLException{
+		
+		List<Conference> result = new ArrayList<Conference>(); // Create the empty list
+		
+		while (rs.next()){
+			if (conferenceMap.containsKey(rs.getInt("id"))) {
+				result.add(conferenceMap.get(rs.getInt("id")));
+			} else {
+				Conference c = new Conference(
+						rs.getInt("id"), 
+						rs.getString("name"), 
+						new User(
+								rs.getInt("user_id"), 
+								rs.getString("username"),
+								rs.getString("password"),
+								rs.getString("email"), 
+								rs.getString("first_name"), 
+								rs.getString("last_name"), 
+								rs.getString("address")),
+						rs.getDate("accept_papers_start"),
+						rs.getDate("accept_papers_end"),
+						rs.getDate("conference_start"),
+						rs.getDate("conference_end"),
+						rs.getString("location"),
+						rs.getString("description")
+				);
+				conferenceMap.put(rs.getInt("id"), c);
+				result.add(c);
+			}
+		}
+		return result;
+	}
+	
 }

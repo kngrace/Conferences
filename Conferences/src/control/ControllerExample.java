@@ -25,9 +25,10 @@ public class ControllerExample
 {
 	
 	private static void test1() throws ClassNotFoundException {
-		User testUser = new User(3, null, null, null, null, null, null);
-		Conference testConference = new Conference(new Conference.ConferenceBuilder(0, "Conference 2.0", 
-				testUser), null);
+		User testUser = new User(3, null, null, null, 
+				null, null, null);
+		Conference testConference = new Conference(null, testUser, null, null, 
+				null, null, null, null);
 		testConference.setName(null, "Testing Access Levels");
 		ConferenceControl.updateConference(testConference);
 		
@@ -63,8 +64,9 @@ public class ControllerExample
 		//System.out.println(AccessLevel.valueOf("PROGRAMCHAIR"));
 
 		//test1();
-		//test2();
-		test3();
+		test2();
+		test2();
+		//test3();
 /*		
 		// load the sqlite-JDBC driver using the current class loader
 		Class.forName("org.sqlite.JDBC");
