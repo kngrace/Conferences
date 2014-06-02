@@ -1,10 +1,27 @@
+/**
+ * TCSS 360 Software Development and Quality Assurance
+ * Conferences Project - Group 3
+ */
+
 package model;
 
 import java.util.Observable;
+
 import java.util.Random;
 
 import control.ConferenceControl;
 import java.sql.Date;
+
+/**
+ * Conferences store the Conference object's unique ID number, name, the 
+ * assigned Program Chair, a description of the Conference, the start and
+ * end dates of manuscript submission and the Conference itself and the 
+ * location. Two constructors used depending on whether a new Conference
+ * is being added TO the database or it's being recreated FROM the database
+ * at the start of a new user session.
+ * @author Trevor Jennings
+ * @version 2 June 2014
+ */
 
 public class Conference extends Observable {
 	
@@ -54,6 +71,7 @@ public class Conference extends Observable {
 	 */
 	private String myLocation;
 	
+	
 	/**
 	 * Constructor implements Build Pattern due to high number of fields. Inputs
 	 * a ConferenceBuilder and also a Session for security. 
@@ -61,9 +79,9 @@ public class Conference extends Observable {
 	 * @param theSession Session object disallows Conference creation without 
 	 * proper access level.
 	 */
+	/*
 	public Conference(ConferenceBuilder theCB, Session theSession) {
 		
-		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)) {
 		    myID = theCB.myID;
 		    myName = theCB.myName;
 		    myProgramChair = theCB.myProgramChair;
@@ -75,12 +93,8 @@ public class Conference extends Observable {
 		    myLocation = theCB.myLocation;
 		    
 		    ConferenceControl.createConference(this);    // add Conference to database
-		    
-		} else {
-			throw new IllegalStateException("User attempting to create new Conference without"
-					+ "the proper access level!");		
-		}
-	}
+		   
+	} */
 	
 	/**
 	 * Constructor for Conference that already exists in database. For example, the Conference
@@ -100,9 +114,8 @@ public class Conference extends Observable {
 	 */
 	public Conference(int theID, String theName, User theProgramChair, Date thePaperStart,
 			Date thePaperEnd, Date theConferenceStart, Date theConferenceEnd,
-			String theLocation, Session theSession) {
+			String theLocation) {
 		
-		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)) {
 			myID = theID;
 			myName = theName;
 			myProgramChair = theProgramChair;
@@ -111,10 +124,6 @@ public class Conference extends Observable {
 			myConferenceStart = theConferenceStart;
 			myConferenceEnd = theConferenceEnd;
 			myLocation = theLocation;
-		} else {
-			throw new IllegalStateException("User attempting to create new Conference without"
-					+ "the proper access level!");		
-		}
 	}
 	
 	/**
@@ -135,8 +144,7 @@ public class Conference extends Observable {
 	 */
 	public Conference(String theName, User theProgramChair, Date thePaperStart,
 			Date thePaperEnd, Date theConferenceStart, Date theConferenceEnd,
-			String theLocation, Session theSession) {
-		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)) {
+			String theLocation) {
 			myName = theName;
 			myProgramChair = theProgramChair;
 			myPaperStart = thePaperStart;
@@ -147,10 +155,6 @@ public class Conference extends Observable {
 			// assign ID AFTER fields are initialized, so they get stored in the
 			// database.
 			myID = ConferenceControl.createConference(this);
-		} else {
-			throw new IllegalStateException("User attempting to create new Conference without"
-					+ "the proper access level!");		
-		}
 		
 	}
 	
@@ -191,13 +195,13 @@ public class Conference extends Observable {
 	}
 	
 	public AccessLevel getAccessLevel(Session theSession) {
-		// the method below needs to be added to ConferenceControl
-		return ConferenceControl.getAccessLevel(this, theSession.getCurrentUser());
+		return theSession.getCurrentUser().getAccess(this);
 	}
 	
 	public boolean setName(Session theSession, String theName) {
 		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)) {
 		    myName = theName;
+		    ConferenceControl.updateConference(this);
 		    notifyObservers();
 		    return true;
 		} else {
@@ -208,6 +212,7 @@ public class Conference extends Observable {
 	public boolean setDescription(Session theSession, String theDescription) {
 		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)) {
 		    myDescription = theDescription;
+		    ConferenceControl.updateConference(this);
 		    notifyObservers();
 		    return true;
 		} else {
@@ -218,6 +223,7 @@ public class Conference extends Observable {
 	public boolean setPaperStart(Session theSession, Date thePaperStart) {
 		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)) {
 		    myPaperStart = thePaperStart;
+		    ConferenceControl.updateConference(this);
 		    notifyObservers();
 		    return true;
 		} else {
@@ -228,6 +234,7 @@ public class Conference extends Observable {
 	public boolean setPaperEnd(Session theSession, Date thePaperEnd) {
 		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)) {
 		    myPaperStart = thePaperEnd;
+		    ConferenceControl.updateConference(this);
 		    notifyObservers();
 		    return true;
 		} else {
@@ -238,6 +245,7 @@ public class Conference extends Observable {
 	public boolean setConferenceStart(Session theSession, Date theConferenceStart) {
 		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)) {
 		    myConferenceStart = theConferenceStart;
+		    ConferenceControl.updateConference(this);
 		    notifyObservers();
 		    return true;
 		} else {
@@ -248,6 +256,7 @@ public class Conference extends Observable {
     public boolean setConferenceEnd(Session theSession, Date theConferenceEnd) {
 		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)) {
 		    myConferenceEnd = theConferenceEnd;
+		    ConferenceControl.updateConference(this);
 		    notifyObservers();
 		    return true;
 		} else {
@@ -258,6 +267,7 @@ public class Conference extends Observable {
 	public boolean setLocation(Session theSession, String theLocation) {
 		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)) {
 		    myLocation = theLocation;
+		    ConferenceControl.updateConference(this);
 		    notifyObservers();
 		    return true;
 		} else {
@@ -279,6 +289,7 @@ public class Conference extends Observable {
 		return this.getAccessLevel(theSession).compareTo(theAccessLevel) >= 0;
 	}
 	
+	/*
 	private static class ConferenceBuilder {
 		
 		private int myID;
@@ -330,6 +341,6 @@ public class Conference extends Observable {
 		public Conference build(Session theSession) {
 			return new Conference(this, theSession);
 		}
-	}
+	} */
 
 }
