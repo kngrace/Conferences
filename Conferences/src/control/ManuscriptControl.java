@@ -20,6 +20,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -99,8 +100,42 @@ public class ManuscriptControl {
 		return -1;
 	}
 	
-	public static Boolean updateManuscript(Manuscript theManuscript) {
-		return false;
+	/**
+	 * Use this method to update a manuscript in the database after one of it's 
+	 * fields has been changed. The manuscript MUST have its ID number correctly
+	 * set or the update will have unintended results. If an error is encountered, 
+	 * the error message will be returned as a String. If no error is encountered, 
+	 * null is returned.
+	 * 
+	 * @param theManuscript the java object representation of the manuscript
+	 * @return The error message encountered or null if no error is encountered
+	 */
+	public static String updateManuscript(Manuscript theManuscript) {
+		checkConnection();
+		try {
+			// Update the conference within the database
+//			https://developer.salesforce.com/page/Secure_Coding_SQL_Injection
+			PreparedStatement pstmt = connection.prepareStatement("UPDATE manuscript SET "
+					+ "author=?, conference=?, rec_status=?, final_status=?, "
+					+ "submitted=?, file_name=?, file_blob=? WHERE id=?");
+			pstmt.setInt(1, theManuscript.getAuthor().getId());
+			pstmt.setInt(2, theManuscript.getConference().getId());  
+			pstmt.setInt(3, theManuscript.getRecommendStatus().value());
+			pstmt.setInt(4, theManuscript.getFinalStatus().value()); // don't have a session :-(
+			pstmt.setInt(5, theManuscript.getSPC().value()); // no session
+			pstmt.setBoolean(5, theManuscript.isSubmitted());  
+			pstmt.setString(6, theManuscript.getFile().getName());
+			pstmt.setBinaryStream(7, new FileInputStream(theManuscript.getFile()), 
+					theManuscript.getFile().length());
+			pstmt.executeUpdate();
+		} catch(SQLException e) {
+			// if the error message is "out of memory", 
+			// it probably means no database file is found
+			
+			return e.getMessage(); // error occurred
+		}
+
+		return null; // no error
 	}
 	
 	public static List<Manuscript> getManuscripts(Conference theCon, User theUser){
@@ -108,6 +143,19 @@ public class ManuscriptControl {
 	}
 	
 	public static List<Review> getReviews(Manuscript theMan, User theUser){
+		return null;
+	}
+	
+	public static void addReview(Manuscript theMan, Review theReview) {
+		// todo
+	}
+	
+	public static void addReviewer(Manuscript theMan, User theReviewer) {
+		// todo  (update users_manuscript)
+	}
+	
+	// Does the GUI need this???
+	public static List<User> getReviewers(Manuscript theMan) {
 		return null;
 	}
 	
@@ -129,5 +177,46 @@ public class ManuscriptControl {
 		}
 	}
 	
+	
+	/**
+	 * Private helper method that will iterate over a ResultSet and construct the
+	 * Conference and User objects needed then returns the List<Conference> back.
+	 * 
+	 * @param rs The ResultSet to be iterated over.
+	 * @return The completed List<Conference> constructed from the given ResultSet
+	 * @throws SQLException The exception encountered from the ResultSet
+	 */
+	private static List<Conference> iterateResults(ResultSet rs) throws SQLException{
+		
+		List<Conference> result = new ArrayList<Conference>(); // Create the empty list
+		
+		while (rs.next()){
+			if (conferenceMap.containsKey(rs.getInt("id"))) {
+				result.add(conferenceMap.get(rs.getInt("id")));
+			} else {
+				Conference c = new Conference(
+						rs.getInt("id"), 
+						rs.getString("name"), 
+						new User(
+								rs.getInt("user_id"), 
+								rs.getString("username"),
+								rs.getString("password"),
+								rs.getString("email"), 
+								rs.getString("first_name"), 
+								rs.getString("last_name"), 
+								rs.getString("address")),
+						rs.getDate("accept_papers_start"),
+						rs.getDate("accept_papers_end"),
+						rs.getDate("conference_start"),
+						rs.getDate("conference_end"),
+						rs.getString("location"),
+						rs.getString("description")
+				);
+				conferenceMap.put(rs.getInt("id"), c);
+				result.add(c);
+			}
+		}
+		return result;
+	}
 	
 }

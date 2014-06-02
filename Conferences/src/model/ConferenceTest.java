@@ -6,8 +6,6 @@ import java.sql.Date;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.Rule;
 
 /**
  * Test class for class Constructor. 

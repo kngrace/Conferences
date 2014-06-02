@@ -20,7 +20,7 @@ public enum AccessLevel implements Comparator<AccessLevel> {
 	/**
 	 * Enum "constructors" assign integer values to each enumeration
 	 */
-	AUTHOR(0), REVIEWER(0), SUBPROGRAMCHAIR(1), PROGRAMCHAIR(2);
+	AUTHOR(0), REVIEWER(1), SUBPROGRAMCHAIR(2), PROGRAMCHAIR(3);
 	
 	/**
 	 * The enumeration's integer value.
@@ -63,8 +63,9 @@ public enum AccessLevel implements Comparator<AccessLevel> {
 	public static AccessLevel accessLevelOf(int theValue) {
 		switch (theValue) {
 		    case 0 : return AccessLevel.AUTHOR;
-		    case 1 : return AccessLevel.SUBPROGRAMCHAIR;
-		    case 2 : return AccessLevel.PROGRAMCHAIR;
+		    case 1 : return AccessLevel.REVIEWER;
+		    case 2 : return AccessLevel.SUBPROGRAMCHAIR;
+		    case 3 : return AccessLevel.PROGRAMCHAIR;
 		    default : return AccessLevel.AUTHOR;
 		}
 	}
@@ -80,9 +81,9 @@ public enum AccessLevel implements Comparator<AccessLevel> {
 	public static int getValueOf(AccessLevel theAccessLevel) {
 		switch (theAccessLevel) {
 		    case AUTHOR : return 0;
-		    case REVIEWER : return 0;
-		    case SUBPROGRAMCHAIR : return 1;
-		    case PROGRAMCHAIR : return 2;
+		    case REVIEWER : return 1;
+		    case SUBPROGRAMCHAIR : return 2;
+		    case PROGRAMCHAIR : return 3;
 		    default : return 0;
 		}
 	}

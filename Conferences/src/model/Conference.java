@@ -114,7 +114,7 @@ public class Conference extends Observable {
 	 */
 	public Conference(int theID, String theName, User theProgramChair, Date thePaperStart,
 			Date thePaperEnd, Date theConferenceStart, Date theConferenceEnd,
-			String theLocation) {
+			String theLocation, String theDescription) {
 		
 			myID = theID;
 			myName = theName;
@@ -124,6 +124,7 @@ public class Conference extends Observable {
 			myConferenceStart = theConferenceStart;
 			myConferenceEnd = theConferenceEnd;
 			myLocation = theLocation;
+			myDescription = theDescription;
 	}
 	
 	/**
@@ -144,7 +145,7 @@ public class Conference extends Observable {
 	 */
 	public Conference(String theName, User theProgramChair, Date thePaperStart,
 			Date thePaperEnd, Date theConferenceStart, Date theConferenceEnd,
-			String theLocation) {
+			String theLocation, String theDescription) {
 			myName = theName;
 			myProgramChair = theProgramChair;
 			myPaperStart = thePaperStart;
@@ -152,6 +153,7 @@ public class Conference extends Observable {
 			myConferenceStart = theConferenceStart;
 			myConferenceEnd = theConferenceEnd;
 			myLocation = theLocation;
+			myDescription = theDescription;
 			// assign ID AFTER fields are initialized, so they get stored in the
 			// database.
 			myID = ConferenceControl.createConference(this);

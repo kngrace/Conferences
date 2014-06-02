@@ -1,3 +1,8 @@
+/**
+ * TCSS 360 Software Development and Quality Assurance
+ * Conferences Project - Group 3
+ */
+
 package model;
 
 import java.io.File;
@@ -6,6 +11,17 @@ import java.util.List;
 import java.util.Observable;
 import control.*;
 
+/**
+ * Manuscript stores the manuscripts to be submitted to a Conference. It stores
+ * fields of a unique ID number, a User author, the conference it belongs to,
+ * a file name, a file, a tag informing the User if it has been submitted,
+ * it's recommendation status (given by the Sub-Program Chair), it's final 
+ * recommendation status (given by the Program Chair), the Sub-Program Chair
+ * this manuscript is assigned to, and a list of Reviewers to review the
+ * manuscript.
+ * @author Trevor Jennings
+ * @version 2 June 2014
+ */
 public class Manuscript extends Observable {
 	
 	private int myID;
@@ -19,6 +35,9 @@ public class Manuscript extends Observable {
 	private User mySPC;
 	private List<User> myReviewers;
 	
+	/*
+	 * DEPRECATED
+	 * 
 	public Manuscript(ManuscriptBuilder theManuscriptBuilder) {
 		
 		myID = theManuscriptBuilder.myID;
@@ -34,19 +53,19 @@ public class Manuscript extends Observable {
 		// Call this control method AFTER fields have been assigned
 		// to ensure proper data is saved in database.
 		ManuscriptControl.createManuscript(this);
-	}
+	} */
 	
 	/**
 	 * Constructor creates Manuscript object that currently has persistent data in
 	 * the database i.e. this Manuscript has been created before in a previous Session.
 	 * Therefore, it accepts an ID as a parameter rather than having to create a new
 	 * one.
-	 * @param theID
-	 * @param theAuthor
-	 * @param theConference
-	 * @param theFileName
-	 * @param theFile
-	 * @param theSPC
+	 * @param theID the Manuscripts unique ID number.
+	 * @param theAuthor the Manuscript's User author.
+	 * @param theConference the Conference this Manuscript belongs to.
+	 * @param theFileName the String filename of this Manuscript.
+	 * @param theFile the File for this Manuscript.
+	 * @param theSPC the User Sub-Program Chair this Manuscript is assigned to.
 	 */
 	public Manuscript(int theID, User theAuthor, Conference theConference, 
 			String theFileName, File theFile, User theSPC) {
@@ -67,12 +86,12 @@ public class Manuscript extends Observable {
 	 * the first time. Therefore, an ID must be generated and assigned. This is 
 	 * done by calling the createConference() method from ManuscriptControl, which
 	 * returns an integer, representing the Manuscript's ID.
-	 * @param theID
-	 * @param theAuthor
-	 * @param theConference
-	 * @param theFileName
-	 * @param theFile
-	 * @param theSPC
+	 * @param theID the Manuscripts unique ID number.
+	 * @param theAuthor the Manuscript's User author.
+	 * @param theConference the Conference this Manuscript belongs to.
+	 * @param theFileName the String filename of this Manuscript.
+	 * @param theFile the File for this Manuscript.
+	 * @param theSPC the User Sub-Program Chair this Manuscript is assigned to.
 	 */
 	public Manuscript(User theAuthor, Conference theConference, 
 			String theFileName, File theFile, User theSPC) {
@@ -141,6 +160,7 @@ public class Manuscript extends Observable {
 	// it does not need security via a Session parameter.
 	public void unsubmit() {
 		isSubmitted = false;
+		ManuscriptControl.updateManuscript(this);
 		notifyObservers();
 	}
 	
@@ -148,6 +168,7 @@ public class Manuscript extends Observable {
 		try {
 		    myFile = new File(myFileName);
 		    isSubmitted = true;
+		    ManuscriptControl.updateManuscript(this);
 		    notifyObservers();
 		} catch (NullPointerException npe) {
 			System.out.println("File name is null!");
@@ -179,13 +200,13 @@ public class Manuscript extends Observable {
 		    	return false;
 		    }
 		} else {
-			throw new IllegalStateException("User does not have access to add review!");
 			return false;
 		}
 	} 
 	public void setRecommendStatus(Status theStatus, Session theSession) {
 		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)) {
 		    myRecommendStatus = theStatus;
+		    ManuscriptControl.updateManuscript(this);
 		    notifyObservers();
 		} else {
 			throw new IllegalStateException("User does not have access to recommend a manuscript!");
@@ -195,6 +216,7 @@ public class Manuscript extends Observable {
 	public void setFinalStatus(Status theStatus, Session theSession) {
 		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)) {
 		    myFinalStatus = theStatus;
+		    ManuscriptControl.updateManuscript(this);
 		    notifyObservers();
 		} else {
 			throw new IllegalStateException("User does not have access to set final status"
@@ -205,6 +227,7 @@ public class Manuscript extends Observable {
 	public void assignSPC(User theSPC, Session theSession) {
 		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)) {
 		    mySPC = theSPC;
+		    ManuscriptControl.updateManuscript(this);
 		    notifyObservers();
 		} else {
 			throw new IllegalStateException("User does not have access to set subprogramchair"
@@ -251,6 +274,7 @@ public class Manuscript extends Observable {
 				compareTo(theAccessLevel) >= 0;
 	}
 	
+	/* DEPRECATED
 	public static class ManuscriptBuilder {
 		
 		private int myID;
@@ -303,6 +327,6 @@ public class Manuscript extends Observable {
 		public Manuscript build() {
 			return new Manuscript(this);
 		}
-	}
+	} */
 
 }
