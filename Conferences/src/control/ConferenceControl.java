@@ -78,7 +78,7 @@ public class ConferenceControl {
 					+ "(user_id, conference_id, access_level) VALUES (?, ?, ?)");
 			pstmt.setInt(1, theConference.getProgramChair().getId());
 			pstmt.setInt(2, conferenceID);
-			pstmt.setInt(3, AccessLevel.PROGRAMCHAIR.value());
+			pstmt.setInt(3, AccessLevel.getValueOf(AccessLevel.PROGRAMCHAIR));
 			pstmt.executeUpdate();
 			
 			// Add this conference to the Map
@@ -98,7 +98,8 @@ public class ConferenceControl {
 	 * Use this method to update a conference in the database after one of it's 
 	 * fields has been changed. The conference MUST have its ID number correctly
 	 * set or the update will have unintended results. If an error is encountered, 
-	 * the error message will be returned. If no error is encountered, null is returned.
+	 * the error message will be returned as a String. If no error is encountered, 
+	 * null is returned.
 	 * 
 	 * @param theConference the java object representation of the conference
 	 * @return The error message encountered or null if no error is encountered
@@ -214,7 +215,7 @@ public class ConferenceControl {
 					+ "JOIN users AS u ON c.program_chair=u.id WHERE uc.user_id=? "
 					+ "AND uc.access_level=?");
 			pstmt.setInt(1, theUser.getId());
-			pstmt.setInt(2, theAccess.value());
+			pstmt.setInt(2, theAccess.getValue());
 			ResultSet rs = pstmt.executeQuery();
 			return iterateResults(rs);
 
@@ -283,7 +284,7 @@ public class ConferenceControl {
 					+ "WHERE conference_id=" + conferenceID + " AND user_id=" + userID);
 			
 		//	System.out.println("The value is: " + rs.getInt("access_level"));
-			AccessLevel al = AccessLevel.valueOf(rs.getInt("access_level"));
+			AccessLevel al = AccessLevel.accessLevelOf(rs.getInt("access_level"));
 			
 			return al;
 
