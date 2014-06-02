@@ -30,6 +30,10 @@ import control.UserControl;
  */
 public class Login {
 	
+	/**
+	 * Test comment
+	 */
+	
 	
 
 	private JFrame frame;
@@ -98,6 +102,7 @@ public class Login {
 				 	frame.getContentPane().add(home.getPanel());
 				  	frame.repaint();
 				  }
+			
 			}
 
 		});

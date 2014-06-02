@@ -10,6 +10,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import control.UserControl;
 import model.User;
@@ -96,9 +98,21 @@ public class NewUser {
 		panel_1.add(lblAddress);
 		
 		email = new JTextField();
-		email.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		email.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				//do nothing
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent arg0) {
 				user_email = email.getText();
+				
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent arg0) {
+				user_email = email.getText();
+				
 			}
 		});
 		email.setBounds(78, 183, 209, 20);
@@ -106,9 +120,21 @@ public class NewUser {
 		email.setColumns(10);
 		
 		add = new JTextField();
-		add.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		add.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				//do nothing
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent arg0) {
 				user_address = add.getText();
+				
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent arg0) {
+				user_address = add.getText();
+				
 			}
 		});
 		add.setBounds(78, 213, 209, 75);
@@ -116,9 +142,21 @@ public class NewUser {
 		add.setColumns(10);
 		
 		textField_2 = new JTextField();
-		textField_2.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		textField_2.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				//do nothing
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent arg0) {
 				password = textField_2.getText();
+				
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent arg0) {
+				password = textField_2.getText();
+				
 			}
 		});
 		textField_2.setColumns(10);
@@ -130,9 +168,21 @@ public class NewUser {
 		panel_1.add(lblLastName);
 		
 		frstName = new JTextField();
-		frstName.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		frstName.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				//do nothing
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent arg0) {
 				user_first = frstName.getText();
+				
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent arg0) {
+				user_first = frstName.getText();
+				
 			}
 		});
 		frstName.setColumns(10);
@@ -140,9 +190,21 @@ public class NewUser {
 		panel_1.add(frstName);
 		
 		lstName = new JTextField();
-		lstName.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		lstName.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				//do nothing
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent arg0) {
 				user_last = lstName.getText();
+				
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent arg0) {
+				user_last = lstName.getText();
+				
 			}
 		});
 		lstName.setBounds(78, 152, 86, 20);
@@ -158,18 +220,21 @@ public class NewUser {
 		panel_1.add(lblPassword);
 		
 		usrName = new JTextField();
-		usrName.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		usrName.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				//do nothing
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent arg0) {
 				username = usrName.getText();
-				/**
-				 * User dummy = UserControl.getUser(username);
-				 * if(dummy != null) {
-				 * 	lblNewLabel = new JLabel("Username is already used!");
-				 *  lblNewLabel.setForeground(Color.RED);
-		         *  lblNewLabel.setBounds(176, 299, 179, 14);
-		         *  panel_1.add(lblNewLabel);
-		         * }
-				 */
+				
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent arg0) {
+				username = usrName.getText();
+				
 			}
 		});
 		usrName.setColumns(10);
