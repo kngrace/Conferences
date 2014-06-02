@@ -5,7 +5,7 @@
  * Conference objects already loaded into memory to prevent duplication.)
  * 
  * @author Kirsten Grace
- * @version 5.28.14
+ * @version 6.02.14
  */
 
 package control;
