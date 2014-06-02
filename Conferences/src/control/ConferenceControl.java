@@ -293,7 +293,7 @@ public class ConferenceControl {
 			
 			// Do not print error if the error is because no results were found
 			if (!e.getMessage().equals("ResultSet closed")){ 
-				System.err.println("SQL Error: " + e.getMessage());
+				accessLevelOf.err.println("SQL Error: " + e.getMessage());
 			}
 		}
 		

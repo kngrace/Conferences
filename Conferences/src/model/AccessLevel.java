@@ -60,7 +60,7 @@ public enum AccessLevel implements Comparator<AccessLevel> {
 	 * @param theValue the integer value of an existing AccessLevel.
 	 * @return the AccessLevel of the passed integer value.
 	 */
-	public static AccessLevel valueOf(int theValue) {
+	public static AccessLevel accessLevelOf(int theValue) {
 		switch (theValue) {
 		    case 0 : return AccessLevel.AUTHOR;
 		    case 1 : return AccessLevel.SUBPROGRAMCHAIR;
@@ -77,7 +77,7 @@ public enum AccessLevel implements Comparator<AccessLevel> {
 	 * to be returned.
 	 * @return the integer value of the passed AccessLevel.
 	 */
-	public static int accessLevelOf(AccessLevel theAccessLevel) {
+	public static int getValueOf(AccessLevel theAccessLevel) {
 		switch (theAccessLevel) {
 		    case AUTHOR : return 0;
 		    case REVIEWER : return 0;

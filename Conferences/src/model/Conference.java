@@ -195,7 +195,7 @@ public class Conference extends Observable {
 	}
 	
 	public AccessLevel getAccessLevel(Session theSession) {
-		return theSession.getCurrentUser().getAccess(this);
+		return ConferenceControl.getAccessLevel(this, theSession.getCurrentUser());
 	}
 	
 	public boolean setName(Session theSession, String theName) {
