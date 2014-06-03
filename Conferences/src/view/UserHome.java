@@ -12,12 +12,14 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import model.Session;
+
 /**
  * 
  * @author pothnik
  * @version 05/28
  */
-public class UserBorder {
+public class UserHome {
 
 	private JFrame frame;
 	private JButton btnSubmissions;
@@ -28,27 +30,18 @@ public class UserBorder {
 	private JLabel lblNewLabel;
 	private JPanel panel;
 	private JPanel panel_2;
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					UserBorder window = new UserBorder();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+	private Session session;
+	private JPanel panel_3;
+	
+	private JPanel sub_panel;
+	private JPanel conf_panel;
+	private JPanel confs_panel;
 
 	/**
 	 * Create the application.
 	 */
-	public UserBorder() {
+	public UserHome(Session the_session) {
+		session = the_session;
 		initialize();
 	}
 
@@ -83,33 +76,75 @@ public class UserBorder {
 		btnSubmissions = new JButton("Submissions");
 		btnSubmissions.setIcon(new ImageIcon("C:\\Users\\pothnik\\Pictures\\leaf.jpg"));
 		btnSubmissions.setBounds(10, 59, 128, 23);
-		panel_1.add(btnSubmissions);
-		
-		logoutButton = new JButton("Logout");
-		logoutButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		btnSubmissions.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				System.out.println("Working");
+				panel_3.removeAll();
+				panel_3.setLayout(null);
+				MySubmissions mySub = new MySubmissions(session);
+				sub_panel = mySub.getPanel_1();
+				panel_3.add(sub_panel);
+				panel_3.repaint();
+				frame.repaint();
+				
 			}
 		});
-		logoutButton.setBounds(20, 311, 103, 23);
-		panel_1.add(logoutButton);
+		panel_1.add(btnSubmissions);
+		
 		
 		confButton = new JButton("Conferences");
 		confButton.setBounds(10, 93, 128, 23);
+		confButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				MyConferences myConf = new MyConferences(session);
+				
+				panel_3.removeAll();
+				panel_3.setLayout(null);
+				
+				conf_panel = myConf.getPanel_1();
+				
+				panel_3.add(conf_panel);
+				
+				panel_3.repaint();
+				frame.repaint();
+				
+			}
+		});
 		panel_1.add(confButton);
 		
 		allConfButton = new JButton("All Conferences");
 		allConfButton.setBounds(10, 127, 128, 23);
+		allConfButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				
+				
+				
+				AllConferences allconf = new AllConferences(session);
+				panel_3.removeAll();
+				panel_3.setLayout(null);
+				confs_panel = allconf.getPanel_1();
+				panel_3.add(confs_panel);
+				panel_3.repaint();
+				frame.repaint();
+				
+				
+			}
+		});
 		panel_1.add(allConfButton);
 		
-		lblNewLabel = new JLabel("");
-		lblNewLabel.setBounds(251, 162, 324, 145);
-		panel.add(lblNewLabel);
-		lblNewLabel.setIcon(new ImageIcon("C:\\Users\\pothnik\\Pictures\\welcome.jpg"));
 		
 		panel_2 = new JPanel();
 		panel_2.setBackground(new Color(176, 196, 222));
 		panel_2.setBounds(0, 0, 690, 82);
 		panel.add(panel_2);
+		
+		panel_3 = new JPanel();
+		panel_3.setBounds(147, 83, 536, 345);
+		panel_3.setLayout(null);
+		panel.add(panel_3);
+		
 	}
 
 	public JFrame getFrame() {
@@ -132,5 +167,9 @@ public class UserBorder {
 	}
 	public JButton getLogoutButton() {
 		return logoutButton;
+	}
+	
+	public JPanel getPanel_3() {
+		return panel_3;
 	}
 }
