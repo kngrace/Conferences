@@ -61,4 +61,28 @@ public class Review {
 	public void setFile(final File theFile) {
 		myFile = theFile;
 	}
+	
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Review by ");
+		sb.append(myReviewer);
+		sb.append(" for ");
+		sb.append(myManuscript);
+		return sb.toString();
+	}
+	
+	public boolean equals(final Object o) {
+		boolean equal = false;
+		if (o instanceof Review) {
+			Review r = (Review) o;
+			if (r.getID() == myID) {
+				equal = true;
+			}
+		}
+		return equal;
+	}
+	
+	public int hashCode() {
+		return (myID * 33) + 411;
+	}
 }
