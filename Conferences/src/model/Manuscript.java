@@ -6,8 +6,11 @@
 package model;
 
 import java.io.File;
+
 import java.io.FileNotFoundException;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.Observable;
 import control.*;
 
@@ -34,6 +37,8 @@ public class Manuscript extends Observable {
 	private Status myFinalStatus; // = UNDECIDED
 	private User mySPC;
 	private List<User> myReviewers;
+	private List<Review> myReviews;
+	private Map<Review, User> myReviewToReviewer;
 	
 	/*
 	 * DEPRECATED
@@ -154,23 +159,31 @@ public class Manuscript extends Observable {
 		}
 	}
 	
-	// Since unsubmmit() is an Author action which has the lowest access level clearance,
+	// Since unsubmit() is an Author action which has the lowest access level clearance,
 	// it does not need security via a Session parameter.
-	public void unsubmit() {
-		isSubmitted = false;
-		ManuscriptControl.updateManuscript(this);
-		notifyObservers();
-	}
-	
-	public void submit() {
-		try {
-		    myFile = new File(myFileName);
-		    isSubmitted = true;
+	public void unsubmit(Session theSession) throws Exception {
+		if (myAuthor == theSession.getCurrentUser()) {
+		    isSubmitted = false;
 		    ManuscriptControl.updateManuscript(this);
 		    notifyObservers();
-		} catch (NullPointerException npe) {
-			System.out.println("File name is null!");
-		} finally {}
+		} else {
+			throw new Exception("User is not the Author, so cannot unsubmit!");
+		}
+	}
+	
+	public void submit(Session theSession) throws Exception {
+		if (myAuthor == theSession.getCurrentUser()) {
+		    try {
+		        myFile = new File(myFileName);
+		        isSubmitted = true;
+		        ManuscriptControl.updateManuscript(this);
+		        notifyObservers();
+		    } catch (NullPointerException npe) {
+		    	System.out.println("File name is null!");
+		    } finally {}
+		} else {
+			throw new Exception("You are not the Author so you can't submit!");
+		}
 	}
 	
 	/**
@@ -186,23 +199,9 @@ public class Manuscript extends Observable {
 		}
 	}
 	
-    
-	public boolean addReview(Review theReview, Session theSession) {
-		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)) {
-		    if (this.getReviews(theSession).size() < 4) {
-		    	ManuscriptControl.addReview(this, theReview);
-		    	notifyObservers();
-		    	return true;
-		    } else {
-		    	System.out.println("Cannot add Review. This manuscript already has 4 Reviews.");
-		    	return false;
-		    }
-		} else {
-			return false;
-		}
-	} 
+	
 	public void setRecommendStatus(Status theStatus, Session theSession) {
-		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)) {
+		if (sessionHasAccessLevelOf(AccessLevel.SUBPROGRAMCHAIR, theSession)) {
 		    myRecommendStatus = theStatus;
 		    ManuscriptControl.updateManuscript(this);
 		    notifyObservers();
@@ -240,17 +239,21 @@ public class Manuscript extends Observable {
 	 * ATTN: this method must be added to class diagram. Also, new method
 	 * addReviewer() added to ManuscriptControl.
 	 */
-	public boolean addReviewer(User theReviewer, Session theSession) {
+	public boolean addReview(Review theReview, Session theSession) {
 		
 		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)) {
-		    if (myReviewers.size() < 4) {
-			    ManuscriptControl.addReviewer(this, theReviewer);
+		    if (myReviews.size() < 4 && !myReviews.contains(theReview)) {
+		    	myReviews.add(theReview);
+		    	myReviewers.add(theReview.getReviewer());
+		    	myReviewToReviewer.put(theReview, theReview.getReviewer());
+			    ManuscriptControl.updateReview(theReview);
 			    notifyObservers();
 			    return true;
 		    } else {
-		    	System.out.println("Attempting to add Reviewer when list is full!");
+		    	System.out.println("addReview() failed: Either too many Reviews "
+		    			+ "or this Manuscript already contains this Review!");
 		    	return false;
-		    }
+		    } 
 		} else {
 			throw new IllegalStateException("User does not have access to add Reviewer "
 					+ "to Manuscript!");

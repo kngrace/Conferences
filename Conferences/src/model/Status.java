@@ -1,5 +1,13 @@
 package model;
 
+/**
+ * Status enumeration gives an intuitive names to the categories of 
+ * manuscript submission status. The integer values given
+ * do not imply a ranking, rather are just used for convenience
+ * for storage in the database.
+ * @author Trevor Jennings
+ * @version 3 June 2014
+ */
 public enum Status {
 	
 	APPROVED(2), UNDECIDED(1), REJECTED(0);
