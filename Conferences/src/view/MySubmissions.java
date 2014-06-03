@@ -1,17 +1,22 @@
 package view;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Date;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import model.AccessLevel;
 import model.Conference;
 import model.Session;
+import model.User;
 import control.ConferenceControl;
 
 
@@ -19,34 +24,19 @@ public class MySubmissions {
 
 	private JFrame frame;
 	
-	private UserBorder border;
 	
 	private Session session;
 	
-
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					MySubmissions window = new MySubmissions();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+	private JPanel panel;
+	
+	private JPanel panel_1;
+	
 
 	/**
 	 * Create the application.
 	 */
-	public MySubmissions() {
-		border = new UserBorder();
-		//session = the_session;
+	public MySubmissions(Session the_session) {
+		session = the_session;
 		initialize();
 	}
 
@@ -61,48 +51,68 @@ public class MySubmissions {
 		frame.getContentPane().setLayout(null);
 		
 		
-		JPanel panel = new JPanel();
+		panel = new JPanel();
+		panel_1 = new JPanel();
 		panel.setBounds(0, 0, 683, 428);
+		panel_1.setBounds(0, 0, 536, 345);
 		frame.getContentPane().add(panel);
 		panel.setLayout(null);
+		panel_1.setLayout(null);
 		
-		panel.add(border.getPanel());
+		panel.add(panel_1);
 				
 		panel.setLayout(null);
 		
-		JButton btnNewButton = new JButton("New button");
-		btnNewButton.addActionListener(new ActionListener() {
+		final List<Conference> lst = 
+				ConferenceControl.getConferences(session.getCurrentUser(), AccessLevel.AUTHOR);
+		
+		final JButton select = new JButton("Select A Conference");
+		if(lst.isEmpty() || lst == null) {
+			select.setEnabled(false);
+		}
+		
+	
+		select.addActionListener(new ActionListener() {
+			
 			public void actionPerformed(ActionEvent arg0) {
-				//todo
+				PopupMenu pop = new PopupMenu(lst);
+				pop.show((Component)arg0.getSource(), 0, 0);  
+				
+				
 			}
 		});
-		btnNewButton.setBounds(304, 98, 162, 32);
-		panel.add(btnNewButton);
+		select.setBounds(21, 22, 174, 23);
+		panel_1.add(select);
 		
-		List<Conference> lst = ConferenceControl.getConferences();
 		
-		JLabel lab = new JLabel("hello");
+		int x = 27;
 		
-		int x = 170;
+		if((!lst.isEmpty()) && (lst != null)) {
+			for(int i = 0; i < lst.size(); i++) {
+				
+				JLabel label = new JLabel(lst.get(i).getName());
+				x += 50;
+				label.setBounds(21, x, 400, 20);
+				panel_1.add(label);
 		
-		for(int i = 0; i < lst.size(); i++) {
-			
-			JLabel label = new JLabel(lst.get(i).getName());
-			x += 50;
-			label.setBounds(166, x, 400, 20);
-			
-			JLabel dateSub = new JLabel(lst.get(i).getPaperStart().toString());
-			
-			dateSub.setBounds(166, x + 20, 200, 20);
-			
-			JLabel dateConf = new JLabel(lst.get(i).getPaperEnd().toString());
-			
-			dateSub.setBounds(381, x + 20, 200, 20);
-			
-			panel.add(label);
-			panel.add(dateSub);
-			panel.add(dateConf);
-			
+				JLabel dateSub = new JLabel("Open: " + lst.get(i).getPaperStart().toString());
+				
+				dateSub.setBounds(21, x + 20, 100, 20);
+				panel_1.add(dateSub);
+				
+				JLabel dateConf = new JLabel("Deadline: " + lst.get(i).getPaperEnd().toString());
+				
+				dateConf.setBounds(184, x + 20, 200, 20);
+				
+				panel_1.add(dateConf);
+				
+				
+				
+			}
+		} else {
+			JLabel empty = new JLabel("No Conferences Found!");
+			empty.setBounds(27, 80, 400, 20);
+			panel_1.add(empty);
 		}
 		
 		
@@ -110,5 +120,13 @@ public class MySubmissions {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		
+	}
+	
+	public JPanel getPanel() {
+		return panel;
+	}
+	
+	public JPanel getPanel_1() {
+		return panel_1;
 	}
 }
