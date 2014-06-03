@@ -2,7 +2,7 @@
  * Class that communicates with the database to store/retrieve data.
  * 
  * @author Eric Miller, Kirsten Grace
- * @version 5.12.14
+ * @version 5.12.15
  */
 
 package control;
@@ -22,8 +22,8 @@ public class UserControl {
 	private static Connection connection = null;
 	
 	private UserControl() {
-		// Do Nothing (stop trying to create me)
 	}
+		// Do Nothing (stop trying to create me)
 	
 	public static String updateUser(User theUser){
 		checkConnection();
