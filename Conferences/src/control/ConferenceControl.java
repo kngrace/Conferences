@@ -62,7 +62,7 @@ public class ConferenceControl {
 			pstmt.setInt(2, theConference.getProgramChair().getId());  
 			pstmt.setString(3, theConference.getDescription());
 			pstmt.setDate(4, theConference.getPaperStart());
-			pstmt.setDate(5, theConference.getPaperStart());
+			pstmt.setDate(5, theConference.getPaperEnd());
 			pstmt.setDate(6, theConference.getConferenceStart());
 			pstmt.setDate(7, theConference.getConferenceEnd());
 			pstmt.executeUpdate();
@@ -265,7 +265,7 @@ public class ConferenceControl {
 	/**
 	 * Use this method to retrieve the AccessLevel of a specific user for
 	 * a specific conference. If the user does not exist in the database
-	 * with a specific AccessLevel, then the AccessLevel of AUTHOR is returned.
+	 * with a specific AccessLevel, then null is returned.
 	 * 
 	 * @param theCon The conference to be matched
 	 * @param theUser The user to be matched
@@ -298,7 +298,7 @@ public class ConferenceControl {
 			}
 		}
 		
-		return AccessLevel.AUTHOR; // No entry existed in the table
+		return null; // No entry existed in the table
 	}
 	
 	/**
@@ -351,4 +351,5 @@ public class ConferenceControl {
 		}
 		return result;
 	}
+}
 	

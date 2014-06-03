@@ -15,6 +15,7 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Blob;
@@ -64,17 +65,6 @@ public class ManuscriptControl {
 	public static int createManuscript(Manuscript theManuscript) {
 		checkConnection();
 		try {
-			
-			File f = theManuscript.getFile();
-	//		FileInputStream input = new FileInputStream(theManuscript.getFile());
-	
-			
-			byte[] pdfData = new byte[(int) f.length()];
-			DataInputStream dis = new DataInputStream(new FileInputStream(f));
-			dis.readFully(pdfData);  // read from file into byte[] array
-			dis.close();
-
-			
 //			https://developer.salesforce.com/page/Secure_Coding_SQL_Injection
 			// Add the manuscript to the database
 			PreparedStatement pstmt = connection.prepareStatement("INSERT INTO manuscripts "
@@ -82,7 +72,14 @@ public class ManuscriptControl {
 			pstmt.setInt(1, theManuscript.getAuthor().getId());
 			pstmt.setInt(2, theManuscript.getConference().getId());  
 			pstmt.setString(3, theManuscript.getFile().getName());
-			pstmt.setBytes(4, pdfData);
+			
+			File f = theManuscript.getFile();
+			byte[] fileData = new byte[(int) f.length()];
+			DataInputStream dis = new DataInputStream(new FileInputStream(f));
+			dis.readFully(fileData);  // read from file into byte[] array
+			dis.close();
+			
+			pstmt.setBytes(4, fileData);
 			pstmt.executeUpdate();
 
 			// Retrieve the ID from the database for the recently inserted manuscript
@@ -91,12 +88,53 @@ public class ManuscriptControl {
 			ResultSet rs = statement.executeQuery("select last_insert_rowid()");
 			int manuscriptID = rs.getInt("last_insert_rowid()");
 			
-			// Create entry into the users_manuscripts table to add the author's relation
-			pstmt = connection.prepareStatement("INSERT INTO users_manuscripts "
-					+ "(user_id, manuscript_id, can_submit) VALUES (?, ?, 1)");
-			pstmt.setInt(1, theManuscript.getAuthor().getId());
-			pstmt.setInt(2, manuscriptID);
-			pstmt.executeUpdate();
+			while (true) {
+				try {
+					// Create entry into the users_manuscripts table to add program chair's relation
+					pstmt = connection.prepareStatement("INSERT INTO users_manuscripts "
+							+ "(user_id, manuscript_id, can_final) VALUES (?, ?, 1)");
+					pstmt.setInt(1, theManuscript.getConference().getProgramChair().getId());
+					pstmt.setInt(2, manuscriptID);
+					pstmt.executeUpdate();	
+					break;
+					
+				} catch (SQLException e) {
+					pstmt = connection.prepareStatement("UPDATE users_manuscripts "
+							+ "SET can_final=1 WHERE user_id=? AND manuscript_id=?");
+					pstmt.setInt(1, theManuscript.getConference().getProgramChair().getId());
+					pstmt.setInt(2, manuscriptID);
+					pstmt.executeUpdate();	
+					
+					rs = statement.executeQuery("SELECT CHANGES()");
+					int changes = rs.getInt("CHANGES()");
+					System.out.println(changes);
+					if (changes != 0) break;
+				}
+			}
+			
+			while (true) {
+				try {
+					// Create entry into the users_manuscripts table to add the author's relation
+					pstmt = connection.prepareStatement("INSERT INTO users_manuscripts "
+							+ "(user_id, manuscript_id, can_submit) VALUES (?, ?, 1)");
+					pstmt.setInt(1, theManuscript.getAuthor().getId());
+					pstmt.setInt(2, manuscriptID);
+					pstmt.executeUpdate();
+					break;
+					
+				} catch (SQLException e) {
+					pstmt = connection.prepareStatement("UPDATE users_manuscripts "
+							+ "SET can_submit=1 WHERE user_id=? AND manuscript_id=?");
+					pstmt.setInt(1, theManuscript.getAuthor().getId());
+					pstmt.setInt(2, manuscriptID);
+					pstmt.executeUpdate();	
+					
+					rs = statement.executeQuery("SELECT CHANGES()");
+					int changes = rs.getInt("CHANGES()");
+					System.out.println(changes);
+					if (changes != 0) break;
+				}
+			}
 			
 			// Add this manuscript to the Map
 			manuscriptMap.put(manuscriptID, theManuscript);
@@ -106,6 +144,7 @@ public class ManuscriptControl {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
 			System.err.println(e.getMessage());
+			e.printStackTrace();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -130,33 +169,117 @@ public class ManuscriptControl {
 	public static String updateManuscript(Manuscript theManuscript) {
 		checkConnection();
 		try {
-			// Update the conference within the database
+			System.out.println("I'm updating the manuscript with ID= "
+					+ theManuscript.getId());
+			// Update the manuscript within the database
 //			https://developer.salesforce.com/page/Secure_Coding_SQL_Injection
-			PreparedStatement pstmt = connection.prepareStatement("UPDATE manuscript SET "
-					+ "author=?, conference=?, rec_status=?, final_status=?, "
-					+ "submitted=?, file_name=?, file_blob=? WHERE id=?");
+			PreparedStatement pstmt = connection.prepareStatement("UPDATE manuscripts SET "
+					+ "author=?, conference=?, submitted=?, file_name=?, file_blob=? "
+					+ "WHERE id=?");
 			pstmt.setInt(1, theManuscript.getAuthor().getId());
-			pstmt.setInt(2, theManuscript.getConference().getId());  
-			pstmt.setInt(3, theManuscript.getRecommendStatus().value());
-			pstmt.setInt(4, theManuscript.getFinalStatus().value()); // don't have a session :-(
-			pstmt.setInt(5, theManuscript.getSPC().value()); // no session
-			pstmt.setBoolean(5, theManuscript.isSubmitted());  
-			pstmt.setString(6, theManuscript.getFile().getName());
-			pstmt.setBinaryStream(7, new FileInputStream(theManuscript.getFile()), 
-					theManuscript.getFile().length());
+			pstmt.setInt(2, theManuscript.getConference().getId()); 
+			pstmt.setBoolean(3, theManuscript.isSubmitted());  
+			pstmt.setString(4, theManuscript.getFile().getName());
+			
+			File f = theManuscript.getFile();
+			byte[] fileData = new byte[(int) f.length()];
+			DataInputStream dis = new DataInputStream(new FileInputStream(f));
+			dis.readFully(fileData);  // read from file into byte[] array
+			dis.close();
+			
+			pstmt.setBytes(5, fileData);
+			pstmt.setInt(6, theManuscript.getId());
 			pstmt.executeUpdate();
+			
 		} catch(SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
-			
+			e.printStackTrace();
 			return e.getMessage(); // error occurred
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return e.getMessage();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return e.getMessage();
 		}
 
 		return null; // no error
 	}
 	
 	public static List<Manuscript> getManuscripts(Conference theCon, User theUser){
+		checkConnection();		 
+		try {
+//			// Load all of the conferences from the database into a ResultSet 
+//			Statement statement = connection.createStatement();
+//			statement.setQueryTimeout(30);  // set timeout to 30 sec.
+//			ResultSet rs = statement.executeQuery("SELECT c.*, u.id AS user_id, u.email, "
+//					+ "u.username, u.password, u.first_name, u.last_name, u.address "
+//					+ "FROM conferences AS c JOIN users AS u ON c.program_chair=u.id");
+//			return iterateResults(rs);
+//
+			
+			//testing
+						
+						Statement statement2 = connection.createStatement();
+						statement2.setQueryTimeout(30);  // set timeout to 30 sec.
+						ResultSet rs2 = statement2.executeQuery("SELECT * FROM manuscripts");
+						String filename = rs2.getString("file_name");
+						
+						File              blobFile   = new File("doesthiswork.txt"); 
+						FileOutputStream  outStream  = new FileOutputStream(blobFile); 
+				
+						byte[]  buffer  =  rs2.getBytes("file_blob"); 
+						
+						System.out.println("The size is " + buffer.length);
+
+						outStream.write(buffer); 
+				
+						outStream.close(); 
+						
+//						byte [] array = blob.getBytes( 1, ( int ) blob.length() );
+//						File file = File.createTempFile("something-", ".binary", new File("."));
+//						FileOutputStream out = new FileOutputStream( file );
+//						out.write( array );
+//						out.close();
+						
+			
+		}catch(SQLException e) {
+			// if the error message is "out of memory", 
+			// it probably means no database file is found
+			
+			// Do not print error if the error is because no results were found
+			if (!e.getMessage().equals("ResultSet closed")){ 
+				System.err.println("SQL Error: " + e.getMessage());
+			}
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		return null;
+//		
+//		File              blobFile   = new File(filename); 
+//		FileOutputStream  outStream  = new FileOutputStream(blobFile); 
+//		InputStream       inStream   = blob.getBinaryStream(); 
+//
+//		int     length  = -1; 
+//		int     size    = blob.getBufferSize(); 
+//		byte[]  buffer  = new byte[size]; 
+//
+//		while ((length = inStream.read(buffer)) != -1) 
+//		{ 
+//			outStream.write(buffer, 0, length); 
+//			outStream.flush(); 
+//		} 
+//
+//		inStream.close(); 
+//		outStream.close(); 
 	}
 	
 	public static List<Review> getReviews(Manuscript theMan, User theUser){

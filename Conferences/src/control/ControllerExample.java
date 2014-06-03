@@ -11,14 +11,23 @@
 
 package control;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Scanner;
+
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 
 import model.AccessLevel;
 import model.Conference;
+import model.Manuscript;
+import model.Session;
 import model.User;
 
 public class ControllerExample
@@ -27,10 +36,10 @@ public class ControllerExample
 	private static void test1() throws ClassNotFoundException {
 		User testUser = new User(3, null, null, null, 
 				null, null, null);
-		Conference testConference = new Conference(null, testUser, null, null, 
+		Conference testConference = new Conference("TestDummy", testUser, Date.valueOf("2014-06-01"), Date.valueOf("2014-06-25"), 
 				null, null, null, null);
-		testConference.setName(null, "Testing Access Levels");
-		ConferenceControl.updateConference(testConference);
+	//	testConference.setName(null, "Testing Access Levels");
+	//	ConferenceControl.updateConference(testConference);
 		
 		
 		System.out.println("The access level for this user is: " 
@@ -57,16 +66,59 @@ public class ControllerExample
 //				"Captain", "Spock", "Enterprise"));
 	}
 	
-	public static void main(String[] args) throws ClassNotFoundException
+	
+	private static void test4() throws ClassNotFoundException, FileNotFoundException {
+		
+		JFrame j = new JFrame();
+		JFileChooser chooser = new JFileChooser();
+		int returnVal = chooser.showOpenDialog(null);
+		File f = null;
+	    if(returnVal == JFileChooser.APPROVE_OPTION) {
+	       System.out.println("You chose to open this file: " +
+	            chooser.getSelectedFile().getName());
+	       f = chooser.getSelectedFile();
+//	       System.out.println(f.getAbsolutePath());
+//	       System.out.println(f.getPath());
+//	       
+//	       
+//	       System.out.println(System.getProperty("user.dir"));
+	    }
+		j.setVisible(true);
+		
+		User testUser = new User(3, null, null, null, 
+				null, null, null);
+		Conference testConference = new Conference(3, "TestDummy", testUser, Date.valueOf("2014-06-01"), Date.valueOf("2014-06-25"), 
+				null, null, null, null);
+		
+		Manuscript m = new Manuscript(testUser, testConference, f.getName(), new File(f.getAbsolutePath()));
+		
+		Session s = new Session(testUser);
+		
+		try {
+			m.unsubmit(s);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+	}
+	
+	public static void main(String[] args) throws ClassNotFoundException, FileNotFoundException
 	{
 		
 		//.out.println(AccessLevel.PROGRAMCHAIR);
 		//System.out.println(AccessLevel.valueOf("PROGRAMCHAIR"));
 
 		//test1();
-		test2();
-		test2();
+		//test2();
+		//test2();
 		//test3();
+		test4();
+		
+		Date D = Date.valueOf("2014-1-12");
+		System.out.println(D.toString());
+		
 /*		
 		// load the sqlite-JDBC driver using the current class loader
 		Class.forName("org.sqlite.JDBC");
