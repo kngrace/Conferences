@@ -67,17 +67,16 @@ public class Manuscript extends Observable {
 	 * @param theFile the File for this Manuscript.
 	 * @param theSPC the User Sub-Program Chair this Manuscript is assigned to.
 	 */
-	public Manuscript(int theID, User theAuthor, Conference theConference, 
-			String theFileName, File theFile, User theSPC) {
+	public Manuscript(int theID, User theAuthor, Conference theConference, String theFileName,
+			File theFile, Status theRecommendStatus, Status theFinalStatus, boolean theIsSubmitted) {
 		myID = theID;
 		myAuthor = theAuthor;
 		myConference = theConference;
 		myFileName = theFileName;
-		myFile = new File(myFileName);
-		myRecommendStatus = Status.UNDECIDED;
-		myFinalStatus = Status.UNDECIDED;
-		mySPC = theSPC;
-		isSubmitted = true;
+		myFile = theFile;
+		myRecommendStatus = theRecommendStatus;
+		myFinalStatus = theFinalStatus;
+		isSubmitted = theIsSubmitted;
 	}
 	
 	/**
@@ -94,14 +93,13 @@ public class Manuscript extends Observable {
 	 * @param theSPC the User Sub-Program Chair this Manuscript is assigned to.
 	 */
 	public Manuscript(User theAuthor, Conference theConference, 
-			String theFileName, File theFile, User theSPC) {
+			String theFileName, File theFile) {
 		myAuthor = theAuthor;
 		myConference = theConference;
 		myFileName = theFileName;
 		myFile = new File(myFileName);
 		myRecommendStatus = Status.UNDECIDED;
 		myFinalStatus = Status.UNDECIDED;
-		mySPC = theSPC;
 		isSubmitted = true;
 		// assign ID AFTER field have been initialized, so that all fields
 		// get stored in the database.

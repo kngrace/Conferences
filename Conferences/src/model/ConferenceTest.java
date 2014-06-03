@@ -32,7 +32,7 @@ public class ConferenceTest {
 		mySession2 = new Session(myUser2);
 		myConference1 = new Conference(0013, "Conference A", myUser1, Date.valueOf("2015-04-13"),
 				Date.valueOf("2015-05-13"), Date.valueOf("2015-05-20"), 
-				Date.valueOf("2015-05-22"), "Tacoma, WA");
+				Date.valueOf("2015-05-22"), "Tacoma, WA", "Description for Conference1");
 		myUser1.setAccess(myConference1, AccessLevel.PROGRAMCHAIR);
 		myUser2.setAccess(myConference1, AccessLevel.REVIEWER);
 		myUser2.setAccess(myConference2, AccessLevel.PROGRAMCHAIR);
@@ -40,14 +40,13 @@ public class ConferenceTest {
 		
 		myConference2 = new Conference("Conference B", myUser2, Date.valueOf("2015-08-13"),
 				Date.valueOf("2015-08-13"), Date.valueOf("2015-08-20"), 
-				Date.valueOf("2015-08-22"), "Tacoma, WA");
+				Date.valueOf("2015-08-22"), "Tacoma, WA", "Description for Conference 2");
 				
 		
 	}
 
 	@Test
 	public void testSetName() {
-	     String oldName = myConference1.getName();
 	     String newName = "This is Conference A's new name.";
 	     // Should be allowed to change as this Session has this access.
 	     boolean setNameSuccess = myConference1.setName(mySession1, newName);
@@ -63,7 +62,6 @@ public class ConferenceTest {
 	
 	@Test
 	public void testSetDescription() {
-		String oldDescription = myConference1.getDescription();
 		String description1 = "This is the changed description.";
 		String description2 = "Description should NOT be changed to this.";
 		boolean setDescriptionSuccess = myConference1.setDescription(mySession1, 
@@ -78,7 +76,6 @@ public class ConferenceTest {
 	
 	@Test
 	public void testSetPaperStart() {
-		Date originalPaperStart = myConference1.getPaperStart();
 		Date paperStart1 = Date.valueOf("2015-04-14");
 		Date paperStart2 = Date.valueOf("2015-04-19");
 		boolean setPaperStartSuccess = myConference1.setPaperStart(mySession1, paperStart1);
@@ -91,7 +88,6 @@ public class ConferenceTest {
 	
 	@Test
 	public void testSetPaperEnd() {
-		Date originalPaperEnd = myConference1.getPaperEnd();
 		Date paperEnd1 = Date.valueOf("2015-05-14");
 		Date paperEnd2 = Date.valueOf("2015-05-19");
 		boolean setPaperEndSuccess = myConference1.setPaperEnd(mySession1, paperEnd1);
@@ -104,7 +100,6 @@ public class ConferenceTest {
 	
 	@Test
 	public void testSetConferenceStart() {
-		Date originalConferenceStart = myConference1.getConferenceStart();
 		Date conferenceStart1 = Date.valueOf("2015-05-25");
 		Date conferenceStart2 = Date.valueOf("2015-05-26");
 		boolean setConferenceStartSuccess = myConference1.setConferenceStart(mySession1, conferenceStart1);
@@ -119,7 +114,6 @@ public class ConferenceTest {
 	
 	@Test
 	public void testSetConferenceEnd() {
-		Date originalConferenceEnd = myConference1.getConferenceEnd();
 		Date conferenceEnd1 = Date.valueOf("2015-05-30");
 		Date conferenceEnd2 = Date.valueOf("2015-05-31");
 		boolean setConferenceEndSuccess = myConference1.setConferenceEnd(mySession1, 
@@ -134,7 +128,6 @@ public class ConferenceTest {
 	
 	@Test
 	public void testSetLocation() {
-		String originalLocation = myConference1.getDescription();
 		String location1 = "This is the changed location.";
 		String location2 = "Location should NOT be changed to this.";
 		boolean setLocationSuccess = myConference1.setLocation(mySession1, location1);
