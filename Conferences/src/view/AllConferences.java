@@ -20,7 +20,7 @@ import model.User;
 import control.ConferenceControl;
 
 
-public class MySubmissions {
+public class AllConferences {
 
 	private JFrame frame;
 	
@@ -35,7 +35,7 @@ public class MySubmissions {
 	/**
 	 * Create the application.
 	 */
-	public MySubmissions(Session the_session) {
+	public AllConferences(Session the_session) {
 		session = the_session;
 		initialize();
 	}
@@ -63,11 +63,10 @@ public class MySubmissions {
 				
 		panel.setLayout(null);
 		
-		final List<Conference> lst = 
-				ConferenceControl.getConferences(session.getCurrentUser(), AccessLevel.AUTHOR);
+		final List<Conference> lst = ConferenceControl.getConferences();
 		
 		final JButton select = new JButton("Select A Conference");
-		if(lst.isEmpty() || lst == null) {
+		if(lst == null) {
 			select.setEnabled(false);
 		}
 		
@@ -84,10 +83,18 @@ public class MySubmissions {
 		select.setBounds(21, 22, 174, 23);
 		panel_1.add(select);
 		
+		JButton btnNewButton1 = new JButton("Add A Conference");
+		btnNewButton1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				//new window for adding a conf.
+			}
+		});
+		btnNewButton1.setBounds(283, 22, 174, 23);
+		panel_1.add(btnNewButton1);
 		
 		int x = 27;
 		
-		if((!lst.isEmpty()) && (lst != null)) {
+		if(lst != null) {
 			for(int i = 0; i < lst.size(); i++) {
 				
 				JLabel label = new JLabel(lst.get(i).getName());
@@ -105,8 +112,6 @@ public class MySubmissions {
 				dateConf.setBounds(184, x + 20, 200, 20);
 				
 				panel_1.add(dateConf);
-				
-				
 				
 			}
 		} else {

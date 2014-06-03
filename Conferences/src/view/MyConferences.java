@@ -20,7 +20,7 @@ import model.User;
 import control.ConferenceControl;
 
 
-public class MySubmissions {
+public class MyConferences {
 
 	private JFrame frame;
 	
@@ -35,7 +35,7 @@ public class MySubmissions {
 	/**
 	 * Create the application.
 	 */
-	public MySubmissions(Session the_session) {
+	public MyConferences(Session the_session) {
 		session = the_session;
 		initialize();
 	}
@@ -63,11 +63,10 @@ public class MySubmissions {
 				
 		panel.setLayout(null);
 		
-		final List<Conference> lst = 
-				ConferenceControl.getConferences(session.getCurrentUser(), AccessLevel.AUTHOR);
+		final List<Conference> lst = ConferenceControl.getConferences(session.getCurrentUser());
 		
 		final JButton select = new JButton("Select A Conference");
-		if(lst.isEmpty() || lst == null) {
+		if(lst == null || lst.isEmpty()) {
 			select.setEnabled(false);
 		}
 		
@@ -84,14 +83,13 @@ public class MySubmissions {
 		select.setBounds(21, 22, 174, 23);
 		panel_1.add(select);
 		
-		
 		int x = 27;
 		
-		if((!lst.isEmpty()) && (lst != null)) {
+		if(lst != null && !lst.isEmpty()) {
 			for(int i = 0; i < lst.size(); i++) {
 				
 				JLabel label = new JLabel(lst.get(i).getName());
-				x += 50;
+				x += 70;
 				label.setBounds(21, x, 400, 20);
 				panel_1.add(label);
 		
@@ -106,8 +104,10 @@ public class MySubmissions {
 				
 				panel_1.add(dateConf);
 				
+				JLabel access = new JLabel("Roles: " + lst.get(i).getAccessLevel(session));
+				access.setBounds(21, x + 40, 200, 20);
 				
-				
+				panel_1.add(access);
 			}
 		} else {
 			JLabel empty = new JLabel("No Conferences Found!");

@@ -2,23 +2,19 @@
  * Class that communicates with the database to store/retrieve data.
  * 
  * @author Eric Miller, Kirsten Grace
- * @version 5.12.14
+ * @version 5.12.15
  */
 
 package control;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import model.AccessLevel;
-import model.Conference;
 import model.User;
 
 public class UserControl {
@@ -26,18 +22,37 @@ public class UserControl {
 	private static Connection connection = null;
 	
 	private UserControl() {
-		// Do Nothing (stop trying to create me)
 	}
+		// Do Nothing (stop trying to create me)
 	
-	public static Boolean updateUser(User theUser){
-		return false;	
+	public static String updateUser(User theUser){
+		checkConnection();
+		try {
+			// Update the user within the database
+//			https://developer.salesforce.com/page/Secure_Coding_SQL_Injection
+			PreparedStatement pstmt = connection.prepareStatement("UPDATE users SET "
+					+ "email=?, first_name=?, last_name=?, address=?, "
+					+ "username=?, password=? WHERE id=?");
+			pstmt.setString(1, theUser.getEmail());
+			pstmt.setString(2, theUser.getFirstName());  
+			pstmt.setString(3, theUser.getLastName());
+			pstmt.setString(4, theUser.getAddress());
+			pstmt.setString(5, theUser.getUsername());
+			pstmt.setString(6, theUser.getPassword());
+			pstmt.setInt(7, theUser.getId());
+			pstmt.executeUpdate();
+		} catch(SQLException e) {
+			// if the error message is "out of memory", 
+			// it probably means no database file is found
+			
+			return e.getMessage(); // error occurred
+		}
+		
+		return null; // no error
 	}
 	
 	public static int createUser(User theUser){
-		if (connection == null) {
-			connection = JDBCConnection.getConnection();
-		}
-		
+		checkConnection();
 		try {
 			//https://developer.salesforce.com/page/Secure_Coding_SQL_Injection
 
@@ -70,10 +85,7 @@ public class UserControl {
 	
 	public static List<User> getUsers(){
 		// Establish a connection if one does not exist
-				if(connection == null) {
-					connection = JDBCConnection.getConnection();
-				}
-				 
+				checkConnection();
 				List<User> result = new ArrayList<User>(); // Create the empty list
 				try {
 					// Load all of the conferences from the database into a ResultSet 
@@ -111,10 +123,7 @@ public class UserControl {
 	}
 	
 	public static User authenticate(final String the_user, final String the_pass) {
-		if(connection == null) {
-			connection = JDBCConnection.getConnection();
-		}
-
+		checkConnection();
 		User login = null;
 		try {
 			PreparedStatement pstmt = connection.prepareStatement("SELECT * FROM users WHERE username=?");
@@ -150,5 +159,13 @@ public class UserControl {
 		return null;
 	}
 	
-	
+	/**
+	 * Private helper method that establishes a connection to the database
+	 * if one does not already exist.
+	 */
+	private static void checkConnection(){
+		if(connection == null) {
+			connection = JDBCConnection.getConnection();
+		}
+	}
 }

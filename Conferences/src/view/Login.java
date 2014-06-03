@@ -45,6 +45,8 @@ public class Login {
 	
 	private String username;
 	private String password;
+	
+	private Session session;
 
 	/**
 	 * Launch the application.
@@ -93,14 +95,32 @@ public class Login {
 					lblNewLabel.setForeground(Color.RED);
 		          	lblNewLabel.setBounds(227, 128, 322, 14);
 		          	panel.add(lblNewLabel);
-		          	Session newUser = new Session(test);
+		        
 		          	frame.getContentPane().add(panel);
 				  	frame.repaint();
 				  } else {
 				  	frame.remove(panel);
-				  	UserBorder home = new UserBorder();
-				 	frame.getContentPane().add(home.getPanel());
+				  	Session newUser = new Session(test);
+				  	final UserHome home = new UserHome(newUser);
+
+				  	
+					JButton logoutButton = new JButton("Logout");
+					logoutButton.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							Login log = new Login();
+							JPanel login = log.getPanel();
+							frame.remove(home.getPanel());
+							frame.getContentPane().add(panel);
+							panel.repaint();
+							frame.repaint();
+						}
+					});
+					logoutButton.setBounds(20, 350, 103, 23);
+					home.getPanel().add(logoutButton);
+					frame.getContentPane().add(home.getPanel());
 				  	frame.repaint();
+				
+					
 				  }
 			
 			}
@@ -187,6 +207,8 @@ public class Login {
 	
 		passwordField.setBounds(328, 184, 112, 20);
 		panel.add(passwordField);
+		
+		
 		
 		banner = new JPanel();
 		banner.setBackground(new Color(176, 196, 222));
