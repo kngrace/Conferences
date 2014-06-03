@@ -4,6 +4,11 @@ import java.io.File;
 
 import control.ManuscriptControl;
 
+/**
+ * Model for the manuscript reviews.
+ * @author Eric Miller
+ * @version 0.5
+ */
 public class Review {
 	private final int myID;
 	private final User myReviewer;
