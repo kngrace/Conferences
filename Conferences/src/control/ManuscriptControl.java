@@ -11,8 +11,11 @@
 
 package control;
 
+import java.io.DataInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Blob;
 import java.sql.Connection;
@@ -24,11 +27,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 import model.AccessLevel;
 import model.Conference;
 import model.Manuscript;
 import model.Review;
+import model.Status;
 import model.User;
 
 public class ManuscriptControl {
@@ -59,16 +64,25 @@ public class ManuscriptControl {
 	public static int createManuscript(Manuscript theManuscript) {
 		checkConnection();
 		try {
+			
+			File f = theManuscript.getFile();
+	//		FileInputStream input = new FileInputStream(theManuscript.getFile());
+	
+			
+			byte[] pdfData = new byte[(int) f.length()];
+			DataInputStream dis = new DataInputStream(new FileInputStream(f));
+			dis.readFully(pdfData);  // read from file into byte[] array
+			dis.close();
+
+			
 //			https://developer.salesforce.com/page/Secure_Coding_SQL_Injection
-		    
 			// Add the manuscript to the database
 			PreparedStatement pstmt = connection.prepareStatement("INSERT INTO manuscripts "
 					+ "(author, conference, file_name, file_blob) VALUES (?, ?, ?, ?)");
 			pstmt.setInt(1, theManuscript.getAuthor().getId());
 			pstmt.setInt(2, theManuscript.getConference().getId());  
 			pstmt.setString(3, theManuscript.getFile().getName());
-			pstmt.setBinaryStream(4, new FileInputStream(theManuscript.getFile()), 
-										theManuscript.getFile().length());
+			pstmt.setBytes(4, pdfData);
 			pstmt.executeUpdate();
 
 			// Retrieve the ID from the database for the recently inserted manuscript
@@ -93,6 +107,9 @@ public class ManuscriptControl {
 			// it probably means no database file is found
 			System.err.println(e.getMessage());
 		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -146,8 +163,12 @@ public class ManuscriptControl {
 		return null;
 	}
 	
-	public static void addReview(Manuscript theMan, Review theReview) {
-		// todo
+	public static int createReview(Review theReview) {
+		return -1;
+	}
+	
+	public static void updateReview(Review theReview) {
+		//to do
 	}
 	
 	public static void addReviewer(Manuscript theMan, User theReviewer) {
@@ -168,6 +189,39 @@ public class ManuscriptControl {
 	}
 	
 	/**
+	 * This method will update the recommend status for the specified manuscript
+	 * in the database. (To be called by Manuscript's setRecommendStatus() method)
+	 * 
+	 * @param theMan The manuscript to be updated.
+	 * @param theStatus The new Status to be set for this manuscript.
+	 */
+	public static void updateRecommend(Manuscript theMan, Status theStatus) {
+		
+	}
+	
+	/**
+	 * This method will update the final status for the specified manuscript
+	 * in the database. (To be called by Manuscript's setFinalStatus() method)
+	 * 
+	 * @param theMan The manuscript to be updated.
+	 * @param theStatus The new Status to be set for this manuscript.
+	 */
+	public static void updateFinal(Manuscript theMan, Status theStatus){
+		
+	}
+	
+	/**
+	 * This method will update the SPC assigned to the specified manuscript
+	 * in the database. (To be called by Manuscript's assignSPC() method)
+	 * 
+	 * @param theMan
+	 * @param theSPC
+	 */
+	public static void updateSPC(Manuscript theMan, User theSPC){
+		
+	}
+	
+	/**
 	 * Private helper method that establishes a connection to the database
 	 * if one does not already exist.
 	 */
@@ -179,24 +233,22 @@ public class ManuscriptControl {
 	
 	
 	/**
-	 * Private helper method that will iterate over a ResultSet and construct the
-	 * Conference and User objects needed then returns the List<Conference> back.
+	 * Private helper method that will iterate over a ResultSet then returns 
+	 * the List<Manuscript> back.
 	 * 
 	 * @param rs The ResultSet to be iterated over.
-	 * @return The completed List<Conference> constructed from the given ResultSet
+	 * @return The completed List<Manuscript> constructed from the given ResultSet
 	 * @throws SQLException The exception encountered from the ResultSet
 	 */
 	private static List<Conference> iterateResults(ResultSet rs) throws SQLException{
 		
-		List<Conference> result = new ArrayList<Conference>(); // Create the empty list
+		List<Manuscript> result = new ArrayList<Manuscript>(); // Create the empty list
 		
 		while (rs.next()){
-			if (conferenceMap.containsKey(rs.getInt("id"))) {
-				result.add(conferenceMap.get(rs.getInt("id")));
+			if (manuscriptMap.containsKey(rs.getInt("id"))) {
+				result.add(manuscriptMap.get(rs.getInt("id")));
 			} else {
-				Conference c = new Conference(
-						rs.getInt("id"), 
-						rs.getString("name"), 
+				Manuscript m = new Manuscript(rs.getInt("id"), 
 						new User(
 								rs.getInt("user_id"), 
 								rs.getString("username"),
@@ -204,16 +256,14 @@ public class ManuscriptControl {
 								rs.getString("email"), 
 								rs.getString("first_name"), 
 								rs.getString("last_name"), 
-								rs.getString("address")),
-						rs.getDate("accept_papers_start"),
-						rs.getDate("accept_papers_end"),
-						rs.getDate("conference_start"),
-						rs.getDate("conference_end"),
-						rs.getString("location"),
-						rs.getString("description")
-				);
-				conferenceMap.put(rs.getInt("id"), c);
-				result.add(c);
+								rs.getString("address")), 
+						conference, 
+						filename,
+						file, 
+						spc
+						);
+				manuscriptMap.put(rs.getInt("id"), m);
+				result.add(m);
 			}
 		}
 		return result;
