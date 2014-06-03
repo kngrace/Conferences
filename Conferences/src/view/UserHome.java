@@ -173,7 +173,8 @@ public class UserHome {
 		btnSubmissions.addActionListener(new ActionListener() {
 			
 			/**
-			 * This deletes the 
+			 * This deletes the content of panel_3, and then
+			 * repaints the frame.
 			 */
 			public void actionPerformed(ActionEvent arg0) {
 				System.out.println("Working");
@@ -188,7 +189,7 @@ public class UserHome {
 		});
 		
 		/**
-		 * This adds the button to the panel_1
+		 * This adds the button to the panel_1.
 		 */
 		panel_1.add(btnSubmissions);
 		
@@ -217,13 +218,13 @@ public class UserHome {
 		});
 		
 		/**
-		 * This adds the button to the panel_1
+		 * This adds the button to the panel_1.
 		 */
 		panel_1.add(confButton);
 		
 		/**
-		 * This is the JButton that allows for All of the 
-		 * Conferences 
+		 * This is the JButton that allows for all of the 
+		 * Conferences.
 		 */
 		allConfButton = new JButton("All Conferences");
 		allConfButton.setBounds(10, 127, 128, 23);
@@ -250,7 +251,7 @@ public class UserHome {
 		});
 		
 		/**
-		 * This adds the button to the panel_1
+		 * This adds the button to the panel_1.
 		 */
 		panel_1.add(allConfButton);
 		
@@ -264,13 +265,12 @@ public class UserHome {
 		panel.add(panel_2);
 		
 		/**
-		 * This is the third panel used for the UserHome
+		 * This is the third panel used for the UserHome.
 		 */
 		panel_3 = new JPanel();
 		panel_3.setBounds(147, 83, 536, 345);
 		panel_3.setLayout(null);
 		panel.add(panel_3);
-		
 	}
 
 	/**
@@ -305,16 +305,34 @@ public class UserHome {
 		return allConfButton;
 	}
 	
+	/**
+	 * This is the getter for getting the 
+	 * panel and then returns the panel.
+	 */
 	public JPanel getPanel() {
 		return panel;
 	}
+	
+	/**
+	 * This is the getter for getting the 
+	 * panel_1 and then returns the panel_1.
+	 */
 	public JPanel getPanel_1() {
 		return panel_1;
 	}
+	
+	/**
+	 * This is the getter for getting the 
+	 * logOutButton and then returns it.
+	 */
 	public JButton getLogoutButton() {
 		return logoutButton;
 	}
 	
+	/**
+	 * This is the getter for getting the 
+	 * panel_3 and then returns the it.
+	 */
 	public JPanel getPanel_3() {
 		return panel_3;
 	}
