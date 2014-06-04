@@ -22,7 +22,7 @@ public enum Status {
 		return myValue;
 	}
 	
-	public Status getStatus(int theValue) throws Exception {
+	public static Status getStatus(int theValue) throws Exception {
 		switch (theValue) {
 		    case 0 : return Status.REJECTED;
 		    case 1 : return Status.UNDECIDED;
@@ -31,7 +31,7 @@ public enum Status {
 		}
 	}
 	
-	public int getValue(Status theStatus) throws Exception {
+	public static int getValue(Status theStatus) throws Exception {
 		switch (theStatus) {
 		    case REJECTED : return 0;
 		    case UNDECIDED : return 1;

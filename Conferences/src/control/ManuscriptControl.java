@@ -1,13 +1,7 @@
-/**
- * Class that communicates with the database to store/retrieve data.
- * The Connection object this class uses is globally shared and thus
- * is retrieved via JDBCConnection. (UNDER TEST: Also stores a Map of all 
- * Manuscript objects already loaded into memory to prevent duplication.)
- * 
- * @author Kirsten Grace
- * @version 6.02.14
- */
-
+/*
+ * TCSS 360 Software Development and Quality Assurance
+ * Conferences Project - Group 3
+ */ 
 
 package control;
 
@@ -36,6 +30,16 @@ import model.Manuscript;
 import model.Review;
 import model.Status;
 import model.User;
+
+/**
+ * Class that communicates with the database to store/retrieve data.
+ * The Connection object this class uses is globally shared and thus
+ * is retrieved via JDBCConnection. (UNDER TEST: Also stores a Map of all 
+ * Manuscript objects already loaded into memory to prevent duplication.)
+ * 
+ * @author Kirsten Grace
+ * @version 6.04.14
+ */
 
 public class ManuscriptControl {
 	
@@ -224,7 +228,6 @@ public class ManuscriptControl {
 	 */
 	public static List<Manuscript> getManuscripts(Conference theCon, User theUser){
 		checkConnection();		 
-		List<Manuscript> result = new ArrayList<Manuscript>();
 		try {
 //			// Load all of the conferences from the database into a ResultSet 
 //			Statement statement = connection.createStatement();
@@ -248,40 +251,42 @@ public class ManuscriptControl {
 //						Statement statement2 = connection.createStatement();
 //						statement2.setQueryTimeout(30);  // set timeout to 30 sec.
 //						ResultSet rs2 = statement2.executeQuery("SELECT * FROM manuscripts");
-			while (rs.next()){
-				if (manuscriptMap.containsKey(rs.getInt("manuscript_id"))) {
-					result.add(manuscriptMap.get(rs.getInt("manuscript_id")));
-				} else {
-				
-					// Load the File first because it is multi-step
-					String filename = rs.getString("file_name");
-					File blobFile = new File(filename); 
-					FileOutputStream outStream  = new FileOutputStream(blobFile); 
-					byte[] buffer = rs.getBytes("file_blob"); 
-					outStream.write(buffer); 
-					outStream.close(); 
-					
-					Manuscript m = new Manuscript(
-							rs.getInt("manuscript_id"), 
-							new User(
-									rs.getInt("user_id"), 
-									rs.getString("username"),
-									rs.getString("password"),
-									rs.getString("email"), 
-									rs.getString("first_name"), 
-									rs.getString("last_name"), 
-									rs.getString("address")), 
-							ConferenceControl.getConferenceByID(rs.getInt("conference")), 
-							rs.getString("file_name"), 
-							blobFile, 
-							Status.getStatus(rs.getInt("rec_status")), 
-							Status.getStatus(rs.getInt("final_status")), 
-							rs.getBoolean("submitted"));
-					manuscriptMap.put(rs.getInt("manuscript_id"), m);
-					result.add(m);
-				}
-			}
-			return result;
+			return iterateResults(rs);
+			
+//			while (rs.next()){
+//				if (manuscriptMap.containsKey(rs.getInt("manuscript_id"))) {
+//					result.add(manuscriptMap.get(rs.getInt("manuscript_id")));
+//				} else {
+//				
+//					// Load the File first because it is multi-step
+//					String filename = rs.getString("file_name");
+//					File blobFile = new File(filename); 
+//					FileOutputStream outStream  = new FileOutputStream(blobFile); 
+//					byte[] buffer = rs.getBytes("file_blob"); 
+//					outStream.write(buffer); 
+//					outStream.close(); 
+//					
+//					Manuscript m = new Manuscript(
+//							rs.getInt("manuscript_id"), 
+//							new User(
+//									rs.getInt("user_id"), 
+//									rs.getString("username"),
+//									rs.getString("password"),
+//									rs.getString("email"), 
+//									rs.getString("first_name"), 
+//									rs.getString("last_name"), 
+//									rs.getString("address")), 
+//							ConferenceControl.getConferenceByID(rs.getInt("conference")), 
+//							rs.getString("file_name"), 
+//							blobFile, 
+//							Status.getStatus(rs.getInt("rec_status")), 
+//							Status.getStatus(rs.getInt("final_status")), 
+//							rs.getBoolean("submitted"));
+//					manuscriptMap.put(rs.getInt("manuscript_id"), m);
+//					result.add(m);
+//				}
+//			}
+//			return result;
 		}catch(SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
@@ -374,40 +379,42 @@ public class ManuscriptControl {
 					+ Integer.toString(Status.APPROVED.getValue())
 					+ " AND m.conference=" + Integer.toString(theConference.getId()));
 	
-			while (rs.next()){
-				if (manuscriptMap.containsKey(rs.getInt("manuscript_id"))) {
-					result.add(manuscriptMap.get(rs.getInt("manuscript_id")));
-				} else {
-				
-					// Load the File first because it is multi-step
-					String filename = rs.getString("file_name");
-					File blobFile = new File(filename); 
-					FileOutputStream outStream  = new FileOutputStream(blobFile); 
-					byte[] buffer = rs.getBytes("file_blob"); 
-					outStream.write(buffer); 
-					outStream.close(); 
-					
-					Manuscript m = new Manuscript(
-							rs.getInt("manuscript_id"), 
-							new User(
-									rs.getInt("user_id"), 
-									rs.getString("username"),
-									rs.getString("password"),
-									rs.getString("email"), 
-									rs.getString("first_name"), 
-									rs.getString("last_name"), 
-									rs.getString("address")), 
-							ConferenceControl.getConferenceByID(rs.getInt("conference")), 
-							rs.getString("file_name"), 
-							blobFile, 
-							Status.getStatus(rs.getInt("rec_status")), 
-							Status.getStatus(rs.getInt("final_status")), 
-							rs.getBoolean("submitted"));
-					manuscriptMap.put(rs.getInt("manuscript_id"), m);
-					result.add(m);
-				}
-			}
-			return result;
+			return iterateResults(rs);
+			
+//			while (rs.next()){
+//				if (manuscriptMap.containsKey(rs.getInt("manuscript_id"))) {
+//					result.add(manuscriptMap.get(rs.getInt("manuscript_id")));
+//				} else {
+//				
+//					// Load the File first because it is multi-step
+//					String filename = rs.getString("file_name");
+//					File blobFile = new File(filename); 
+//					FileOutputStream outStream  = new FileOutputStream(blobFile); 
+//					byte[] buffer = rs.getBytes("file_blob"); 
+//					outStream.write(buffer); 
+//					outStream.close(); 
+//					
+//					Manuscript m = new Manuscript(
+//							rs.getInt("manuscript_id"), 
+//							new User(
+//									rs.getInt("user_id"), 
+//									rs.getString("username"),
+//									rs.getString("password"),
+//									rs.getString("email"), 
+//									rs.getString("first_name"), 
+//									rs.getString("last_name"), 
+//									rs.getString("address")), 
+//							ConferenceControl.getConferenceByID(rs.getInt("conference")), 
+//							rs.getString("file_name"), 
+//							blobFile, 
+//							Status.getStatus(rs.getInt("rec_status")), 
+//							Status.getStatus(rs.getInt("final_status")), 
+//							rs.getBoolean("submitted"));
+//					manuscriptMap.put(rs.getInt("manuscript_id"), m);
+//					result.add(m);
+//				}
+//			}
+//			return result;
 		}catch(SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
@@ -430,26 +437,100 @@ public class ManuscriptControl {
 		return null;
 	}
 	
-	// Does the GUI need this???
-		public static List<User> getReviewers(Manuscript theMan) {
-			return null;
+	/**
+	 * This method returns all manuscripts for the specified conference
+	 * that currently do not have SPC's assigned.
+	 * 
+	 * @param theConference The conference to get unassigned SPCs for.
+	 * @param theUser ??? Not sure why this is required - may remove
+	 * @return The list of manuscripts with unassigned SPCs
+	 */
+	public static List<Manuscript> getUnassignedSPC(Conference theConference, User theUser){
+		checkConnection();		 
+		List<Manuscript> result = new ArrayList<Manuscript>();
+		try {
+			Statement statement = connection.createStatement();
+			statement.setQueryTimeout(30);  // set timeout to 30 sec.
+			ResultSet rs = statement.executeQuery("SELECT m.*, m.id AS manuscript_id, "
+					+ "u.id AS user_id, u.email, u.username, u.password, u.first_name, "
+					+ "u.last_name, u.address FROM users_manuscripts AS um	"
+					+ "JOIN users as u ON um.user_id=u.id JOIN manuscripts as m "
+					+ "ON um.manuscript_id=m.id	WHERE m.spc IS NULL "
+					+ "AND m.conference=" + Integer.toString(theConference.getId()));
+	
+			return iterateResults(rs);
+			
+//			while (rs.next()){
+//				if (manuscriptMap.containsKey(rs.getInt("manuscript_id"))) {
+//					result.add(manuscriptMap.get(rs.getInt("manuscript_id")));
+//				} else {
+//				
+//					// Load the File first because it is multi-step
+//					String filename = rs.getString("file_name");
+//					File blobFile = new File(filename); 
+//					FileOutputStream outStream  = new FileOutputStream(blobFile); 
+//					byte[] buffer = rs.getBytes("file_blob"); 
+//					outStream.write(buffer); 
+//					outStream.close(); 
+//					
+//					Manuscript m = new Manuscript(
+//							rs.getInt("manuscript_id"), 
+//							new User(
+//									rs.getInt("user_id"), 
+//									rs.getString("username"),
+//									rs.getString("password"),
+//									rs.getString("email"), 
+//									rs.getString("first_name"), 
+//									rs.getString("last_name"), 
+//									rs.getString("address")), 
+//							ConferenceControl.getConferenceByID(rs.getInt("conference")), 
+//							rs.getString("file_name"), 
+//							blobFile, 
+//							Status.getStatus(rs.getInt("rec_status")), 
+//							Status.getStatus(rs.getInt("final_status")), 
+//							rs.getBoolean("submitted"));
+//					manuscriptMap.put(rs.getInt("manuscript_id"), m);
+//					result.add(m);
+//				}
+//			}
+//			return result;
+		}catch(SQLException e) {
+			// if the error message is "out of memory", 
+			// it probably means no database file is found
+			
+			// Do not print error if the error is because no results were found
+			if (!e.getMessage().equals("ResultSet closed")){ 
+				System.err.println("SQL Error: " + e.getMessage());
+			}
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		
-		public static List<Manuscript> getUnassignedSPC(Conference theCon, User theUser){
-			return null;
-		}
-		
-		public static List<Review> getReviews(Manuscript theMan, User theUser){
-			return null;
-		}
-		
-		public static int createReview(Review theReview) {
-			return -1;
-		}
-		
-		public static void updateReview(Review theReview) {
-			//to do
-		}
+
+		return null;
+	}
+
+	public static List<User> getReviewers(Manuscript theMan) {
+		return null;
+	}
+	
+	public static List<Review> getReviews(Manuscript theMan, User theUser){
+		return null;
+	}
+
+	public static int createReview(Review theReview) {
+		return -1;
+	}
+
+	public static void updateReview(Review theReview) {
+		//to do
+	}
 	
 	/**
 	 * This method will update the recommend status for the specified manuscript
@@ -582,46 +663,131 @@ public class ManuscriptControl {
 		}
 	}
 	
+	/**
+	 * Fetches a single Manuscript object by it's unique ID.
+	 * 
+	 * @param theKey The ID of the manuscript requested
+	 * @return The manuscript that matches the given ID
+	 */
+	public static Manuscript getManuscriptByID(int theKey) {
+		checkConnection();	
+		List<Manuscript> result = new ArrayList<Manuscript>();
+		try {
+			// Load the manuscript with the given ID into the resultset
+			Statement statement = connection.createStatement();
+			statement.setQueryTimeout(30);  // set timeout to 30 sec.
+			ResultSet rs = statement.executeQuery("SELECT m.*, m.id AS manuscript_id, "
+					+ "u.id AS user_id, u.email, u.username, u.password, u.first_name, "
+					+ "u.last_name, u.address FROM users_manuscripts AS um	"
+					+ "JOIN users as u ON um.user_id=u.id JOIN manuscripts as m "
+					+ "ON um.manuscript_id=m.id	WHERE manuscript_id=" + 
+					Integer.toString(theKey));
 	
-//	/**
-//	 * Private helper method that will iterate over a ResultSet then returns 
-//	 * the List<Manuscript> back.
-//	 * 
-//	 * @param rs The ResultSet to be iterated over.
-//	 * @return The completed List<Manuscript> constructed from the given ResultSet
-//	 * @throws SQLException The exception encountered from the ResultSet
-//	 */
-//	private static List<Conference> iterateResults(ResultSet rs) throws SQLException{
-//		
-//		List<Manuscript> result = new ArrayList<Manuscript>(); // Create the empty list
-//		
-//		while (rs.next()){
-//			if (manuscriptMap.containsKey(rs.getInt("id"))) {
-//				result.add(manuscriptMap.get(rs.getInt("id")));
-//			} else {
-//				Manuscript m = new Manuscript(rs.getInt("id"), 
-//						new User(
-//								rs.getInt("user_id"), 
-//								rs.getString("username"),
-//								rs.getString("password"),
-//								rs.getString("email"), 
-//								rs.getString("first_name"), 
-//								rs.getString("last_name"), 
-//								rs.getString("address")), 
-//						conference, 
-//						filename,
-//						file, 
-//						spc
-//						);
-//				manuscriptMap.put(rs.getInt("id"), m);
-//				result.add(m);
+			return iterateResults(rs).get(0);
+			
+//			while (rs.next()){
+//				if (manuscriptMap.containsKey(rs.getInt("manuscript_id"))) {
+//					result.add(manuscriptMap.get(rs.getInt("manuscript_id")));
+//				} else {
+//				
+//					// Load the File first because it is multi-step
+//					String filename = rs.getString("file_name");
+//					File blobFile = new File(filename); 
+//					FileOutputStream outStream  = new FileOutputStream(blobFile); 
+//					byte[] buffer = rs.getBytes("file_blob"); 
+//					outStream.write(buffer); 
+//					outStream.close(); 
+//					
+//					Manuscript m = new Manuscript(
+//							rs.getInt("manuscript_id"), 
+//							new User(
+//									rs.getInt("user_id"), 
+//									rs.getString("username"),
+//									rs.getString("password"),
+//									rs.getString("email"), 
+//									rs.getString("first_name"), 
+//									rs.getString("last_name"), 
+//									rs.getString("address")), 
+//							ConferenceControl.getConferenceByID(rs.getInt("conference")), 
+//							rs.getString("file_name"), 
+//							blobFile, 
+//							Status.getStatus(rs.getInt("rec_status")), 
+//							Status.getStatus(rs.getInt("final_status")), 
+//							rs.getBoolean("submitted"));
+//					manuscriptMap.put(rs.getInt("manuscript_id"), m);
+//					result.add(m);
+//				}
 //			}
-//		}
-//		return result;
-//	}
+//			return result.get(0);
+		}catch(SQLException e) {
+			// if the error message is "out of memory", 
+			// it probably means no database file is found
+			
+			// Do not print error if the error is because no results were found
+			if (!e.getMessage().equals("ResultSet closed")){ 
+				System.err.println("SQL Error: " + e.getMessage());
+			}
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
 	
-}
+	/**
+	 * Private helper method that will iterate over a ResultSet then returns 
+	 * the List<Manuscript> back.
+	 * 
+	 * @param rs The ResultSet to be iterated over.
+	 * @return The completed List<Manuscript> constructed from the given ResultSet
+	 * @throws Exception The Exception encountered
+	 */
+	private static List<Manuscript> iterateResults(ResultSet rs) throws Exception{
 
+		List<Manuscript> result = new ArrayList<Manuscript>(); // Create the empty list
+
+		while (rs.next()){
+			if (manuscriptMap.containsKey(rs.getInt("manuscript_id"))) {
+				result.add(manuscriptMap.get(rs.getInt("manuscript_id")));
+			} else {
+
+				// Load the File first because it is multi-step
+				String filename = rs.getString("file_name");
+				File blobFile = new File(filename); 
+				FileOutputStream outStream  = new FileOutputStream(blobFile); 
+				byte[] buffer = rs.getBytes("file_blob"); 
+				outStream.write(buffer); 
+				outStream.close(); 
+
+				Manuscript m = new Manuscript(
+						rs.getInt("manuscript_id"), 
+						new User(
+								rs.getInt("user_id"), 
+								rs.getString("username"),
+								rs.getString("password"),
+								rs.getString("email"), 
+								rs.getString("first_name"), 
+								rs.getString("last_name"), 
+								rs.getString("address")), 
+								ConferenceControl.getConferenceByID(rs.getInt("conference")), 
+								rs.getString("file_name"), 
+								blobFile, 
+								Status.getStatus(rs.getInt("rec_status")), 
+								Status.getStatus(rs.getInt("final_status")), 
+								rs.getBoolean("submitted"));
+				manuscriptMap.put(rs.getInt("manuscript_id"), m);
+				result.add(m);
+			}
+		}
+		return result;
+	}
+}
 
 //// Load all of the conferences from the database into a ResultSet 
 //Statement statement = connection.createStatement();

@@ -1,37 +1,38 @@
-
-/**
- * The following code is a copy of the Sample.java file posted on the website:
- * 
- * https://bitbucket.org/xerial/sqlite-jdbc/overview
- * 
- * Additional comments were written by Kirsten. This is a reference only and
- * will not be included in the final project.
- */
-
+/*
+ * TCSS 360 Software Development and Quality Assurance
+ * Conferences Project - Group 3
+ */ 
 
 package control;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.sql.Connection;
 import java.sql.Date;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Scanner;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 
-import model.AccessLevel;
 import model.Conference;
 import model.Manuscript;
 import model.Session;
 import model.User;
 
-public class ControllerExample
-{
+
+/**
+ * The class is used as a test for the controller classes. It is not a set
+ * of traditionally JUnit tests, but rather a quick way for Kirsten to test
+ * code she has written in the control package. 
+ * 
+ * The code was originally inspired by the Sample.java file posted 
+ * on the following website:
+ * 
+ * https://bitbucket.org/xerial/sqlite-jdbc/overview
+ * 
+ * Additional comments and methods were written by Kirsten. This is a reference only 
+ * and is not part of the working code for the final project.
+ */
+
+public class ControllerExample {
 	
 	private static void test1() throws ClassNotFoundException {
 		User testUser = new User(3, null, null, null, 
