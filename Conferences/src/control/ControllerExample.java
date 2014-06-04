@@ -51,9 +51,9 @@ public class ControllerExample
 	}
 	
 
-	
 	private static void test2() throws ClassNotFoundException {
 		System.out.println("The conferences:" + ConferenceControl.getConferences());
+		System.out.println("The 3rd conference: " + ConferenceControl.getConferenceByID(3));
 	}
 	
 	private static void test3() throws ClassNotFoundException {
@@ -111,10 +111,10 @@ public class ControllerExample
 		//System.out.println(AccessLevel.valueOf("PROGRAMCHAIR"));
 
 		//test1();
-		//test2();
+		test2();
 		//test2();
 		//test3();
-		test4();
+		//test4();
 		
 		Date D = Date.valueOf("2014-1-12");
 		System.out.println(D.toString());

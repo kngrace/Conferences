@@ -302,6 +302,38 @@ public class ConferenceControl {
 	}
 	
 	/**
+	 * Fetches a single Conference object by it's unique ID.
+	 * 
+	 * @param theKey
+	 * @return
+	 */
+	public static Conference getConferenceByID(int theKey) {
+		checkConnection();		 
+		try {
+			// Load all of the conferences from the database into a ResultSet 
+			Statement statement = connection.createStatement();
+			statement.setQueryTimeout(30);  // set timeout to 30 sec.
+			ResultSet rs = statement.executeQuery("SELECT c.*, u.id AS user_id, u.email, "
+					+ "u.username, u.password, u.first_name, u.last_name, u.address "
+					+ "FROM conferences AS c JOIN users AS u ON c.program_chair=u.id "
+					+ "WHERE c.id=" + theKey);
+			return iterateResults(rs).get(0);
+		 // Isn't working. Not sure why :-(
+
+		}catch(SQLException e) {
+			// if the error message is "out of memory", 
+			// it probably means no database file is found
+			
+			// Do not print error if the error is because no results were found
+			if (!e.getMessage().equals("ResultSet closed")){ 
+				System.err.println("SQL Error: " + e.getMessage());
+			}
+		}
+
+		return null;
+	}
+	
+	/**
 	 * Private helper method that establishes a connection to the database
 	 * if one does not already exist.
 	 */
@@ -310,7 +342,7 @@ public class ConferenceControl {
 			connection = JDBCConnection.getConnection();
 		}
 	}
-
+	
 	/**
 	 * Private helper method that will iterate over a ResultSet and construct the
 	 * Conference and User objects needed then returns the List<Conference> back.
