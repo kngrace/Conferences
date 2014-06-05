@@ -25,18 +25,32 @@ import model.User;
  * is retrieved via JDBCConnection. (UNDER TEST: Also stores a Map of all 
  * Conference objects already loaded into memory to prevent duplication.)
  * 
+ * Helpful reference: https://developer.salesforce.com/page/Secure_Coding_SQL_Injection
+ * 
  * @author Kirsten Grace
  * @version 6.04.14
  */
 
 public class ConferenceControl {
 
+	/*
+	 * ====================
+	 * = Fields (Static)  =
+	 * ====================
+	 */
+	
 	/** The connection object this class uses to connect with the database. */
 	private static Connection connection = null;
 
 	/** The map of reference for all Conference objects currently loaded into memory. */
 	private static Map<Integer, Conference> conferenceMap = 
 			new HashMap<Integer, Conference>();
+	
+	/*
+	 * =======================
+	 * = Private Constructor =
+	 * =======================
+	 */
 	
 	/**
 	 * Private constructor to prevent instantiation. 
@@ -45,6 +59,12 @@ public class ConferenceControl {
 		// Do Nothing (stop trying to create me)
 	}
 
+	/*
+	 * =======================================================
+	 * = Methods that Create or Edit Conferences in Database =
+	 * =======================================================
+	 */
+	
 	/**
 	 * Use this method to submit a freshly created conference to the database and
 	 * retrieve its unique ID number. Do NOT use this method to update a conference
@@ -56,9 +76,7 @@ public class ConferenceControl {
 	 */
 	public static int createConference(Conference theConference) {
 		checkConnection();
-		try {
-//			https://developer.salesforce.com/page/Secure_Coding_SQL_Injection
-			
+		try {	
 			// Add the conference to the database
 			PreparedStatement pstmt = connection.prepareStatement("INSERT INTO conferences "
 					+ "(name, program_chair, description, accept_papers_start, accept_papers_end,"
@@ -113,7 +131,6 @@ public class ConferenceControl {
 		checkConnection();
 		try {
 			// Update the conference within the database
-//			https://developer.salesforce.com/page/Secure_Coding_SQL_Injection
 			PreparedStatement pstmt = connection.prepareStatement("UPDATE conferences SET name=?, "
 					+ "program_chair=?, description=?, accept_papers_start=?, accept_papers_end=?, "
 					+ "conference_start=?, conference_end=? WHERE id=?");
@@ -136,6 +153,12 @@ public class ConferenceControl {
 		return null; // no error
 	}
 
+	/*
+	 * ======================================================================
+	 * = Methods that Retrieve Conferences in Database by specific criteria =
+	 * ======================================================================
+	 */
+	
 	/**
 	 * This method returns a List<Conference> of ALL conferences within the database.
 	 * This method returns a null pointer if no results are found.
@@ -268,6 +291,43 @@ public class ConferenceControl {
 	}
 
 	/**
+	 * Fetches a single Conference object by it's unique ID.
+	 * 
+	 * @param theKey The ID of the conference requested
+	 * @return The conference that matches the given ID
+	 */
+	public static Conference getConferenceByID(int theKey) {
+		checkConnection();		 
+		try {
+			// Load all of the conferences from the database into a ResultSet 
+			Statement statement = connection.createStatement();
+			statement.setQueryTimeout(30);  // set timeout to 30 sec.
+			ResultSet rs = statement.executeQuery("SELECT c.*, u.id AS user_id, u.email, "
+					+ "u.username, u.password, u.first_name, u.last_name, u.address "
+					+ "FROM conferences AS c JOIN users AS u ON c.program_chair=u.id "
+					+ "WHERE c.id=" + theKey);
+			return iterateResults(rs).get(0);
+
+		}catch(SQLException e) {
+			// if the error message is "out of memory", 
+			// it probably means no database file is found
+			
+			// Do not print error if the error is because no results were found
+			if (!e.getMessage().equals("ResultSet closed")){ 
+				System.err.println("SQL Error: " + e.getMessage());
+			}
+		}
+
+		return null;
+	}
+	
+	/*
+	 * ==================================
+	 * = Method related to AccessLevel  =
+	 * ==================================
+	 */
+
+	/**
 	 * Use this method to retrieve the AccessLevel of a specific user for
 	 * a specific conference. If the user does not exist in the database
 	 * with a specific AccessLevel, then null is returned.
@@ -306,36 +366,11 @@ public class ConferenceControl {
 		return null; // No entry existed in the table
 	}
 	
-	/**
-	 * Fetches a single Conference object by it's unique ID.
-	 * 
-	 * @param theKey The ID of the conference requested
-	 * @return The conference that matches the given ID
+	/*
+	 * ===========================
+	 * = Private Helper Methods  =
+	 * ===========================
 	 */
-	public static Conference getConferenceByID(int theKey) {
-		checkConnection();		 
-		try {
-			// Load all of the conferences from the database into a ResultSet 
-			Statement statement = connection.createStatement();
-			statement.setQueryTimeout(30);  // set timeout to 30 sec.
-			ResultSet rs = statement.executeQuery("SELECT c.*, u.id AS user_id, u.email, "
-					+ "u.username, u.password, u.first_name, u.last_name, u.address "
-					+ "FROM conferences AS c JOIN users AS u ON c.program_chair=u.id "
-					+ "WHERE c.id=" + theKey);
-			return iterateResults(rs).get(0);
-
-		}catch(SQLException e) {
-			// if the error message is "out of memory", 
-			// it probably means no database file is found
-			
-			// Do not print error if the error is because no results were found
-			if (!e.getMessage().equals("ResultSet closed")){ 
-				System.err.println("SQL Error: " + e.getMessage());
-			}
-		}
-
-		return null;
-	}
 	
 	/**
 	 * Private helper method that establishes a connection to the database

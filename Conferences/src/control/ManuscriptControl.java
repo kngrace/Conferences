@@ -688,9 +688,9 @@ public class ManuscriptControl {
 	}
 	
 	/*
-	 * ================================
-	 * = Private Helper Methods Below =
-	 * ================================
+	 * ===========================
+	 * = Private Helper Methods  =
+	 * ===========================
 	 */
 	
 	/**
