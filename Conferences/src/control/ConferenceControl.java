@@ -1,12 +1,7 @@
-/**
- * Class that communicates with the database to store/retrieve data.
- * The Connection object this class uses is globally shared and thus
- * is retrieved via JDBCConnection. (UNDER TEST: Also stores a Map of all 
- * Conference objects already loaded into memory to prevent duplication.)
- * 
- * @author Kirsten Grace
- * @version 6.02.14
- */
+/*
+ * TCSS 360 Software Development and Quality Assurance
+ * Conferences Project - Group 3
+ */ 
 
 package control;
 
@@ -23,6 +18,16 @@ import java.util.Map;
 import model.AccessLevel;
 import model.Conference;
 import model.User;
+
+/**
+ * Class that communicates with the database to store/retrieve data.
+ * The Connection object this class uses is globally shared and thus
+ * is retrieved via JDBCConnection. (UNDER TEST: Also stores a Map of all 
+ * Conference objects already loaded into memory to prevent duplication.)
+ * 
+ * @author Kirsten Grace
+ * @version 6.04.14
+ */
 
 public class ConferenceControl {
 
@@ -304,8 +309,8 @@ public class ConferenceControl {
 	/**
 	 * Fetches a single Conference object by it's unique ID.
 	 * 
-	 * @param theKey
-	 * @return
+	 * @param theKey The ID of the conference requested
+	 * @return The conference that matches the given ID
 	 */
 	public static Conference getConferenceByID(int theKey) {
 		checkConnection();		 
@@ -318,7 +323,6 @@ public class ConferenceControl {
 					+ "FROM conferences AS c JOIN users AS u ON c.program_chair=u.id "
 					+ "WHERE c.id=" + theKey);
 			return iterateResults(rs).get(0);
-		 // Isn't working. Not sure why :-(
 
 		}catch(SQLException e) {
 			// if the error message is "out of memory", 

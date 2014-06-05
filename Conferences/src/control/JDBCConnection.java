@@ -1,3 +1,14 @@
+/*
+ * TCSS 360 Software Development and Quality Assurance
+ * Conferences Project - Group 3
+ */ 
+
+package control;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
 /**
  * Class that implements the Singleton design pattern so that only
  * one Connection object is created for use by any of the classes
@@ -6,12 +17,6 @@
  * @author Kirsten Grace
  * @version 5.15.14
  */
-
-package control;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 
 public class JDBCConnection {
 
