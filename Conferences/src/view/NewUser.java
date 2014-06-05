@@ -247,7 +247,6 @@ public class NewUser {
 		panel.setBounds(0, 0, 690, 82);
 		panel_1.add(panel);
 			
-	
 	}
 	
 	public ArrayList<String> getInfo() {
