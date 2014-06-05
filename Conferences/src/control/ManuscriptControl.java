@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import model.AccessLevel;
 import model.Conference;
 import model.Manuscript;
 import model.Review;
@@ -448,6 +449,62 @@ public class ManuscriptControl {
 
 		return null;
 	}
+	
+
+	/**
+	 * Returns list of manuscripts in this conference for this user and AccessLevel. 
+	 * 
+	 * Returns Null if no manuscripts exist for this criteria.
+	 * 
+	 * @param theCon The conference that the requested manuscripts are part of
+	 * @param theUser The user being used as a filter for the manuscripts
+	 * @return A list of manuscripts the user has access to for this conference
+	 */
+	public static List<Manuscript> getManuscripts(final Conference theConference, final User theUser, final AccessLevel theAccessLevel){
+		checkConnection();		 
+		
+		int al = theAccessLevel.getValue();
+		String column = "can_submit";
+		switch (al) {
+			case(0) : column = "um.can_submit";
+			case(1) : column = "um.can_review";
+			case(2) : column = "um.can_recommend";
+			case(3) : column = "um.can_final";
+		}
+			
+		try {
+			Statement statement = connection.createStatement();
+			statement.setQueryTimeout(30);  // set timeout to 30 sec.
+			ResultSet rs = statement.executeQuery("SELECT m.*, m.id AS manuscript_id, "
+					+ "u.id AS user_id, u.email, u.username, u.password, u.first_name, "
+					+ "u.last_name, u.address FROM users_manuscripts AS um	"
+					+ "JOIN users as u ON um.user_id=u.id JOIN manuscripts as m "
+					+ "ON um.manuscript_id=m.id	WHERE user_id=" + theUser.getId()
+					+ " AND m.conference=" + theConference.getId() 
+					+ " AND " + column + "=1");
+			
+			return iterateResults(rs);
+
+		}catch(SQLException e) {
+			// if the error message is "out of memory", 
+			// it probably means no database file is found
+			
+			// Do not print error if the error is because no results were found
+			if (!e.getMessage().equals("ResultSet closed")){ 
+				System.err.println("SQL Error: " + e.getMessage());
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+	
+	
 	
 	/**
 	 * Returns list of manuscripts in this conference that have final status of APPROVED.
