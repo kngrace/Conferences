@@ -60,29 +60,39 @@ public class MySubmissions {
 		panel_1.setLayout(null);
 		
 		panel.add(panel_1);
+		
+		panel_1.setBackground(Color.ORANGE);
 				
 		panel.setLayout(null);
 		
 		final List<Conference> lst = 
 				ConferenceControl.getConferences(session.getCurrentUser(), AccessLevel.AUTHOR);
 		
-		final JButton select = new JButton("Select A Conference");
-		if(lst.isEmpty() || lst == null) {
-			select.setEnabled(false);
-		}
-		
-	
-		select.addActionListener(new ActionListener() {
-			
-			public void actionPerformed(ActionEvent arg0) {
-				PopupMenu pop = new PopupMenu(lst);
-				pop.show((Component)arg0.getSource(), 0, 0);  
-				
-				
+		final JComboBox comboBox = new JComboBox();
+		if(lst != null && !lst.isEmpty()) {
+			String label = "Select a Conference";
+			comboBox.addItem(label);
+			for(int i = 0; i < lst.size(); i++) {
+				comboBox.addItem(lst.get(i).getName());
 			}
-		});
-		select.setBounds(21, 22, 174, 23);
-		panel_1.add(select);
+			comboBox.setSelectedItem(0);
+			comboBox.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					System.out.println("comes");
+					@SuppressWarnings("rawtypes")
+					JComboBox cb = (JComboBox)e.getSource();
+					int index = cb.getSelectedIndex();
+					UserScreen tabs = new UserScreen(lst.get(index - 1), session);
+					panel_1.removeAll();
+					panel_1.add(tabs.getTab());
+					panel_1.repaint();	
+				}
+			});
+		} else {
+			comboBox.setEnabled(false);
+		}
+		comboBox.setBounds(21, 22, 174, 23);
+		panel_1.add(comboBox);
 		
 		
 		int x = 27;
