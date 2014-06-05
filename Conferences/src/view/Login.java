@@ -29,12 +29,6 @@ import control.UserControl;
  *
  */
 public class Login {
-	
-	/**
-	 * Test comment
-	 */
-	
-	
 
 	private JFrame frame;
 	private JTextField usernameField;
@@ -79,11 +73,13 @@ public class Login {
 		frame.setBounds(100, 100, 706, 476);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new CardLayout(0, 0));
-		
+		frame.setBackground(Color.ORANGE);
 		panel = new JPanel();
 		panel.setBackground(Color.ORANGE);
 		frame.getContentPane().add(panel, "name_1668062565993978");
 		panel.setLayout(null);
+		
+		panel.setBackground(Color.ORANGE);
 		
 		JButton loginSubmit = new JButton("Submit");
 		loginSubmit.addActionListener(new ActionListener() {
