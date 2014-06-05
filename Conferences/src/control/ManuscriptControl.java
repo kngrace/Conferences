@@ -505,7 +505,6 @@ public class ManuscriptControl {
 	}
 	
 	
-	
 	/**
 	 * Returns list of manuscripts in this conference that have final status of APPROVED.
 	 * 
@@ -736,6 +735,11 @@ public class ManuscriptControl {
 	
 	/* ======TO DO====== */
 	public static List<Review> getReviews(final Manuscript theManuscript, final User theUser){
+		return null;
+	}
+	
+	/* ======TO DO====== */
+	public static List<Review> getReviews(final Manuscript theManuscript){
 		return null;
 	}
 	
