@@ -109,6 +109,7 @@ public class ConferenceControl {
 			
 			return conferenceID;
 		} catch(SQLException e){
+			e.printStackTrace();
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
 			System.err.println(e.getMessage());
@@ -179,7 +180,7 @@ public class ConferenceControl {
 		}catch(SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
-			
+			e.printStackTrace();
 			// Do not print error if the error is because no results were found
 			if (!e.getMessage().equals("ResultSet closed")){ 
 				System.err.println("SQL Error: " + e.getMessage());
@@ -204,7 +205,8 @@ public class ConferenceControl {
 		try {
 			// Load all conferences from the database that have a relation to specified User
 			PreparedStatement pstmt = connection.prepareStatement("SELECT c.*, u.id AS user_id, "
-					+ "u.email, u.first_name, u.last_name, u.address FROM conferences AS c "
+					+ "u.email, u.first_name, u.last_name, u.address, u.username, "
+					+ "u.password FROM conferences AS c "
 					+ "JOIN users_conferences AS uc ON c.id=uc.conference_id "
 					+ "JOIN users AS u ON c.program_chair=u.id WHERE uc.user_id=?");
 			pstmt.setInt(1, theUser.getId());
@@ -214,7 +216,7 @@ public class ConferenceControl {
 		} catch(SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
-			
+			e.printStackTrace();
 			// Do not print error if the error is because no results were found
 			if (!e.getMessage().equals("ResultSet closed")){ 
 				System.err.println("SQL Error: " + e.getMessage());
@@ -250,7 +252,7 @@ public class ConferenceControl {
 		} catch(SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
-			
+			e.printStackTrace();
 			// Do not print error if the error is because no results were found
 			if (!e.getMessage().equals("ResultSet closed")){ 
 				System.err.println("SQL Error: " + e.getMessage());
@@ -281,7 +283,7 @@ public class ConferenceControl {
 		}catch(SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
-			
+			e.printStackTrace();
 			// Do not print error if the error is because no results were found
 			if (!e.getMessage().equals("ResultSet closed")){ 
 				System.err.println("SQL Error: " + e.getMessage());
@@ -311,7 +313,7 @@ public class ConferenceControl {
 		}catch(SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
-			
+			e.printStackTrace();
 			// Do not print error if the error is because no results were found
 			if (!e.getMessage().equals("ResultSet closed")){ 
 				System.err.println("SQL Error: " + e.getMessage());
@@ -348,7 +350,7 @@ public class ConferenceControl {
 			ResultSet rs = statement.executeQuery("SELECT access_level FROM users_conferences "
 					+ "WHERE conference_id=" + conferenceID + " AND user_id=" + userID);
 			
-		//	System.out.println("The value is: " + rs.getInt("access_level"));
+			System.out.println("The value is: " + rs.getInt("access_level"));
 			AccessLevel al = AccessLevel.accessLevelOf(rs.getInt("access_level"));
 			
 			return al;
@@ -356,7 +358,7 @@ public class ConferenceControl {
 		}catch(SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
-			
+			e.printStackTrace();
 			// Do not print error if the error is because no results were found
 			if (!e.getMessage().equals("ResultSet closed")){ 
 				System.err.println("SQL Error: " + e.getMessage());
