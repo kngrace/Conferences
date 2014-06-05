@@ -185,6 +185,20 @@ public class User {
 		return my_map.get(the_user);
 	}
 	
+	//May need to revise; operates in O(n) time.
+	public static User getUser(final int the_id) {
+		User u = null;
+		Set<String> keys = my_map.keySet();
+		for (String s : keys) {
+			if (my_map.get(s).getId() == the_id) {
+				u = my_map.get(s);
+				break;
+			}
+		}
+		
+		return u;
+	}
+	
 	/**
 	 * 'Getter' class to retrieve the user's unique identifier.
 	 * @return An int that uniquely identifies the user.
