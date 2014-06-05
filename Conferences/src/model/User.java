@@ -99,7 +99,7 @@ public class User {
 	//Check link in Skype
 	//Use private constructor to prevent instantiation from outside.
 	
-	private User(final int the_id, final String the_user, final String the_pass, final String the_email, 
+	public User(final int the_id, final String the_user, final String the_pass, final String the_email, 
 			final String the_first, final String the_last, final String the_address) {
 		my_id = the_id;
 		my_email = the_email;
@@ -122,7 +122,7 @@ public class User {
 	 * @param the_name User's full name.
 	 * @param the_address User's home address.
 	 */
-	private User(final String the_user, final String the_pass, final String the_email, 
+	public User(final String the_user, final String the_pass, final String the_email, 
 			final String the_first, final String the_last, final String the_address) {
 		my_email = the_email;
 		my_firstname = the_first;
