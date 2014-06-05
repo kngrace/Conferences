@@ -366,7 +366,7 @@ public class ConferenceControl {
 				Conference c = new Conference(
 						rs.getInt("id"), 
 						rs.getString("name"), 
-						new User(
+						User.makeUserID(
 								rs.getInt("user_id"), 
 								rs.getString("username"),
 								rs.getString("password"),

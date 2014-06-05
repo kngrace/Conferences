@@ -34,6 +34,8 @@ import model.User;
  * Manuscript objects already loaded into memory to prevent duplication.
  * Also stores a Map of all Review objects in a similar fashion.)
  * 
+ * Helpful reference: https://developer.salesforce.com/page/Secure_Coding_SQL_Injection
+ * 
  * @author Kirsten Grace
  * @version 6.04.14
  */
@@ -50,11 +52,11 @@ public class ManuscriptControl {
 	private static Connection connection = null;
 	
 	/** The map of reference for all Manuscript objects currently loaded into memory. */
-	private static Map<Integer, Manuscript> manuscriptMap = 
+	private static final Map<Integer, Manuscript> manuscriptMap = 
 			new HashMap<Integer, Manuscript>();
 	
 	/** The map of reference for all Review objects currently loaded into memory. */
-	private static Map<Integer, Review> reviewMap = 
+	private static final Map<Integer, Review> reviewMap = 
 			new HashMap<Integer, Review>();
 	
 	/*
@@ -85,10 +87,9 @@ public class ManuscriptControl {
 	 * @param theManuscript The java object representation of a manuscript.
 	 * @return The unique ID of the newly added manuscript.
 	 */
-	public static int createManuscript(Manuscript theManuscript) {
+	public static int createManuscript(final Manuscript theManuscript) {
 		checkConnection();
 		try {
-//			https://developer.salesforce.com/page/Secure_Coding_SQL_Injection
 			// Add the manuscript to the database
 			PreparedStatement pstmt = connection.prepareStatement("INSERT INTO manuscripts "
 					+ "(author, conference, file_name, file_blob) VALUES (?, ?, ?, ?)");
@@ -96,9 +97,9 @@ public class ManuscriptControl {
 			pstmt.setInt(2, theManuscript.getConference().getId());  
 			pstmt.setString(3, theManuscript.getFile().getName());
 			
-			File f = theManuscript.getFile();
-			byte[] fileData = new byte[(int) f.length()];
-			DataInputStream dis = new DataInputStream(new FileInputStream(f));
+			final File f = theManuscript.getFile();
+			final byte[] fileData = new byte[(int) f.length()];
+			final DataInputStream dis = new DataInputStream(new FileInputStream(f));
 			dis.readFully(fileData);  // read from file into byte[] array
 			dis.close();
 			
@@ -106,10 +107,10 @@ public class ManuscriptControl {
 			pstmt.executeUpdate();
 
 			// Retrieve the ID from the database for the recently inserted manuscript
-			Statement statement = connection.createStatement();
+			final Statement statement = connection.createStatement();
 			statement.setQueryTimeout(30);  // set timeout to 30 sec.
 			ResultSet rs = statement.executeQuery("select last_insert_rowid()");
-			int manuscriptID = rs.getInt("last_insert_rowid()");
+			final int manuscriptID = rs.getInt("last_insert_rowid()");
 			
 			while (true) {
 				try {
@@ -122,12 +123,14 @@ public class ManuscriptControl {
 					break;
 					
 				} catch (SQLException e) {
+					// Entry already exists in users_manuscripts so update it instead
 					pstmt = connection.prepareStatement("UPDATE users_manuscripts "
 							+ "SET can_final=1 WHERE user_id=? AND manuscript_id=?");
 					pstmt.setInt(1, theManuscript.getConference().getProgramChair().getId());
 					pstmt.setInt(2, manuscriptID);
 					pstmt.executeUpdate();	
 					
+					// Check to make sure the update actually went through correctly
 					rs = statement.executeQuery("SELECT CHANGES()");
 					int changes = rs.getInt("CHANGES()");
 					System.out.println(changes);
@@ -146,6 +149,7 @@ public class ManuscriptControl {
 					break;
 					
 				} catch (SQLException e) {
+					// Entry already exists in users_manuscripts so update it instead
 					pstmt = connection.prepareStatement("UPDATE users_manuscripts "
 							+ "SET can_submit=1 WHERE user_id=? AND manuscript_id=?");
 					pstmt.setInt(1, theManuscript.getAuthor().getId());
@@ -158,7 +162,6 @@ public class ManuscriptControl {
 					if (changes != 0) break;
 				}
 			}
-			
 			// Add this manuscript to the Map
 			manuscriptMap.put(manuscriptID, theManuscript);
 			
@@ -169,10 +172,8 @@ public class ManuscriptControl {
 			System.err.println(e.getMessage());
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -189,13 +190,12 @@ public class ManuscriptControl {
 	 * @param theManuscript the java object representation of the manuscript
 	 * @return The error message encountered or null if no error is encountered
 	 */
-	public static String updateManuscript(Manuscript theManuscript) {
+	public static String updateManuscript(final Manuscript theManuscript) {
 		checkConnection();
 		try {
 			System.out.println("I'm updating the manuscript with ID= "
 					+ theManuscript.getId());
 			// Update the manuscript within the database
-//			https://developer.salesforce.com/page/Secure_Coding_SQL_Injection
 			PreparedStatement pstmt = connection.prepareStatement("UPDATE manuscripts SET "
 					+ "author=?, conference=?, submitted=?, file_name=?, file_blob=? "
 					+ "WHERE id=?");
@@ -204,9 +204,9 @@ public class ManuscriptControl {
 			pstmt.setBoolean(3, theManuscript.isSubmitted());  
 			pstmt.setString(4, theManuscript.getFile().getName());
 			
-			File f = theManuscript.getFile();
-			byte[] fileData = new byte[(int) f.length()];
-			DataInputStream dis = new DataInputStream(new FileInputStream(f));
+			final File f = theManuscript.getFile();
+			final byte[] fileData = new byte[(int) f.length()];
+			final DataInputStream dis = new DataInputStream(new FileInputStream(f));
 			dis.readFully(fileData);  // read from file into byte[] array
 			dis.close();
 			
@@ -220,11 +220,9 @@ public class ManuscriptControl {
 			e.printStackTrace();
 			return e.getMessage(); // error occurred
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return e.getMessage();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return e.getMessage();
 		}
@@ -239,7 +237,7 @@ public class ManuscriptControl {
 	 * @param theManuscript The manuscript to add the reviewer to.
 	 * @param theReviewer The user to be added as a reviewer.
 	 */
-	public static void addReviewer(Manuscript theManuscript, User theReviewer) {
+	public static void addReviewer(final Manuscript theManuscript, final User theReviewer) {
 		checkConnection();
 		PreparedStatement pstmt;
 		try {
@@ -265,9 +263,7 @@ public class ManuscriptControl {
 						statement.setQueryTimeout(30);  
 						ResultSet rs = statement.executeQuery("SELECT CHANGES()");
 						int changes = rs.getInt("CHANGES()");
-						//	System.out.println(changes);
 						if (changes != 0) break;
-
 				}
 			}
 		} catch (SQLException e) {
@@ -291,7 +287,7 @@ public class ManuscriptControl {
 	 * @param theManuscript The manuscript to be updated.
 	 * @param theStatus The new Status to be set for this manuscript.
 	 */
-	public static String updateRecommend(Manuscript theManuscript, Status theStatus) {
+	public static String updateRecommend(final Manuscript theManuscript, final Status theStatus) {
 		checkConnection();
 		try {
 			// Update the manuscript within the database
@@ -322,11 +318,10 @@ public class ManuscriptControl {
 	 * @param theManuscript The manuscript to be updated.
 	 * @param theStatus The new Status to be set for this manuscript.
 	 */
-	public static String updateFinal(Manuscript theManuscript, Status theStatus){
+	public static String updateFinal(final Manuscript theManuscript, final Status theStatus){
 		checkConnection();
 		try {
 			// Update the manuscript within the database
-//			https://developer.salesforce.com/page/Secure_Coding_SQL_Injection
 			PreparedStatement pstmt = connection.prepareStatement("UPDATE manuscripts "
 					+ "SET final_status=? WHERE id=?");
 			pstmt.setInt(1, theStatus.getValue());
@@ -355,7 +350,7 @@ public class ManuscriptControl {
 	 * @param theManuscript The manuscript to be updated.
 	 * @param theSPC The user to be set as the sub program chair.
 	 */
-	public static String updateSPC(Manuscript theManuscript, User theSPC){
+	public static String updateSPC(final Manuscript theManuscript, final User theSPC){
 		checkConnection();
 		try {
 			// Update the manuscript within the database
@@ -421,7 +416,7 @@ public class ManuscriptControl {
 	 * @param theUser The user being used as a filter for the manuscripts
 	 * @return A list of manuscripts the user has access to for this conference
 	 */
-	public static List<Manuscript> getManuscripts(Conference theConference, User theUser){
+	public static List<Manuscript> getManuscripts(final Conference theConference, final User theUser){
 		checkConnection();		 
 		try {
 			Statement statement = connection.createStatement();
@@ -444,13 +439,10 @@ public class ManuscriptControl {
 				System.err.println("SQL Error: " + e.getMessage());
 			}
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -463,7 +455,7 @@ public class ManuscriptControl {
 	 * @param theConference The conference these manuscripts are attached to.
 	 * @return A list of manuscripts with approved status for the given conference.
 	 */
-	public static List<Manuscript> getAcceptedManuscripts(Conference theConference){
+	public static List<Manuscript> getAcceptedManuscripts(final Conference theConference){
 		checkConnection();		 
 		try {
 			Statement statement = connection.createStatement();
@@ -477,41 +469,7 @@ public class ManuscriptControl {
 					+ " AND m.conference=" + Integer.toString(theConference.getId()));
 	
 			return iterateResults(rs);
-			
-//			while (rs.next()){
-//				if (manuscriptMap.containsKey(rs.getInt("manuscript_id"))) {
-//					result.add(manuscriptMap.get(rs.getInt("manuscript_id")));
-//				} else {
-//				
-//					// Load the File first because it is multi-step
-//					String filename = rs.getString("file_name");
-//					File blobFile = new File(filename); 
-//					FileOutputStream outStream  = new FileOutputStream(blobFile); 
-//					byte[] buffer = rs.getBytes("file_blob"); 
-//					outStream.write(buffer); 
-//					outStream.close(); 
-//					
-//					Manuscript m = new Manuscript(
-//							rs.getInt("manuscript_id"), 
-//							new User(
-//									rs.getInt("user_id"), 
-//									rs.getString("username"),
-//									rs.getString("password"),
-//									rs.getString("email"), 
-//									rs.getString("first_name"), 
-//									rs.getString("last_name"), 
-//									rs.getString("address")), 
-//							ConferenceControl.getConferenceByID(rs.getInt("conference")), 
-//							rs.getString("file_name"), 
-//							blobFile, 
-//							Status.getStatus(rs.getInt("rec_status")), 
-//							Status.getStatus(rs.getInt("final_status")), 
-//							rs.getBoolean("submitted"));
-//					manuscriptMap.put(rs.getInt("manuscript_id"), m);
-//					result.add(m);
-//				}
-//			}
-//			return result;
+		
 		}catch(SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
@@ -521,13 +479,10 @@ public class ManuscriptControl {
 				System.err.println("SQL Error: " + e.getMessage());
 			}
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -540,7 +495,7 @@ public class ManuscriptControl {
 	 * @param theConference The conference to get unassigned SPCs for.
 	 * @return The list of manuscripts with unassigned SPCs
 	 */
-	public static List<Manuscript> getUnassignedSPC(Conference theConference){
+	public static List<Manuscript> getUnassignedSPC(final Conference theConference){
 		checkConnection();		
 		try {
 			Statement statement = connection.createStatement();
@@ -553,41 +508,7 @@ public class ManuscriptControl {
 					+ "AND m.conference=" + Integer.toString(theConference.getId()));
 	
 			return iterateResults(rs);
-			
-//			while (rs.next()){
-//				if (manuscriptMap.containsKey(rs.getInt("manuscript_id"))) {
-//					result.add(manuscriptMap.get(rs.getInt("manuscript_id")));
-//				} else {
-//				
-//					// Load the File first because it is multi-step
-//					String filename = rs.getString("file_name");
-//					File blobFile = new File(filename); 
-//					FileOutputStream outStream  = new FileOutputStream(blobFile); 
-//					byte[] buffer = rs.getBytes("file_blob"); 
-//					outStream.write(buffer); 
-//					outStream.close(); 
-//					
-//					Manuscript m = new Manuscript(
-//							rs.getInt("manuscript_id"), 
-//							new User(
-//									rs.getInt("user_id"), 
-//									rs.getString("username"),
-//									rs.getString("password"),
-//									rs.getString("email"), 
-//									rs.getString("first_name"), 
-//									rs.getString("last_name"), 
-//									rs.getString("address")), 
-//							ConferenceControl.getConferenceByID(rs.getInt("conference")), 
-//							rs.getString("file_name"), 
-//							blobFile, 
-//							Status.getStatus(rs.getInt("rec_status")), 
-//							Status.getStatus(rs.getInt("final_status")), 
-//							rs.getBoolean("submitted"));
-//					manuscriptMap.put(rs.getInt("manuscript_id"), m);
-//					result.add(m);
-//				}
-//			}
-//			return result;
+	
 		}catch(SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
@@ -597,13 +518,10 @@ public class ManuscriptControl {
 				System.err.println("SQL Error: " + e.getMessage());
 			}
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -616,7 +534,7 @@ public class ManuscriptControl {
 	 * @param theKey The ID of the manuscript requested
 	 * @return The manuscript that matches the given ID
 	 */
-	public static Manuscript getManuscriptByID(int theKey) {
+	public static Manuscript getManuscriptByID(final int theKey) {
 		checkConnection();	
 		try {
 			// Load the manuscript with the given ID into the resultset
@@ -631,40 +549,6 @@ public class ManuscriptControl {
 	
 			return iterateResults(rs).get(0);
 			
-//			while (rs.next()){
-//				if (manuscriptMap.containsKey(rs.getInt("manuscript_id"))) {
-//					result.add(manuscriptMap.get(rs.getInt("manuscript_id")));
-//				} else {
-//				
-//					// Load the File first because it is multi-step
-//					String filename = rs.getString("file_name");
-//					File blobFile = new File(filename); 
-//					FileOutputStream outStream  = new FileOutputStream(blobFile); 
-//					byte[] buffer = rs.getBytes("file_blob"); 
-//					outStream.write(buffer); 
-//					outStream.close(); 
-//					
-//					Manuscript m = new Manuscript(
-//							rs.getInt("manuscript_id"), 
-//							new User(
-//									rs.getInt("user_id"), 
-//									rs.getString("username"),
-//									rs.getString("password"),
-//									rs.getString("email"), 
-//									rs.getString("first_name"), 
-//									rs.getString("last_name"), 
-//									rs.getString("address")), 
-//							ConferenceControl.getConferenceByID(rs.getInt("conference")), 
-//							rs.getString("file_name"), 
-//							blobFile, 
-//							Status.getStatus(rs.getInt("rec_status")), 
-//							Status.getStatus(rs.getInt("final_status")), 
-//							rs.getBoolean("submitted"));
-//					manuscriptMap.put(rs.getInt("manuscript_id"), m);
-//					result.add(m);
-//				}
-//			}
-//			return result.get(0);
 		}catch(SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
@@ -674,20 +558,17 @@ public class ManuscriptControl {
 				System.err.println("SQL Error: " + e.getMessage());
 			}
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
 	}
 	
 	/* ======TO DO====== */
-	public static List<User> getReviewers(Manuscript theManuscript) {
+	public static List<User> getReviewers(final Manuscript theManuscript) {
 		return null;
 	}
 
@@ -706,7 +587,7 @@ public class ManuscriptControl {
 	 * @param theReview The java object representation of a review.
 	 * @return The unique ID of the newly added review.
 	 */
-	public static int createReview(Review theReview) {
+	public static int createReview(final Review theReview) {
 		checkConnection();
 		try {
 			// Add the review to the database
@@ -741,10 +622,8 @@ public class ManuscriptControl {
 			System.err.println(e.getMessage());
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -762,7 +641,7 @@ public class ManuscriptControl {
 	 * @param theReview The java object representation of the review
 	 * @return The error message encountered or null if no error is encountered
 	 */
-	public static String updateReview(Review theReview) {
+	public static String updateReview(final Review theReview) {
 		checkConnection();
 		try {
 			// Update the manuscript within the database
@@ -789,11 +668,9 @@ public class ManuscriptControl {
 			e.printStackTrace();
 			return e.getMessage(); // error occurred
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return e.getMessage();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return e.getMessage();
 		}
@@ -801,12 +678,12 @@ public class ManuscriptControl {
 	}
 	
 	/* ======TO DO====== */
-	public static List<Review> getReviews(Manuscript theMan, User theUser){
+	public static List<Review> getReviews(final Manuscript theManuscript, final User theUser){
 		return null;
 	}
 	
 	/* ======TO DO====== */
-	public static Review getReviewByID(int theKey) {
+	public static Review getReviewByID(final int theKey) {
 		return null;
 	}
 	
@@ -833,7 +710,7 @@ public class ManuscriptControl {
 	 * @return The completed List<Manuscript> constructed from the given ResultSet
 	 * @throws Exception The Exception encountered
 	 */
-	private static List<Manuscript> iterateResults(ResultSet rs) throws Exception{
+	private static List<Manuscript> iterateResults(final ResultSet rs) throws Exception{
 
 		List<Manuscript> result = new ArrayList<Manuscript>(); // Create the empty list
 
@@ -852,7 +729,7 @@ public class ManuscriptControl {
 
 				Manuscript m = new Manuscript(
 						rs.getInt("manuscript_id"), 
-						new User(
+						User.makeUserID(
 								rs.getInt("user_id"), 
 								rs.getString("username"),
 								rs.getString("password"),
