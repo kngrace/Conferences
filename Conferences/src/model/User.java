@@ -12,7 +12,7 @@ import control.UserControl;
 /**
  * A class designed to model a user for our conference management system.
  * @author Eric Miller
- * @version 0.4
+ * @version 0.6
  * @date 5/19/14
  */
 public class User {
