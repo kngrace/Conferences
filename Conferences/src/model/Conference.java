@@ -148,6 +148,7 @@ public class Conference extends Observable {
 			String theLocation, String theDescription) {
 			myName = theName;
 			myProgramChair = theProgramChair;
+			myProgramChair.setAccess(this, AccessLevel.PROGRAMCHAIR);
 			myPaperStart = thePaperStart;
 			myPaperEnd = thePaperEnd;
 			myConferenceStart = theConferenceStart;

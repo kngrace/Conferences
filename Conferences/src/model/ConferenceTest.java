@@ -35,14 +35,13 @@ public class ConferenceTest {
 				Date.valueOf("2015-05-22"), "Tacoma, WA", "Description for Conference1");
 		myUser1.setAccess(myConference1, AccessLevel.PROGRAMCHAIR);
 		myUser2.setAccess(myConference1, AccessLevel.REVIEWER);
+		//System.out.println("User1 access conference1: " )
 		myUser2.setAccess(myConference2, AccessLevel.PROGRAMCHAIR);
 		
 		
 		myConference2 = new Conference("Conference B", myUser2, Date.valueOf("2015-08-13"),
 				Date.valueOf("2015-08-13"), Date.valueOf("2015-08-20"), 
-				Date.valueOf("2015-08-22"), "Tacoma, WA", "Description for Conference 2");
-				
-		
+				Date.valueOf("2015-08-22"), "Tacoma, WA", "Description for Conference 2");	
 	}
 
 	@Test

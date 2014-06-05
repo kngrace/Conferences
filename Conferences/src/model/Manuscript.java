@@ -102,7 +102,7 @@ public class Manuscript extends Observable {
 		myAuthor = theAuthor;
 		myConference = theConference;
 		myFileName = theFileName;
-		myFile = new File(myFileName);
+		myFile = theFile;
 		myRecommendStatus = Status.UNDECIDED;
 		myFinalStatus = Status.UNDECIDED;
 		isSubmitted = true;
@@ -271,6 +271,8 @@ public class Manuscript extends Observable {
 	 * false otherwise.
 	 */
 	private boolean sessionHasAccessLevelOf(AccessLevel theAccessLevel, Session theSession) {
+		System.out.println(ConferenceControl.getAccessLevel(this.getConference(), theSession.getCurrentUser()));
+		
 		return ConferenceControl.getAccessLevel(this.getConference(), theSession.getCurrentUser()).
 				compareTo(theAccessLevel) >= 0;
 	}
