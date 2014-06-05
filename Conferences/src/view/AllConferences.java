@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -43,6 +44,7 @@ public class AllConferences {
 	/**
 	 * Initialize the contents of the frame.
 	 */
+	@SuppressWarnings("unchecked")
 	private void initialize() {
 		
 		frame = new JFrame();
@@ -58,6 +60,7 @@ public class AllConferences {
 		frame.getContentPane().add(panel);
 		panel.setLayout(null);
 		panel_1.setLayout(null);
+		panel_1.setBackground(Color.ORANGE);
 		
 		panel.add(panel_1);
 				
@@ -65,23 +68,31 @@ public class AllConferences {
 		
 		final List<Conference> lst = ConferenceControl.getConferences();
 		
-		final JButton select = new JButton("Select A Conference");
-		if(lst == null) {
-			select.setEnabled(false);
-		}
-		
-	
-		select.addActionListener(new ActionListener() {
-			
-			public void actionPerformed(ActionEvent arg0) {
-				PopupMenu pop = new PopupMenu(lst);
-				pop.show((Component)arg0.getSource(), 0, 0);  
-				
-				
+		final JComboBox comboBox = new JComboBox();
+			if(lst != null && !lst.isEmpty()) {
+				String label = "Select a Conference";
+				comboBox.addItem(label);
+				for(int i = 0; i < lst.size(); i++) {
+					comboBox.addItem(lst.get(i).getName());
+				}
+				comboBox.setSelectedItem(0);
+				comboBox.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						System.out.println("comes");
+						@SuppressWarnings("rawtypes")
+						JComboBox cb = (JComboBox)e.getSource();
+						int index = cb.getSelectedIndex();
+						UserScreen tabs = new UserScreen(lst.get(index - 1), session);
+						panel_1.removeAll();
+						panel_1.add(tabs.getTab());
+						panel_1.repaint();	
+					}
+				});
+			} else {
+				comboBox.setEnabled(false);
 			}
-		});
-		select.setBounds(21, 22, 174, 23);
-		panel_1.add(select);
+			comboBox.setBounds(21, 22, 174, 23);
+			panel_1.add(comboBox);
 		
 		JButton btnNewButton1 = new JButton("Add A Conference");
 		btnNewButton1.addActionListener(new ActionListener() {
