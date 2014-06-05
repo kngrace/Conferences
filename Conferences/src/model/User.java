@@ -56,6 +56,34 @@ public class User {
 	
 	private String my_password;
 	
+	public static final Map<String, User> my_map = new HashMap<String, User>();
+	
+	public static synchronized User makeUser(final String the_user, final String the_pass, final String the_email, 
+			final String the_first, final String the_last, final String the_address) {
+		User u = my_map.get(the_user);
+		
+		if (u == null) {
+			u = new User(the_user, the_pass, the_email, the_first, the_last, the_address);
+			
+			my_map.put(the_user, u);
+		}
+		
+		return u;
+	}
+	
+	
+	public static synchronized User makeUserID(final int the_id, final String the_user, final String the_pass, final String the_email, 
+			final String the_first, final String the_last, final String the_address) {
+		User u = my_map.get(the_user);
+		
+		if (u == null) {
+			u = new User(the_id, the_user, the_pass, the_email, the_first, the_last, the_address);
+			
+			my_map.put(the_user, u);
+		}
+		
+		return u;
+	}
 	
 	/**
 	 * Instantiate the user with all required fields pre-filled.
@@ -66,7 +94,12 @@ public class User {
 	 * @param the_name User's full name.
 	 * @param the_address User's home address.
 	 */
-	public User(final int the_id, final String the_user, final String the_pass, final String the_email, 
+	
+	//Create stand-in for this
+	//Check link in Skype
+	//Use private constructor to prevent instantiation from outside.
+	
+	private User(final int the_id, final String the_user, final String the_pass, final String the_email, 
 			final String the_first, final String the_last, final String the_address) {
 		my_id = the_id;
 		my_email = the_email;
@@ -89,7 +122,7 @@ public class User {
 	 * @param the_name User's full name.
 	 * @param the_address User's home address.
 	 */
-	public User(final String the_user, final String the_pass, final String the_email, 
+	private User(final String the_user, final String the_pass, final String the_email, 
 			final String the_first, final String the_last, final String the_address) {
 		my_email = the_email;
 		my_firstname = the_first;
@@ -146,6 +179,10 @@ public class User {
 		 * 
 		 */
 		UserControl.updateUser(this);
+	}
+	
+	public static User getUser(final String the_user) {
+		return my_map.get(the_user);
 	}
 	
 	/**

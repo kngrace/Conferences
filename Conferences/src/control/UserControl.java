@@ -96,15 +96,9 @@ public class UserControl {
 					// Iterate through ResultSet, creating/adding each conference to the List
 					while (rs.next()){
 						result.add(
-								new User(
-											rs.getInt("id"), 
-											rs.getString("username"),
-											rs.getString("password"),
-											rs.getString("email"), 
-											rs.getString("first_name"), 
-											rs.getString("last_name"), 
-											rs.getString("address")
-								)
+								User.makeUserID(rs.getInt("id"), rs.getString("username"), rs.getString("password"), 
+								rs.getString("email"), rs.getString("first_name"), rs.getString("last_name"),
+								rs.getString("address"))
 						);
 					}
 					return result;
@@ -133,7 +127,10 @@ public class UserControl {
 			if (rs.getString("password").equals(the_pass)) {
 				
 				// Iterate through ResultSet, creating/adding each conference to the List
-							login = new User(
+							login = User.makeUserID(rs.getInt("id"), rs.getString("username"), rs.getString("password"), 
+									rs.getString("email"), rs.getString("first_name"), rs.getString("last_name"),
+									rs.getString("address"));
+									/*new User(
 										rs.getInt("id"), 
 										rs.getString("username"),
 										rs.getString("password"),
@@ -141,8 +138,7 @@ public class UserControl {
 										rs.getString("first_name"), 
 										rs.getString("last_name"), 
 										rs.getString("address")
-									);
-				
+									);*/
 				
 				
 			}
@@ -156,7 +152,9 @@ public class UserControl {
 	}
 	
 	public static List<User> searchUsers(String searchKey) {
-		return null;
+		List<User> arr = new ArrayList();
+		arr.add(User.getUser(searchKey));
+		return arr;
 	}
 	
 	/**
