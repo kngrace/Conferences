@@ -135,6 +135,10 @@ public class Manuscript extends Observable {
 		return myRecommendStatus;
 	}
 	
+	public void setIsSubmitted(boolean theSubmissionStatus) {
+		isSubmitted = theSubmissionStatus;
+	}
+	
 	public Status getFinalStatus(Session theSession) {
 		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)) {
 		    return myFinalStatus;
@@ -171,16 +175,21 @@ public class Manuscript extends Observable {
 		}
 	}
 	
+	/**
+	 * Precondition: myFileName is not null
+	 * @param theSession
+	 * @throws Exception
+	 */
 	public void submit(Session theSession) throws Exception {
 		if (myAuthor == theSession.getCurrentUser()) {
-		    try {
+		   // try {
 		        myFile = new File(myFileName);
 		        isSubmitted = true;
 		        ManuscriptControl.updateManuscript(this);
 		        notifyObservers();
-		    } catch (NullPointerException npe) {
-		    	System.out.println("File name is null!");
-		    } finally {}
+		    //} catch (NullPointerException npe) {
+		    //	System.out.println("File name is null!");
+		    //} 
 		} else {
 			throw new Exception("You are not the Author so you can't submit!");
 		}
@@ -271,7 +280,7 @@ public class Manuscript extends Observable {
 	 * false otherwise.
 	 */
 	private boolean sessionHasAccessLevelOf(AccessLevel theAccessLevel, Session theSession) {
-		System.out.println(ConferenceControl.getAccessLevel(this.getConference(), theSession.getCurrentUser()));
+		System.out.println(theSession.getCurrentUser() + ": " + ConferenceControl.getAccessLevel(this.getConference(), theSession.getCurrentUser()));
 		
 		return ConferenceControl.getAccessLevel(this.getConference(), theSession.getCurrentUser()).
 				compareTo(theAccessLevel) >= 0;
