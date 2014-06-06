@@ -5,16 +5,20 @@ import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import control.ConferenceControl;
 import control.ManuscriptControl;
+import model.AccessLevel;
 import model.Conference;
 import model.Manuscript;
 import model.Session;
@@ -26,6 +30,7 @@ public class DefaultTab {
 	private JPanel panel;
 	private Conference myConference;
 	private Session session;
+	private MyFile file;
 
 	/**
 	 * Create the application.
@@ -88,14 +93,28 @@ public class DefaultTab {
 				Date date = new Date();
 				if((myConference.getPaperStart().before(date) 
 						&& myConference.getPaperEnd().after(date)) 
-						&& (ManuscriptControl.getManuscripts(myConference, session.getCurrentUser()).size() <= 4)) {
+						&& (ManuscriptControl.getManuscripts(myConference, session.getCurrentUser(), AccessLevel.AUTHOR).size() < 4)) {
 					
 		            final JFileChooser fc = new JFileChooser(); 
 		            int returnVal = fc.showOpenDialog(panel);
 		            if (returnVal == JFileChooser.APPROVE_OPTION) {
-		                File file = fc.getSelectedFile();
-		                Manuscript man = new Manuscript(session.getCurrentUser(), 
-		                		myConference, file.getName(), file);
+		                File file_select = fc.getSelectedFile();
+		                
+		                File output = new File(file_select.getName());
+		                MyFile copy = new MyFile();
+		                try {
+							copy.copyFile(file_select, output);
+							Manuscript man = new Manuscript(session.getCurrentUser(), 
+			                		myConference, file_select.getName(), file_select);
+							JOptionPane.showMessageDialog(panel, new JLabel("File has been submitted."));
+							if(man.getFile().getName().equals(output.getName())) {
+								System.out.println("true");
+							}
+							System.out.println(ConferenceControl.getAccessLevel(myConference, session.getCurrentUser()));
+						} catch (IOException e) {
+							JOptionPane.showMessageDialog(panel, new JLabel("Please choose a valid file .txt"));
+							
+						}
 		            } 
 				} else {
 					JLabel deadline = new JLabel("No Submissions Allowed Past Deadline!");

@@ -1,6 +1,7 @@
 package view;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,6 +14,7 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import model.AccessLevel;
 import model.Conference;
@@ -55,14 +57,15 @@ public class AllConferences {
 		
 		panel = new JPanel();
 		panel_1 = new JPanel();
-		panel.setBounds(0, 0, 683, 428);
+		panel.setPreferredSize(new Dimension(683, 428));
 		panel_1.setBounds(0, 0, 536, 345);
+		panel_1.setPreferredSize(new Dimension(536, 345));
 		frame.getContentPane().add(panel);
 		panel.setLayout(null);
 		panel_1.setLayout(null);
 		panel_1.setBackground(Color.ORANGE);
 		
-		panel.add(panel_1);
+		panel.add(new JScrollPane(panel_1));
 				
 		panel.setLayout(null);
 		
@@ -113,12 +116,12 @@ public class AllConferences {
 				label.setBounds(21, x, 400, 20);
 				panel_1.add(label);
 		
-				JLabel dateSub = new JLabel("Open: " + lst.get(i).getPaperStart().toString());
+				JLabel dateSub = new JLabel("Open: " + lst.get(i).getPaperStart());
 				
 				dateSub.setBounds(21, x + 20, 100, 20);
 				panel_1.add(dateSub);
 				
-				JLabel dateConf = new JLabel("Deadline: " + lst.get(i).getPaperEnd().toString());
+				JLabel dateConf = new JLabel("Deadline: " + lst.get(i).getPaperEnd());
 				
 				dateConf.setBounds(184, x + 20, 200, 20);
 				
