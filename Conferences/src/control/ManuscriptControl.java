@@ -539,8 +539,8 @@ public class ManuscriptControl {
 					+ "u.id AS user_id, u.email, u.username, u.password, u.first_name, "
 					+ "u.last_name, u.address FROM users_manuscripts AS um	"
 					+ "JOIN users as u ON um.user_id=u.id JOIN manuscripts as m "
-					+ "ON um.manuscript_id=m.id	WHERE user_id=" + theUser.getId()
-					+ " AND m.conference=" + theConference.getId());
+					+ "ON um.manuscript_id=m.id	WHERE user_id=" + Integer.toString(theUser.getId())
+					+ " AND m.conference=" + Integer.toString(theConference.getId()));
 			
 			return iterateManuscripts(rs);
 
@@ -576,7 +576,7 @@ public class ManuscriptControl {
 	public static List<Manuscript> getManuscripts(final Conference theConference, final User theUser, final AccessLevel theAccessLevel){
 		checkConnection();		 
 		
-		int al = theAccessLevel.getValue();
+		int al = theAccessLevel.getValue();	
 		String column = "can_submit";
 		switch (al) {
 			case(0) : column = "um.can_submit";
@@ -592,8 +592,8 @@ public class ManuscriptControl {
 					+ "u.id AS user_id, u.email, u.username, u.password, u.first_name, "
 					+ "u.last_name, u.address FROM users_manuscripts AS um	"
 					+ "JOIN users as u ON um.user_id=u.id JOIN manuscripts as m "
-					+ "ON um.manuscript_id=m.id	WHERE user_id=" + theUser.getId()
-					+ " AND m.conference=" + theConference.getId() 
+					+ "ON um.manuscript_id=m.id	WHERE user_id=" + Integer.toString(theUser.getId())
+					+ " AND m.conference=" + Integer.toString(theConference.getId()) 
 					+ " AND " + column + "=1");
 			
 			return iterateManuscripts(rs);
@@ -754,13 +754,13 @@ public class ManuscriptControl {
 		checkConnection();	
 		List<User> result = new ArrayList<User>();
 		try {
-			int manuscriptID = theManuscript.getId();
 			// Load the users that are marked as reviewers for this manuscript
 			Statement statement = connection.createStatement();
 			statement.setQueryTimeout(30);  // set timeout to 30 sec.
 			ResultSet rs = statement.executeQuery("SELECT u.id AS user_id "
 					+ "FROM users AS u JOIN users_manuscripts AS um "
-					+ "ON u.id=um.user_id WHERE um.manuscript_id=" + manuscriptID
+					+ "ON u.id=um.user_id WHERE um.manuscript_id=" 
+					+ Integer.toString(theManuscript.getId())
 					+ " AND um.can_review=1");
 
 			while (rs.next()){
@@ -904,20 +904,17 @@ public class ManuscriptControl {
 	public static List<Review> getReviews(final Manuscript theManuscript, final User theUser){
 		checkConnection();		 
 		try {
-			// Scrub the int value to prevent SQL injection. Yay! Now its safe!
-			int manuscriptIDValue = theManuscript.getId();
-			int userIDValue = theUser.getId();
-			String manuscriptID = String.valueOf(manuscriptIDValue);
-			String userID = String.valueOf(userIDValue);
-			
 			Statement statement = connection.createStatement();
 			statement.setQueryTimeout(30);  // set timeout to 30 sec.
 			ResultSet rs = statement.executeQuery("SELECT r.*, r.id as review_id, m.spc, c.program_chair "
 					+ "FROM reviews AS r JOIN manuscripts as m ON r.manuscript=m.id "
 					+ "JOIN conferences as c ON m.conference=c.id "
-					+ "WHERE r.manuscript=" + manuscriptID 
-					+ " AND (m.author=" + userID + " OR r.reviewer=" + userID 
-					+ " OR m.spc=" + userID + "  OR c.program_chair=" + userID);
+					+ "WHERE r.manuscript=" + Integer.toString(theManuscript.getId()) 
+					+ " AND (m.author=" + Integer.toString(theUser.getId()) 
+					+ " OR r.reviewer=" + Integer.toString(theUser.getId()) 
+					+ " OR m.spc=" + Integer.toString(theUser.getId()) 
+					+ "  OR c.program_chair=" + Integer.toString(theUser.getId())
+					+ ")");
 			
 			return iterateReviews(rs);
 
@@ -951,14 +948,13 @@ public class ManuscriptControl {
 	 */
 	public static List<Review> getReviews(final Manuscript theManuscript){
 		checkConnection();		 
-		try {
-			int manuscriptID = theManuscript.getId();
+		try {	
 			Statement statement = connection.createStatement();
 			statement.setQueryTimeout(30);  // set timeout to 30 sec.
 			ResultSet rs = statement.executeQuery("SELECT r.*, r.id as review_id, m.spc, c.program_chair "
 					+ "FROM reviews AS r JOIN manuscripts as m ON r.manuscript=m.id "
 					+ "JOIN conferences as c ON m.conference=c.id "
-					+ "WHERE r.manuscript=" + manuscriptID);
+					+ "WHERE r.manuscript=" + Integer.toString(theManuscript.getId()));
 			
 			return iterateReviews(rs);
 			
@@ -999,7 +995,7 @@ public class ManuscriptControl {
 			ResultSet rs = statement.executeQuery("SELECT r.*, r.id as review_id, m.spc, c.program_chair "
 						+ "FROM reviews AS r JOIN manuscripts as m ON r.manuscript=m.id "
 						+ "JOIN conferences as c ON m.conference=c.id "
-						+ "WHERE r.id=" + theKey);
+						+ "WHERE r.id=" + Integer.toString(theKey));
 			return iterateReviews(rs).get(0);
 			
 		}catch(SQLException e) {
