@@ -356,7 +356,6 @@ public class ManuscriptControl {
 		checkConnection();
 		try {
 			// Update the manuscript within the database
-//			https://developer.salesforce.com/page/Secure_Coding_SQL_Injection
 			PreparedStatement pstmt = connection.prepareStatement("UPDATE manuscripts "
 					+ "SET spc=? WHERE id=?");
 			pstmt.setInt(1, theSPC.getId());
@@ -412,7 +411,7 @@ public class ManuscriptControl {
 	 * this conference. Note: This will return all manuscripts for the conference
 	 * indicated if the given user is the program chair of that conference.
 	 * 
-	 * Returns Null if no manuscripts exist for this criteria.
+	 * Returns an empty list if no manuscripts exist for this criteria.
 	 * 
 	 * @param theCon The conference that the requested manuscripts are part of
 	 * @param theUser The user being used as a filter for the manuscripts
@@ -448,14 +447,13 @@ public class ManuscriptControl {
 			e.printStackTrace();
 		}
 
-		return null;
+		return new ArrayList<Manuscript>();
 	}
 	
 
 	/**
 	 * Returns list of manuscripts in this conference for this user and AccessLevel. 
-	 * 
-	 * Returns Null if no manuscripts exist for this criteria.
+	 * Returns an empty list if no manuscripts exist for this criteria.
 	 * 
 	 * @param theCon The conference that the requested manuscripts are part of
 	 * @param theUser The user being used as a filter for the manuscripts
@@ -502,12 +500,13 @@ public class ManuscriptControl {
 			e.printStackTrace();
 		}
 
-		return null;
+		return new ArrayList<Manuscript>();
 	}
 	
 	
 	/**
 	 * Returns list of manuscripts in this conference that have final status of APPROVED.
+	 * If no manuscripts match this criteria, an empty list is returned instead.
 	 * 
 	 * @param theConference The conference these manuscripts are attached to.
 	 * @return A list of manuscripts with approved status for the given conference.
@@ -543,11 +542,12 @@ public class ManuscriptControl {
 			e.printStackTrace();
 		}
 
-		return null;
+		return new ArrayList<Manuscript>();
 	}
 	
 	/**
 	 * Returns list of manuscripts in this conference with SPC field marked as NULL.
+	 * If no manuscripts match this criteria, an empty list is returned instead.
 	 * 
 	 * @param theConference The conference to get unassigned SPCs for.
 	 * @return The list of manuscripts with unassigned SPCs
@@ -582,11 +582,13 @@ public class ManuscriptControl {
 			e.printStackTrace();
 		}
 
-		return null;
+		return new ArrayList<Manuscript>();
 	}
 
 	/**
 	 * Returns a single Manuscript object by it's unique ID.
+	 * 
+	 * If no Manuscript exists by this ID, returns null.
 	 * 
 	 * @param theKey The ID of the manuscript requested
 	 * @return The manuscript that matches the given ID
@@ -622,10 +624,43 @@ public class ManuscriptControl {
 		}
 		return null;
 	}
-	
-	/* ======TO DO====== */
+
+	/**
+	 * Returns the list of users marked as reviewers for the manuscript.
+	 * If the manuscript has no reviewers yet, an empty list is returned instead.
+	 * 
+	 * @param theManuscript The manuscript that the list of reviewers is for
+	 * @return The list of reviewers assigned to this manuscript
+	 */
 	public static List<User> getReviewers(final Manuscript theManuscript) {
-		return null;
+		checkConnection();	
+		List<User> result = new ArrayList<User>();
+		try {
+			int manuscriptID = theManuscript.getId();
+			// Load the users that are marked as reviewers for this manuscript
+			Statement statement = connection.createStatement();
+			statement.setQueryTimeout(30);  // set timeout to 30 sec.
+			ResultSet rs = statement.executeQuery("SELECT u.id AS user_id "
+					+ "FROM users AS u JOIN users_manuscripts AS um "
+					+ "ON u.id=um.user_id WHERE um.manuscript_id=" + manuscriptID
+					+ " AND um.can_review=1");
+
+			while (rs.next()){
+				result.add(UserControl.getUserByID(rs.getInt("user_id")));
+			}
+
+			return result;
+
+		}catch(SQLException e) {
+			// if the error message is "out of memory", 
+			// it probably means no database file is found
+		
+			// Do not print error if the error is because no results were found
+			if (!e.getMessage().equals("ResultSet closed")){ 
+				System.err.println("SQL Error: " + e.getMessage());
+			}
+			return result;
+		} 
 	}
 
 	/*
@@ -741,7 +776,7 @@ public class ManuscriptControl {
 	 * indicated if the given user is the program chair of that conference or
 	 * is the sub program chair assigned to the manuscript.
 	 * 
-	 * Returns Null if no reviews exist for this criteria.
+	 * Returns an empty list if no reviews exist for this criteria.
 	 * 
 	 * @param theManuscript The manuscript that the requested reviews are part of
 	 * @param theUser The user being used as a filter for the reviews
@@ -779,13 +814,13 @@ public class ManuscriptControl {
 			e.printStackTrace();
 		}
 
-		return null;
+		return new ArrayList<Review>();
 	}
 	
 	/**
 	 * Returns list of all of the reviews for this manuscript.
 	 * 
-	 * Returns Null if no reviews exist for this manuscript.
+	 * Returns an empty list if no reviews exist for this manuscript.
 	 * 
 	 * @param theManuscript The manuscript that the requested reviews are part of
 	 * @return A list of all of the reviews for this manuscript
@@ -819,11 +854,13 @@ public class ManuscriptControl {
 			e.printStackTrace();
 		}
 
-		return null;
+		return new ArrayList<Review>();
 	}
 	
 	/**
 	 * Returns a single Review object by it's unique ID.
+	 * 
+	 * Returns null if no reviews match this criteria.
 	 * 
 	 * @param theKey The ID of the review requested
 	 * @return The review that matches the given ID
@@ -946,7 +983,7 @@ public class ManuscriptControl {
 
 				Review r = new Review(
 						rs.getInt("review_id"), 
-						User.getUser(rs.getInt("r.reviewer")), /// wrong if null :-( ==========================
+						UserControl.getUserByID(rs.getInt("r.reviewer")), 
 						filename,
 						blobFile, 
 						getManuscriptByID(rs.getInt("manuscript")));			
