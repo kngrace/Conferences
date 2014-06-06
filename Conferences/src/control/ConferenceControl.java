@@ -162,7 +162,7 @@ public class ConferenceControl {
 	
 	/**
 	 * This method returns a List<Conference> of ALL conferences within the database.
-	 * This method returns a null pointer if no results are found.
+	 * This method returns an empty list if no results are found.
 	 * 
 	 * @return a list of all conferences that are saved within the database
 	 */
@@ -187,7 +187,7 @@ public class ConferenceControl {
 			}
 		}
 
-		return null;
+		return new ArrayList<Conference>();
 	}
 
 	/**
@@ -195,7 +195,7 @@ public class ConferenceControl {
 	 * those Conferences that the User has a recorded AccessLevel for. (This should
 	 * only return Conferences that the User has direct ties to, ie: they have submitted
 	 * a paper, are assigned as a reviewer, sub program chair or program chair). 
-	 * This method returns a null pointer if no results are found.
+	 * This method returns an empty list if no results are found.
 	 * 
 	 * @param theUser The User being used as search condition for the Conferences
 	 * @return A List of all Conferences the User is a part of
@@ -223,13 +223,13 @@ public class ConferenceControl {
 			}
 		}
 
-		return null;
+		return new ArrayList<Conference>();
 	}
 
 	/**
 	 * Builds and returns a List of the Conference objects that only include 
 	 * those Conferences that the User has the specific AccessLevel for. 
-	 * This method returns a null pointer if no results are found.
+	 * This method returns an empty list if no results are found.
 	 * 
 	 * @param theUser The User being used to filter the results
 	 * @param theAccess The specific AccessLevel to filter results
@@ -258,14 +258,14 @@ public class ConferenceControl {
 				System.err.println("SQL Error: " + e.getMessage());
 			}
 		}
-		return null;
+		return new ArrayList<Conference>();
 	}
 
 	/**
 	 * Returns a List of Conferences that have the given String as part of their name 
 	 * field. For example, if there is a conference named "Happy Days" it will be found 
 	 * with ANY of the full or partial search Strings: "Day" "Days" "Happy" "Happy Days".
-	 * This method returns a null pointer if no results are found.
+	 * This method returns an empty list if no results are found.
 	 * 
 	 * @param searchString The full or partial search string of the conference name
 	 * @return A list of all conferences matching the given search string
@@ -289,11 +289,13 @@ public class ConferenceControl {
 				System.err.println("SQL Error: " + e.getMessage());
 			}
 		}
-		return null;
+		return new ArrayList<Conference>();
 	}
 
 	/**
 	 * Fetches a single Conference object by it's unique ID.
+	 * 
+	 * Returns null pointer if no conference exists by that ID.
 	 * 
 	 * @param theKey The ID of the conference requested
 	 * @return The conference that matches the given ID
@@ -332,19 +334,19 @@ public class ConferenceControl {
 	 */
 
 	/**
-	 * Use this method to retrieve the AccessLevel of a specific user for
-	 * a specific conference. If the user does not exist in the database
-	 * with a specific AccessLevel, then null is returned.
+	 * Use this method to retrieve the AccessLevel of a user for the conference. 
+	 * If the user doesn't have a specific access level for the conference then 
+	 * a null pointer is returned.
 	 * 
-	 * @param theCon The conference to be matched
+	 * @param theConference The conference to be matched
 	 * @param theUser The user to be matched
 	 * @return The AccessLevel of a specific user conference combination
 	 */
-	public static AccessLevel getAccessLevel(Conference theCon, User theUser){
+	public static AccessLevel getAccessLevel(Conference theConference, User theUser){
 		checkConnection();
 		// Request the AccessLevel from the database users_conferences
 		try {
-			int conferenceID = theCon.getId();
+			int conferenceID = theConference.getId();
 			int userID = theUser.getId();
 
 			Statement statement = connection.createStatement();
