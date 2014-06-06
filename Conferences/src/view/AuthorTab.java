@@ -30,6 +30,8 @@ public class AuthorTab {
 	private Conference my_conference;
 	
 	private Session my_session;
+	
+	
 
 	/**
 	 * Create the application.
@@ -57,6 +59,7 @@ public class AuthorTab {
 		
 		List<Manuscript> lst = ManuscriptControl.getManuscripts(my_conference, my_session.getCurrentUser());
 		int i = 11;
+		if(lst != null && !lst.isEmpty()) {
 		for(final Manuscript m: lst) {
 		JLabel title = new JLabel("Title: " + m.getFile().getName());
 		title.setBounds(10, i, 270, 14);
@@ -115,13 +118,14 @@ public class AuthorTab {
 		download.setBounds(238, i + 25, 108, 23);
 		panel.add(download);
 		
-		if(m.getFinalStatus(my_session) == Status.APPROVED) { 
+		if(m.getFinalStatus(my_session) != Status.UNDECIDED) { 
 			JButton reviews = new JButton("Download Reviews");
 			reviews.setBounds(370, 35, 143, 23);
 			panel.add(reviews);
 		}
 		 i += 64;
 		}
+		} 
 	}
 	
 	public JPanel getPanel() {
