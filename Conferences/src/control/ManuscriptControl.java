@@ -904,8 +904,12 @@ public class ManuscriptControl {
 	public static List<Review> getReviews(final Manuscript theManuscript, final User theUser){
 		checkConnection();		 
 		try {
-			int manuscriptID = theManuscript.getId();
-			int userID = theUser.getId();
+			// Scrub the int value to prevent SQL injection. Yay! Now its safe!
+			int manuscriptIDValue = theManuscript.getId();
+			int userIDValue = theUser.getId();
+			String manuscriptID = String.valueOf(manuscriptIDValue);
+			String userID = String.valueOf(userIDValue);
+			
 			Statement statement = connection.createStatement();
 			statement.setQueryTimeout(30);  // set timeout to 30 sec.
 			ResultSet rs = statement.executeQuery("SELECT r.*, r.id as review_id, m.spc, c.program_chair "
