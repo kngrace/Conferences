@@ -42,20 +42,20 @@ import model.User;
  */
 
 public class ManuscriptControl {
-	
+
 	/*
 	 * ====================
 	 * = Fields (Static)  =
 	 * ====================
 	 */
-	
+
 	/** The connection object this class uses to connect with the database. */
 	private static Connection connection = null;
-	
+
 	/** The map of reference for all Manuscript objects currently loaded into memory. */
 	private static final Map<Integer, Manuscript> manuscriptMap = 
 			new HashMap<Integer, Manuscript>();
-	
+
 	/** The map of reference for all Review objects currently loaded into memory. */
 	private static final Map<Integer, Review> reviewMap = 
 			new HashMap<Integer, Review>();
@@ -65,20 +65,20 @@ public class ManuscriptControl {
 	 * = Private Constructor =
 	 * =======================
 	 */
-	
+
 	/**
 	 * Private constructor to prevent instantiation. 
 	 */
 	private ManuscriptControl() {
 		// Do Nothing (stop trying to create me)
 	}
-	
+
 	/*
 	 * =======================================================
 	 * = Methods that Create or Edit Manuscripts in Database =
 	 * =======================================================
 	 */
-	
+
 	/**
 	 * Use this method to submit a freshly created manuscript to the database and
 	 * retrieve its unique ID number. Do NOT use this method to update a manuscript
@@ -98,13 +98,13 @@ public class ManuscriptControl {
 			pstmt.setInt(1, theManuscript.getAuthor().getId());
 			pstmt.setInt(2, theManuscript.getConference().getId());  
 			pstmt.setString(3, theManuscript.getFile().getName());
-			
+
 			final File f = theManuscript.getFile();
 			final byte[] fileData = new byte[(int) f.length()];
 			final DataInputStream dis = new DataInputStream(new FileInputStream(f));
 			dis.readFully(fileData);  // read from file into byte[] array
 			dis.close();
-			
+
 			pstmt.setBytes(4, fileData);
 			pstmt.executeUpdate();
 
@@ -113,7 +113,7 @@ public class ManuscriptControl {
 			statement.setQueryTimeout(30);  // set timeout to 30 sec.
 			ResultSet rs = statement.executeQuery("select last_insert_rowid()");
 			final int manuscriptID = rs.getInt("last_insert_rowid()");
-			
+
 			while (true) {
 				try {
 					// Create entry into the users_manuscripts table to add program chair's relation
@@ -123,7 +123,7 @@ public class ManuscriptControl {
 					pstmt.setInt(2, manuscriptID);
 					pstmt.executeUpdate();	
 					break;
-					
+
 				} catch (SQLException e) {
 					// Entry already exists in users_manuscripts so update it instead
 					pstmt = connection.prepareStatement("UPDATE users_manuscripts "
@@ -131,7 +131,7 @@ public class ManuscriptControl {
 					pstmt.setInt(1, theManuscript.getConference().getProgramChair().getId());
 					pstmt.setInt(2, manuscriptID);
 					pstmt.executeUpdate();	
-					
+
 					// Check to make sure the update actually went through correctly
 					rs = statement.executeQuery("SELECT CHANGES()");
 					int changes = rs.getInt("CHANGES()");
@@ -139,7 +139,7 @@ public class ManuscriptControl {
 					if (changes != 0) break;
 				}
 			}
-			
+
 			while (true) {
 				try {
 					// Create entry into the users_manuscripts table to add the author's relation
@@ -149,7 +149,7 @@ public class ManuscriptControl {
 					pstmt.setInt(2, manuscriptID);
 					pstmt.executeUpdate();
 					break;
-					
+
 				} catch (SQLException e) {
 					// Entry already exists in users_manuscripts so update it instead
 					pstmt = connection.prepareStatement("UPDATE users_manuscripts "
@@ -157,16 +157,16 @@ public class ManuscriptControl {
 					pstmt.setInt(1, theManuscript.getAuthor().getId());
 					pstmt.setInt(2, manuscriptID);
 					pstmt.executeUpdate();	
-					
+
 					rs = statement.executeQuery("SELECT CHANGES()");
 					int changes = rs.getInt("CHANGES()");
 					System.out.println(changes);
 					if (changes != 0) break;
 				}
 			}
-			
+
 			// make sure this user has the author access level if none currently exists
-			
+
 			AccessLevel al = ConferenceControl.getAccessLevel(theManuscript.getConference(), 
 					theManuscript.getAuthor());
 			if (al == null || al.compareTo(AccessLevel.AUTHOR) < 0 ) {
@@ -198,11 +198,11 @@ public class ManuscriptControl {
 					}
 				}
 			}
-			
-			
+
+
 			// Add this manuscript to the Map
 			manuscriptMap.put(manuscriptID, theManuscript);
-			
+
 			return manuscriptID;
 		} catch(SQLException e){
 			// if the error message is "out of memory", 
@@ -217,7 +217,7 @@ public class ManuscriptControl {
 
 		return -1;
 	}
-	
+
 	/**
 	 * Use this method to update a manuscript in the database after one of it's 
 	 * fields has been changed. The manuscript MUST have its ID number correctly
@@ -241,17 +241,17 @@ public class ManuscriptControl {
 			pstmt.setInt(2, theManuscript.getConference().getId()); 
 			pstmt.setBoolean(3, theManuscript.isSubmitted());  
 			pstmt.setString(4, theManuscript.getFile().getName());
-			
+
 			final File f = theManuscript.getFile();
 			final byte[] fileData = new byte[(int) f.length()];
 			final DataInputStream dis = new DataInputStream(new FileInputStream(f));
 			dis.readFully(fileData);  // read from file into byte[] array
 			dis.close();
-			
+
 			pstmt.setBytes(5, fileData);
 			pstmt.setInt(6, theManuscript.getId());
 			pstmt.executeUpdate();
-			
+
 		} catch(SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
@@ -267,7 +267,7 @@ public class ManuscriptControl {
 
 		return null; // no error
 	}
-	
+
 	/**
 	 * This method will add a relation between the user and the manuscript within the
 	 * database that indicates they are a reviewer for this manuscript.
@@ -279,7 +279,7 @@ public class ManuscriptControl {
 		checkConnection();
 		PreparedStatement pstmt;
 		try {
-			
+
 			while (true) {
 				try {
 					// Create entry into the users_manuscripts table to add the reviewer's relation
@@ -307,13 +307,13 @@ public class ManuscriptControl {
 		} catch (SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
-			
+
 			// Do not print error if the error is because no results were found
 			if (!e.getMessage().equals("ResultSet closed")){ 
 				System.err.println("SQL Error: " + e.getMessage());
 			}
 		}
-		
+
 		// set user access level for this conference to be at least reviewer
 		AccessLevel al = ConferenceControl.getAccessLevel(theManuscript.getConference(), 
 				theReviewer);
@@ -382,7 +382,7 @@ public class ManuscriptControl {
 			pstmt.setInt(1, theStatus.getValue());
 			pstmt.setInt(2, theManuscript.getId()); 
 			pstmt.executeUpdate();
-			
+
 		} catch(SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
@@ -392,7 +392,7 @@ public class ManuscriptControl {
 
 		return null; // no error
 	}
-	
+
 	/**
 	 * This method will update the final status for the specified manuscript
 	 * in the database. (To be called by Manuscript's setFinalStatus() method)
@@ -412,7 +412,7 @@ public class ManuscriptControl {
 			pstmt.setInt(1, theStatus.getValue());
 			pstmt.setInt(2, theManuscript.getId()); 
 			pstmt.executeUpdate();
-			
+
 		} catch(SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
@@ -422,7 +422,7 @@ public class ManuscriptControl {
 
 		return null; // no error
 	}
-	
+
 	/**
 	 * This method will update the SPC assigned to the specified manuscript
 	 * in the database. (To be called by Manuscript's assignSPC() method)
@@ -444,7 +444,7 @@ public class ManuscriptControl {
 			pstmt.setInt(1, theSPC.getId());
 			pstmt.setInt(2, theManuscript.getId()); 
 			pstmt.executeUpdate();
-			
+
 			while (true) {
 				try {
 					// Create entry into the users_manuscripts table to add the SPC's relation
@@ -470,7 +470,7 @@ public class ManuscriptControl {
 					if (changes != 0) break;
 				}
 			}
-			
+
 			// set user access level for this conference to be at least spc
 			AccessLevel al = ConferenceControl.getAccessLevel(theManuscript.getConference(), 
 					theSPC);
@@ -515,13 +515,13 @@ public class ManuscriptControl {
 
 		return null; // no error
 	}
-	
+
 	/*
 	 * ======================================================================
 	 * = Methods that Retrieve Manuscripts in Database by specific criteria =
 	 * ======================================================================
 	 */
-	
+
 	/**
 	 * Returns list of manuscripts in this conference that this user has 'access' to. 
 	 * A user has access if they are: The author of the manuscript, a reviewer for a 
@@ -546,13 +546,13 @@ public class ManuscriptControl {
 					+ "JOIN users as u ON um.user_id=u.id JOIN manuscripts as m "
 					+ "ON um.manuscript_id=m.id	WHERE user_id=" + theUser.getId()
 					+ " AND m.conference=" + theConference.getId());
-			
+
 			return iterateManuscripts(rs);
 
 		}catch(SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
-			
+
 			// Do not print error if the error is because no results were found
 			if (!e.getMessage().equals("ResultSet closed")){ 
 				System.err.println("SQL Error: " + e.getMessage());
@@ -567,7 +567,7 @@ public class ManuscriptControl {
 
 		return new ArrayList<Manuscript>();
 	}
-	
+
 
 	/**
 	 * Returns list of manuscripts in this conference for this user and AccessLevel. 
@@ -579,7 +579,7 @@ public class ManuscriptControl {
 	 */
 	public static List<Manuscript> getManuscripts(final Conference theConference, final User theUser, final AccessLevel theAccessLevel){
 		checkConnection();		 
-		
+
 		int al = theAccessLevel.getValue();
 		String column = "can_submit";
 		switch (al) {
@@ -588,7 +588,7 @@ public class ManuscriptControl {
 			case(2) : column = "um.can_recommend";
 			case(3) : column = "um.can_final";
 		}
-			
+
 		try {
 			Statement statement = connection.createStatement();
 			statement.setQueryTimeout(30);  // set timeout to 30 sec.
@@ -599,13 +599,13 @@ public class ManuscriptControl {
 					+ "ON um.manuscript_id=m.id	WHERE user_id=" + theUser.getId()
 					+ " AND m.conference=" + theConference.getId() 
 					+ " AND " + column + "=1");
-			
+
 			return iterateManuscripts(rs);
 
 		}catch(SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
-			
+
 			// Do not print error if the error is because no results were found
 			if (!e.getMessage().equals("ResultSet closed")){ 
 				System.err.println("SQL Error: " + e.getMessage());
@@ -620,8 +620,8 @@ public class ManuscriptControl {
 
 		return new ArrayList<Manuscript>();
 	}
-	
-	
+
+
 	/**
 	 * Returns list of manuscripts in this conference that have final status of APPROVED.
 	 * If no manuscripts match this criteria, an empty list is returned instead.
@@ -641,13 +641,13 @@ public class ManuscriptControl {
 					+ "ON um.manuscript_id=m.id	WHERE final_status=" 
 					+ Integer.toString(Status.APPROVED.getValue())
 					+ " AND m.conference=" + Integer.toString(theConference.getId()));
-	
+
 			return iterateManuscripts(rs);
-		
+
 		}catch(SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
-			
+
 			// Do not print error if the error is because no results were found
 			if (!e.getMessage().equals("ResultSet closed")){ 
 				System.err.println("SQL Error: " + e.getMessage());
@@ -662,7 +662,7 @@ public class ManuscriptControl {
 
 		return new ArrayList<Manuscript>();
 	}
-	
+
 	/**
 	 * Returns list of manuscripts in this conference with SPC field marked as NULL.
 	 * If no manuscripts match this criteria, an empty list is returned instead.
@@ -681,13 +681,13 @@ public class ManuscriptControl {
 					+ "JOIN users as u ON um.user_id=u.id JOIN manuscripts as m "
 					+ "ON um.manuscript_id=m.id	WHERE m.spc IS NULL "
 					+ "AND m.conference=" + Integer.toString(theConference.getId()));
-	
+
 			return iterateManuscripts(rs);
-	
+
 		}catch(SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
-			
+
 			// Do not print error if the error is because no results were found
 			if (!e.getMessage().equals("ResultSet closed")){ 
 				System.err.println("SQL Error: " + e.getMessage());
@@ -722,13 +722,13 @@ public class ManuscriptControl {
 					+ "u.last_name, u.address FROM users_manuscripts AS um	"
 					+ "JOIN users as u ON um.user_id=u.id JOIN manuscripts as m "
 					+ "ON um.manuscript_id=m.id	WHERE manuscript_id=" +	Integer.toString(theKey));
-	
+
 			return iterateManuscripts(rs).get(0);
-			
+
 		}catch(SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
-			
+
 			// Do not print error if the error is because no results were found
 			if (!e.getMessage().equals("ResultSet closed")){ 
 				System.err.println("SQL Error: " + e.getMessage());
@@ -772,7 +772,7 @@ public class ManuscriptControl {
 		}catch(SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
-		
+
 			// Do not print error if the error is because no results were found
 			if (!e.getMessage().equals("ResultSet closed")){ 
 				System.err.println("SQL Error: " + e.getMessage());
@@ -786,7 +786,7 @@ public class ManuscriptControl {
 	 * = Methods related to REVIEWS  =
 	 * ===============================
 	 */
-	
+
 	/**
 	 * Use this method to submit a freshly created review to the database and
 	 * retrieve its unique ID number. Do NOT use this method to update a review
@@ -860,17 +860,17 @@ public class ManuscriptControl {
 			pstmt.setInt(1, theReview.getReviewer().getId());
 			pstmt.setInt(2, theReview.getManuscript().getId()); 
 			pstmt.setString(3, theReview.getFile().getName());
-				
+
 			File f = theReview.getFile();
 			byte[] fileData = new byte[(int) f.length()];
 			DataInputStream dis = new DataInputStream(new FileInputStream(f));
 			dis.readFully(fileData);  // read from file into byte[] array
 			dis.close();
-			
+
 			pstmt.setBytes(5, fileData);
 			pstmt.setInt(6, theReview.getID());
 			pstmt.executeUpdate();
-			
+
 		} catch(SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
@@ -885,7 +885,7 @@ public class ManuscriptControl {
 		}
 		return null; // no error
 	}
-	
+
 	/**
 	 * Returns list of reviews for this manuscript that this user has 'access' to. 
 	 * A user has access if they are: The user who wrote the review, the author of the 
@@ -913,13 +913,13 @@ public class ManuscriptControl {
 					+ "WHERE r.manuscript=" + manuscriptID 
 					+ " AND (m.author=" + userID + " OR r.reviewer=" + userID 
 					+ " OR m.spc=" + userID + "  OR c.program_chair=" + userID);
-			
+
 			return iterateReviews(rs);
 
 		}catch(SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
-			
+
 			// Do not print error if the error is because no results were found
 			if (!e.getMessage().equals("ResultSet closed")){ 
 				System.err.println("SQL Error: " + e.getMessage());
@@ -934,7 +934,7 @@ public class ManuscriptControl {
 
 		return new ArrayList<Review>();
 	}
-	
+
 	/**
 	 * Returns list of all of the reviews for this manuscript.
 	 * 
@@ -953,13 +953,13 @@ public class ManuscriptControl {
 					+ "FROM reviews AS r JOIN manuscripts as m ON r.manuscript=m.id "
 					+ "JOIN conferences as c ON m.conference=c.id "
 					+ "WHERE r.manuscript=" + manuscriptID);
-			
+
 			return iterateReviews(rs);
-			
+
 		}catch(SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
-			
+
 			// Do not print error if the error is because no results were found
 			if (!e.getMessage().equals("ResultSet closed")){ 
 				System.err.println("SQL Error: " + e.getMessage());
@@ -974,7 +974,7 @@ public class ManuscriptControl {
 
 		return new ArrayList<Review>();
 	}
-	
+
 	/**
 	 * Returns a single Review object by it's unique ID.
 	 * 
@@ -994,11 +994,11 @@ public class ManuscriptControl {
 						+ "JOIN conferences as c ON m.conference=c.id "
 						+ "WHERE r.id=" + theKey);
 			return iterateReviews(rs).get(0);
-			
+
 		}catch(SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
-			
+
 			// Do not print error if the error is because no results were found
 			if (!e.getMessage().equals("ResultSet closed")){ 
 				System.err.println("SQL Error: " + e.getMessage());
@@ -1012,13 +1012,13 @@ public class ManuscriptControl {
 		}
 		return null;
 	}
-	
+
 	/*
 	 * ===========================
 	 * = Private Helper Methods  =
 	 * ===========================
 	 */
-	
+
 	/**
 	 * Private helper method that establishes a connection to the database
 	 * if one does not already exist.
@@ -1028,7 +1028,7 @@ public class ManuscriptControl {
 			connection = JDBCConnection.getConnection();
 		}
 	}
-	
+
 	/**
 	 * Private helper method to iterate over a ResultSet to return a List<Manuscript>.
 	 * 
@@ -1111,6 +1111,6 @@ public class ManuscriptControl {
 		}
 		return result;
 	}
-	
-	
+
+
 }
