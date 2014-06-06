@@ -42,20 +42,20 @@ import model.User;
  */
 
 public class ManuscriptControl {
-
+	
 	/*
 	 * ====================
 	 * = Fields (Static)  =
 	 * ====================
 	 */
-
+	
 	/** The connection object this class uses to connect with the database. */
 	private static Connection connection = null;
 
 	/** The map of reference for all Manuscript objects currently loaded into memory. */
 	private static final Map<Integer, Manuscript> manuscriptMap = 
 			new HashMap<Integer, Manuscript>();
-
+	
 	/** The map of reference for all Review objects currently loaded into memory. */
 	private static final Map<Integer, Review> reviewMap = 
 			new HashMap<Integer, Review>();
@@ -98,13 +98,13 @@ public class ManuscriptControl {
 			pstmt.setInt(1, theManuscript.getAuthor().getId());
 			pstmt.setInt(2, theManuscript.getConference().getId());  
 			pstmt.setString(3, theManuscript.getFile().getName());
-
+			
 			final File f = theManuscript.getFile();
 			final byte[] fileData = new byte[(int) f.length()];
 			final DataInputStream dis = new DataInputStream(new FileInputStream(f));
 			dis.readFully(fileData);  // read from file into byte[] array
 			dis.close();
-
+			
 			pstmt.setBytes(4, fileData);
 			pstmt.executeUpdate();
 
@@ -113,7 +113,7 @@ public class ManuscriptControl {
 			statement.setQueryTimeout(30);  // set timeout to 30 sec.
 			ResultSet rs = statement.executeQuery("select last_insert_rowid()");
 			final int manuscriptID = rs.getInt("last_insert_rowid()");
-
+			
 			while (true) {
 				try {
 					// Create entry into the users_manuscripts table to add program chair's relation
@@ -123,7 +123,7 @@ public class ManuscriptControl {
 					pstmt.setInt(2, manuscriptID);
 					pstmt.executeUpdate();	
 					break;
-
+					
 				} catch (SQLException e) {
 					// Entry already exists in users_manuscripts so update it instead
 					pstmt = connection.prepareStatement("UPDATE users_manuscripts "
@@ -131,7 +131,7 @@ public class ManuscriptControl {
 					pstmt.setInt(1, theManuscript.getConference().getProgramChair().getId());
 					pstmt.setInt(2, manuscriptID);
 					pstmt.executeUpdate();	
-
+					
 					// Check to make sure the update actually went through correctly
 					rs = statement.executeQuery("SELECT CHANGES()");
 					int changes = rs.getInt("CHANGES()");
@@ -139,7 +139,7 @@ public class ManuscriptControl {
 					if (changes != 0) break;
 				}
 			}
-
+			
 			while (true) {
 				try {
 					// Create entry into the users_manuscripts table to add the author's relation
@@ -149,7 +149,7 @@ public class ManuscriptControl {
 					pstmt.setInt(2, manuscriptID);
 					pstmt.executeUpdate();
 					break;
-
+					
 				} catch (SQLException e) {
 					// Entry already exists in users_manuscripts so update it instead
 					pstmt = connection.prepareStatement("UPDATE users_manuscripts "
@@ -157,16 +157,16 @@ public class ManuscriptControl {
 					pstmt.setInt(1, theManuscript.getAuthor().getId());
 					pstmt.setInt(2, manuscriptID);
 					pstmt.executeUpdate();	
-
+					
 					rs = statement.executeQuery("SELECT CHANGES()");
 					int changes = rs.getInt("CHANGES()");
 					System.out.println(changes);
 					if (changes != 0) break;
 				}
 			}
-
+			
 			// make sure this user has the author access level if none currently exists
-
+			
 			AccessLevel al = ConferenceControl.getAccessLevel(theManuscript.getConference(), 
 					theManuscript.getAuthor());
 			if (al == null || al.compareTo(AccessLevel.AUTHOR) < 0 ) {
@@ -198,11 +198,11 @@ public class ManuscriptControl {
 					}
 				}
 			}
-
-
+			
+			
 			// Add this manuscript to the Map
 			manuscriptMap.put(manuscriptID, theManuscript);
-
+			
 			return manuscriptID;
 		} catch(SQLException e){
 			// if the error message is "out of memory", 
@@ -279,7 +279,7 @@ public class ManuscriptControl {
 		checkConnection();
 		PreparedStatement pstmt;
 		try {
-
+			
 			while (true) {
 				try {
 					// Create entry into the users_manuscripts table to add the reviewer's relation
@@ -307,13 +307,13 @@ public class ManuscriptControl {
 		} catch (SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
-
+			
 			// Do not print error if the error is because no results were found
 			if (!e.getMessage().equals("ResultSet closed")){ 
 				System.err.println("SQL Error: " + e.getMessage());
 			}
 		}
-
+		
 		// set user access level for this conference to be at least reviewer
 		AccessLevel al = ConferenceControl.getAccessLevel(theManuscript.getConference(), 
 				theReviewer);
@@ -444,7 +444,7 @@ public class ManuscriptControl {
 			pstmt.setInt(1, theSPC.getId());
 			pstmt.setInt(2, theManuscript.getId()); 
 			pstmt.executeUpdate();
-
+			
 			while (true) {
 				try {
 					// Create entry into the users_manuscripts table to add the SPC's relation
@@ -470,7 +470,7 @@ public class ManuscriptControl {
 					if (changes != 0) break;
 				}
 			}
-
+			
 			// set user access level for this conference to be at least spc
 			AccessLevel al = ConferenceControl.getAccessLevel(theManuscript.getConference(), 
 					theSPC);
