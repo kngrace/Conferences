@@ -306,6 +306,7 @@ public class ManuscriptControl {
 			// Do not print error if the error is because no results were found
 			if (!e.getMessage().equals("ResultSet closed")){ 
 				System.err.println("SQL Error: " + e.getMessage());
+				e.printStackTrace();
 			}
 		}
 		
@@ -350,6 +351,7 @@ public class ManuscriptControl {
 				// Do not print error if the error is because no results were found
 				if (!e.getMessage().equals("ResultSet closed")){ 
 					System.err.println("SQL Error: " + e.getMessage());
+					e.printStackTrace();
 				}
 			}
 
@@ -549,6 +551,7 @@ public class ManuscriptControl {
 			// Do not print error if the error is because no results were found
 			if (!e.getMessage().equals("ResultSet closed")){ 
 				System.err.println("SQL Error: " + e.getMessage());
+				e.printStackTrace();
 			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -602,6 +605,7 @@ public class ManuscriptControl {
 			// Do not print error if the error is because no results were found
 			if (!e.getMessage().equals("ResultSet closed")){ 
 				System.err.println("SQL Error: " + e.getMessage());
+				e.printStackTrace();
 			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -644,6 +648,7 @@ public class ManuscriptControl {
 			// Do not print error if the error is because no results were found
 			if (!e.getMessage().equals("ResultSet closed")){ 
 				System.err.println("SQL Error: " + e.getMessage());
+				e.printStackTrace();
 			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -684,6 +689,7 @@ public class ManuscriptControl {
 			// Do not print error if the error is because no results were found
 			if (!e.getMessage().equals("ResultSet closed")){ 
 				System.err.println("SQL Error: " + e.getMessage());
+				e.printStackTrace();
 			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -725,6 +731,7 @@ public class ManuscriptControl {
 			// Do not print error if the error is because no results were found
 			if (!e.getMessage().equals("ResultSet closed")){ 
 				System.err.println("SQL Error: " + e.getMessage());
+				e.printStackTrace();
 			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -769,6 +776,7 @@ public class ManuscriptControl {
 			// Do not print error if the error is because no results were found
 			if (!e.getMessage().equals("ResultSet closed")){ 
 				System.err.println("SQL Error: " + e.getMessage());
+				e.printStackTrace();
 			}
 			return result;
 		} 
@@ -916,6 +924,7 @@ public class ManuscriptControl {
 			// Do not print error if the error is because no results were found
 			if (!e.getMessage().equals("ResultSet closed")){ 
 				System.err.println("SQL Error: " + e.getMessage());
+				e.printStackTrace();
 			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -956,6 +965,7 @@ public class ManuscriptControl {
 			// Do not print error if the error is because no results were found
 			if (!e.getMessage().equals("ResultSet closed")){ 
 				System.err.println("SQL Error: " + e.getMessage());
+				e.printStackTrace();
 			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -995,6 +1005,7 @@ public class ManuscriptControl {
 			// Do not print error if the error is because no results were found
 			if (!e.getMessage().equals("ResultSet closed")){ 
 				System.err.println("SQL Error: " + e.getMessage());
+				e.printStackTrace();
 			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
