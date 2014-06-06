@@ -7,6 +7,7 @@ package control;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.lang.reflect.Field;
 import java.sql.Date;
 
 import javax.swing.JFileChooser;
@@ -105,6 +106,20 @@ public class ControllerExample {
 		
 	}
 	
+	
+
+// 2+2 = 5!  (for funsies)
+//	public static void main(String[] args) throws Exception {
+//		Class cache = Integer.class.getDeclaredClasses()[0];
+//		Field c = cache.getDeclaredField("cache");
+//		c.setAccessible(true);
+//		Integer[] array = (Integer[]) c.get(cache);
+//		array[132] = array[133];
+//
+//		System.out.printf("%d",2 + 2);
+//	}
+
+	
 	public static void main(String[] args) throws ClassNotFoundException, FileNotFoundException
 	{
 		
@@ -185,6 +200,10 @@ public class ControllerExample {
 	}
 	
 }
+
+
+
+
 //
 //if (has_review_access == true) {
 //	//do the command

@@ -59,7 +59,7 @@ public class ManuscriptControl {
 	/** The map of reference for all Review objects currently loaded into memory. */
 	private static final Map<Integer, Review> reviewMap = 
 			new HashMap<Integer, Review>();
-	
+
 	/*
 	 * =======================
 	 * = Private Constructor =
@@ -89,6 +89,7 @@ public class ManuscriptControl {
 	 * @return The unique ID of the newly added manuscript.
 	 */
 	public static int createManuscript(final Manuscript theManuscript) {
+
 		checkConnection();
 		try {
 			// Add the manuscript to the database
@@ -429,7 +430,7 @@ public class ManuscriptControl {
 					+ "ON um.manuscript_id=m.id	WHERE user_id=" + theUser.getId()
 					+ " AND m.conference=" + theConference.getId());
 			
-			return iterateResults(rs);
+			return iterateManuscripts(rs);
 
 		}catch(SQLException e) {
 			// if the error message is "out of memory", 
@@ -483,7 +484,7 @@ public class ManuscriptControl {
 					+ " AND m.conference=" + theConference.getId() 
 					+ " AND " + column + "=1");
 			
-			return iterateResults(rs);
+			return iterateManuscripts(rs);
 
 		}catch(SQLException e) {
 			// if the error message is "out of memory", 
@@ -524,7 +525,7 @@ public class ManuscriptControl {
 					+ Integer.toString(Status.APPROVED.getValue())
 					+ " AND m.conference=" + Integer.toString(theConference.getId()));
 	
-			return iterateResults(rs);
+			return iterateManuscripts(rs);
 		
 		}catch(SQLException e) {
 			// if the error message is "out of memory", 
@@ -563,7 +564,7 @@ public class ManuscriptControl {
 					+ "ON um.manuscript_id=m.id	WHERE m.spc IS NULL "
 					+ "AND m.conference=" + Integer.toString(theConference.getId()));
 	
-			return iterateResults(rs);
+			return iterateManuscripts(rs);
 	
 		}catch(SQLException e) {
 			// if the error message is "out of memory", 
@@ -600,10 +601,9 @@ public class ManuscriptControl {
 					+ "u.id AS user_id, u.email, u.username, u.password, u.first_name, "
 					+ "u.last_name, u.address FROM users_manuscripts AS um	"
 					+ "JOIN users as u ON um.user_id=u.id JOIN manuscripts as m "
-					+ "ON um.manuscript_id=m.id	WHERE manuscript_id=" + 
-					Integer.toString(theKey));
+					+ "ON um.manuscript_id=m.id	WHERE manuscript_id=" +	Integer.toString(theKey));
 	
-			return iterateResults(rs).get(0);
+			return iterateManuscripts(rs).get(0);
 			
 		}catch(SQLException e) {
 			// if the error message is "out of memory", 
@@ -733,18 +733,128 @@ public class ManuscriptControl {
 		return null; // no error
 	}
 	
-	/* ======TO DO====== */
+	/**
+	 * Returns list of reviews for this manuscript that this user has 'access' to. 
+	 * A user has access if they are: The user who wrote the review, the author of the 
+	 * manuscript, the sub program chair for the manuscript or the program chair for 
+	 * this conference. Note: This will return all reviews for the manuscript
+	 * indicated if the given user is the program chair of that conference or
+	 * is the sub program chair assigned to the manuscript.
+	 * 
+	 * Returns Null if no reviews exist for this criteria.
+	 * 
+	 * @param theManuscript The manuscript that the requested reviews are part of
+	 * @param theUser The user being used as a filter for the reviews
+	 * @return A list of reviews the user has access to for this manuscript
+	 */
 	public static List<Review> getReviews(final Manuscript theManuscript, final User theUser){
+		checkConnection();		 
+		try {
+			int manuscriptID = theManuscript.getId();
+			int userID = theUser.getId();
+			Statement statement = connection.createStatement();
+			statement.setQueryTimeout(30);  // set timeout to 30 sec.
+			ResultSet rs = statement.executeQuery("SELECT r.*, r.id as review_id, m.spc, c.program_chair "
+					+ "FROM reviews AS r JOIN manuscripts as m ON r.manuscript=m.id "
+					+ "JOIN conferences as c ON m.conference=c.id "
+					+ "WHERE r.manuscript=" + manuscriptID 
+					+ " AND (m.author=" + userID + " OR r.reviewer=" + userID 
+					+ " OR m.spc=" + userID + "  OR c.program_chair=" + userID);
+			
+			return iterateReviews(rs);
+
+		}catch(SQLException e) {
+			// if the error message is "out of memory", 
+			// it probably means no database file is found
+			
+			// Do not print error if the error is because no results were found
+			if (!e.getMessage().equals("ResultSet closed")){ 
+				System.err.println("SQL Error: " + e.getMessage());
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 		return null;
 	}
 	
-	/* ======TO DO====== */
+	/**
+	 * Returns list of all of the reviews for this manuscript.
+	 * 
+	 * Returns Null if no reviews exist for this manuscript.
+	 * 
+	 * @param theManuscript The manuscript that the requested reviews are part of
+	 * @return A list of all of the reviews for this manuscript
+	 */
 	public static List<Review> getReviews(final Manuscript theManuscript){
+		checkConnection();		 
+		try {
+			int manuscriptID = theManuscript.getId();
+			Statement statement = connection.createStatement();
+			statement.setQueryTimeout(30);  // set timeout to 30 sec.
+			ResultSet rs = statement.executeQuery("SELECT r.*, r.id as review_id, m.spc, c.program_chair "
+					+ "FROM reviews AS r JOIN manuscripts as m ON r.manuscript=m.id "
+					+ "JOIN conferences as c ON m.conference=c.id "
+					+ "WHERE r.manuscript=" + manuscriptID);
+			
+			return iterateReviews(rs);
+			
+		}catch(SQLException e) {
+			// if the error message is "out of memory", 
+			// it probably means no database file is found
+			
+			// Do not print error if the error is because no results were found
+			if (!e.getMessage().equals("ResultSet closed")){ 
+				System.err.println("SQL Error: " + e.getMessage());
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 		return null;
 	}
 	
-	/* ======TO DO====== */
+	/**
+	 * Returns a single Review object by it's unique ID.
+	 * 
+	 * @param theKey The ID of the review requested
+	 * @return The review that matches the given ID
+	 */
 	public static Review getReviewByID(final int theKey) {
+		checkConnection();	
+		try {
+			// Load the review with the given ID into the resultset
+			Statement statement = connection.createStatement();
+			statement.setQueryTimeout(30);  // set timeout to 30 sec.
+			ResultSet rs = statement.executeQuery("SELECT r.*, r.id as review_id, m.spc, c.program_chair "
+						+ "FROM reviews AS r JOIN manuscripts as m ON r.manuscript=m.id "
+						+ "JOIN conferences as c ON m.conference=c.id "
+						+ "WHERE r.id=" + theKey);
+			return iterateReviews(rs).get(0);
+			
+		}catch(SQLException e) {
+			// if the error message is "out of memory", 
+			// it probably means no database file is found
+			
+			// Do not print error if the error is because no results were found
+			if (!e.getMessage().equals("ResultSet closed")){ 
+				System.err.println("SQL Error: " + e.getMessage());
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return null;
 	}
 	
@@ -771,7 +881,7 @@ public class ManuscriptControl {
 	 * @return The completed List<Manuscript> constructed from the given ResultSet
 	 * @throws Exception The Exception encountered
 	 */
-	private static List<Manuscript> iterateResults(final ResultSet rs) throws Exception{
+	private static List<Manuscript> iterateManuscripts(final ResultSet rs) throws Exception{
 
 		List<Manuscript> result = new ArrayList<Manuscript>(); // Create the empty list
 
@@ -798,16 +908,54 @@ public class ManuscriptControl {
 								rs.getString("first_name"), 
 								rs.getString("last_name"), 
 								rs.getString("address")), 
-								ConferenceControl.getConferenceByID(rs.getInt("conference")), 
-								rs.getString("file_name"), 
-								blobFile, 
-								Status.getStatus(rs.getInt("rec_status")), 
-								Status.getStatus(rs.getInt("final_status")), 
-								rs.getBoolean("submitted"));
+						ConferenceControl.getConferenceByID(rs.getInt("conference")), 
+						rs.getString("file_name"), 
+						blobFile, 
+						Status.getStatus(rs.getInt("rec_status")), 
+						Status.getStatus(rs.getInt("final_status")), 
+						rs.getBoolean("submitted"));
 				manuscriptMap.put(rs.getInt("manuscript_id"), m);
 				result.add(m);
 			}
 		}
 		return result;
 	}
+
+	/** Private helper method to iterate over a ResultSet to return a List<Review>.
+	 * 
+	 * @param rs The ResultSet to be iterated over.
+	 * @return The completed List<Review> constructed from the given ResultSet
+	 * @throws Exception The Exception encountered
+	 */
+	private static List<Review> iterateReviews(final ResultSet rs) throws Exception{
+
+		List<Review> result = new ArrayList<Review>(); // Create the empty list
+
+		while (rs.next()){
+			if (reviewMap.containsKey(rs.getInt("review_id"))) {
+				result.add(reviewMap.get(rs.getInt("review_id")));
+			} else {
+
+				// Load the File first because it is multi-step
+				String filename = rs.getString("file_name");
+				File blobFile = new File(filename); 
+				FileOutputStream outStream  = new FileOutputStream(blobFile); 
+				byte[] buffer = rs.getBytes("file_blob"); 
+				outStream.write(buffer); 
+				outStream.close(); 
+
+				Review r = new Review(
+						rs.getInt("review_id"), 
+						User.getUser(rs.getInt("r.reviewer")), /// wrong if null :-( ==========================
+						filename,
+						blobFile, 
+						getManuscriptByID(rs.getInt("manuscript")));			
+				reviewMap.put(rs.getInt("review_id"), r);
+				result.add(r);
+			}
+		}
+		return result;
+	}
+	
+	
 }
