@@ -299,6 +299,8 @@ public class ConferenceControl {
 	 * @return The conference that matches the given ID
 	 */
 	public static Conference getConferenceByID(int theKey) {
+		if (conferenceMap.get(theKey) != null) return conferenceMap.get(theKey);
+		
 		checkConnection();		 
 		try {
 			// Load all of the conferences from the database into a ResultSet 
