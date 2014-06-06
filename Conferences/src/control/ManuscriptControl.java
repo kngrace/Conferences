@@ -164,6 +164,42 @@ public class ManuscriptControl {
 					if (changes != 0) break;
 				}
 			}
+			
+			// make sure this user has the author access level if none currently exists
+			
+			AccessLevel al = ConferenceControl.getAccessLevel(theManuscript.getConference(), 
+					theManuscript.getAuthor());
+			if (al == null || al.compareTo(AccessLevel.AUTHOR) < 0 ) {
+				while (true) {
+					try {
+						// Create entry into the users_conferences table to add author's access level
+						pstmt = connection.prepareStatement("INSERT INTO users_conferences "
+								+ "(user_id, conference_id, access_level) VALUES (?, ?, ?)");
+						pstmt.setInt(1, theManuscript.getAuthor().getId());
+						pstmt.setInt(2, theManuscript.getConference().getId());
+						pstmt.setInt(3, AccessLevel.AUTHOR.getValue());
+						pstmt.executeUpdate();	
+						break;
+
+					} catch (SQLException e) {
+						// Entry already exists in users_manuscripts so update it instead
+						pstmt = connection.prepareStatement("UPDATE users_conferences "
+								+ "SET access_level=? WHERE user_id=? AND conference_id=?");
+						pstmt.setInt(1, AccessLevel.AUTHOR.getValue());
+						pstmt.setInt(2, theManuscript.getAuthor().getId());
+						pstmt.setInt(3, theManuscript.getConference().getId());
+						pstmt.executeUpdate();	
+
+						// Check to make sure the update actually went through correctly
+						rs = statement.executeQuery("SELECT CHANGES()");
+						int changes = rs.getInt("CHANGES()");
+						System.out.println(changes);
+						if (changes != 0) break;
+					}
+				}
+			}
+			
+			
 			// Add this manuscript to the Map
 			manuscriptMap.put(manuscriptID, theManuscript);
 			
@@ -255,17 +291,17 @@ public class ManuscriptControl {
 					break;
 
 				} catch (SQLException e) {
-						pstmt = connection.prepareStatement("UPDATE users_manuscripts "
-								+ "SET can_review=1 WHERE user_id=? AND manuscript_id=?");
-						pstmt.setInt(1, theReviewer.getId());
-						pstmt.setInt(2, theManuscript.getId());
-						pstmt.executeUpdate();	
+					pstmt = connection.prepareStatement("UPDATE users_manuscripts "
+							+ "SET can_review=1 WHERE user_id=? AND manuscript_id=?");
+					pstmt.setInt(1, theReviewer.getId());
+					pstmt.setInt(2, theManuscript.getId());
+					pstmt.executeUpdate();	
 
-						Statement statement = connection.createStatement();
-						statement.setQueryTimeout(30);  
-						ResultSet rs = statement.executeQuery("SELECT CHANGES()");
-						int changes = rs.getInt("CHANGES()");
-						if (changes != 0) break;
+					Statement statement = connection.createStatement();
+					statement.setQueryTimeout(30);  
+					ResultSet rs = statement.executeQuery("SELECT CHANGES()");
+					int changes = rs.getInt("CHANGES()");
+					if (changes != 0) break;
 				}
 			}
 		} catch (SQLException e) {
@@ -277,8 +313,55 @@ public class ManuscriptControl {
 				System.err.println("SQL Error: " + e.getMessage());
 			}
 		}
-	}
 		
+		// set user access level for this conference to be at least reviewer
+		AccessLevel al = ConferenceControl.getAccessLevel(theManuscript.getConference(), 
+				theReviewer);
+		if (al == null || al.compareTo(AccessLevel.REVIEWER) < 0 ) {
+			try {
+				while (true) {
+
+					try {
+						// Create entry into the users_conferences table to add author's access level
+						pstmt = connection.prepareStatement("INSERT INTO users_conferences "
+								+ "(user_id, conference_id, access_level) VALUES (?, ?, ?)");
+						pstmt.setInt(1, theReviewer.getId());
+						pstmt.setInt(2, theManuscript.getConference().getId());
+						pstmt.setInt(3, AccessLevel.REVIEWER.getValue());
+						pstmt.executeUpdate();	
+						break;
+
+					} catch (SQLException e) {
+						// Entry already exists in users_manuscripts so update it instead
+						pstmt = connection.prepareStatement("UPDATE users_conferences "
+								+ "SET access_level=? WHERE user_id=? AND conference_id=?");
+						pstmt.setInt(1, AccessLevel.REVIEWER.getValue());
+						pstmt.setInt(2, theReviewer.getId());
+						pstmt.setInt(3, theManuscript.getConference().getId());
+						pstmt.executeUpdate();	
+
+						// Check to make sure the update actually went through correctly
+						Statement statement = connection.createStatement();
+						statement.setQueryTimeout(30);  
+						ResultSet rs = statement.executeQuery("SELECT CHANGES()");
+						int changes = rs.getInt("CHANGES()");
+						System.out.println(changes);
+						if (changes != 0) break;
+					}
+				}
+			} catch (SQLException e) {
+				// if the error message is "out of memory", 
+				// it probably means no database file is found
+
+				// Do not print error if the error is because no results were found
+				if (!e.getMessage().equals("ResultSet closed")){ 
+					System.err.println("SQL Error: " + e.getMessage());
+				}
+			}
+
+		}
+	}
+
 	/**
 	 * This method will update the recommend status for the specified manuscript
 	 * in the database. (To be called by Manuscript's setRecommendStatus() method)
@@ -388,6 +471,41 @@ public class ManuscriptControl {
 				}
 			}
 			
+			// set user access level for this conference to be at least spc
+			AccessLevel al = ConferenceControl.getAccessLevel(theManuscript.getConference(), 
+					theSPC);
+			if (al == null || al.compareTo(AccessLevel.SUBPROGRAMCHAIR) < 0 ) {
+				while (true) {
+
+					try {
+						// Create entry into the users_conferences table to add author's access level
+						pstmt = connection.prepareStatement("INSERT INTO users_conferences "
+								+ "(user_id, conference_id, access_level) VALUES (?, ?, ?)");
+						pstmt.setInt(1, theSPC.getId());
+						pstmt.setInt(2, theManuscript.getConference().getId());
+						pstmt.setInt(3, AccessLevel.SUBPROGRAMCHAIR.getValue());
+						pstmt.executeUpdate();	
+						break;
+
+					} catch (SQLException e) {
+						// Entry already exists in users_manuscripts so update it instead
+						pstmt = connection.prepareStatement("UPDATE users_conferences "
+								+ "SET access_level=? WHERE user_id=? AND conference_id=?");
+						pstmt.setInt(1, AccessLevel.SUBPROGRAMCHAIR.getValue());
+						pstmt.setInt(2, theSPC.getId());
+						pstmt.setInt(3, theManuscript.getConference().getId());
+						pstmt.executeUpdate();	
+
+						// Check to make sure the update actually went through correctly
+						Statement statement = connection.createStatement();
+						statement.setQueryTimeout(30);  
+						ResultSet rs = statement.executeQuery("SELECT CHANGES()");
+						int changes = rs.getInt("CHANGES()");
+						if (changes != 0) break;
+					}
+				}
+			}
+
 		} catch(SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
