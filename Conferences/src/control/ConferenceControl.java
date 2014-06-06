@@ -109,10 +109,10 @@ public class ConferenceControl {
 			
 			return conferenceID;
 		} catch(SQLException e){
-			e.printStackTrace();
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
 			System.err.println(e.getMessage());
+			e.printStackTrace();
 		}
 
 		return -1;
@@ -147,7 +147,7 @@ public class ConferenceControl {
 		} catch(SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
-			
+			e.printStackTrace();			
 			return e.getMessage(); // error occurred
 		}
 
@@ -180,10 +180,10 @@ public class ConferenceControl {
 		}catch(SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
-			e.printStackTrace();
 			// Do not print error if the error is because no results were found
 			if (!e.getMessage().equals("ResultSet closed")){ 
 				System.err.println("SQL Error: " + e.getMessage());
+				e.printStackTrace();
 			}
 		}
 
@@ -216,10 +216,10 @@ public class ConferenceControl {
 		} catch(SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
-			e.printStackTrace();
 			// Do not print error if the error is because no results were found
 			if (!e.getMessage().equals("ResultSet closed")){ 
 				System.err.println("SQL Error: " + e.getMessage());
+				e.printStackTrace();
 			}
 		}
 
@@ -252,10 +252,10 @@ public class ConferenceControl {
 		} catch(SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
-			e.printStackTrace();
 			// Do not print error if the error is because no results were found
 			if (!e.getMessage().equals("ResultSet closed")){ 
 				System.err.println("SQL Error: " + e.getMessage());
+				e.printStackTrace();
 			}
 		}
 		return new ArrayList<Conference>();
@@ -283,10 +283,10 @@ public class ConferenceControl {
 		}catch(SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
-			e.printStackTrace();
 			// Do not print error if the error is because no results were found
 			if (!e.getMessage().equals("ResultSet closed")){ 
 				System.err.println("SQL Error: " + e.getMessage());
+				e.printStackTrace();
 			}
 		}
 		return new ArrayList<Conference>();
@@ -317,10 +317,10 @@ public class ConferenceControl {
 		}catch(SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
-			e.printStackTrace();
 			// Do not print error if the error is because no results were found
 			if (!e.getMessage().equals("ResultSet closed")){ 
 				System.err.println("SQL Error: " + e.getMessage());
+				e.printStackTrace();
 			}
 		}
 
@@ -361,10 +361,10 @@ public class ConferenceControl {
 		}catch(SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
-			e.printStackTrace();
 			// Do not print error if the error is because no results were found
 			if (!e.getMessage().equals("ResultSet closed")){ 
 				System.err.println("SQL Error: " + e.getMessage());
+				e.printStackTrace();
 			}
 		}
 		
