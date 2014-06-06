@@ -135,7 +135,6 @@ public class ManuscriptControl {
 					// Check to make sure the update actually went through correctly
 					rs = statement.executeQuery("SELECT CHANGES()");
 					int changes = rs.getInt("CHANGES()");
-					System.out.println(changes);
 					if (changes != 0) break;
 				}
 			}
@@ -160,7 +159,6 @@ public class ManuscriptControl {
 					
 					rs = statement.executeQuery("SELECT CHANGES()");
 					int changes = rs.getInt("CHANGES()");
-					System.out.println(changes);
 					if (changes != 0) break;
 				}
 			}
@@ -193,7 +191,6 @@ public class ManuscriptControl {
 						// Check to make sure the update actually went through correctly
 						rs = statement.executeQuery("SELECT CHANGES()");
 						int changes = rs.getInt("CHANGES()");
-						System.out.println(changes);
 						if (changes != 0) break;
 					}
 				}
@@ -231,8 +228,6 @@ public class ManuscriptControl {
 	public static String updateManuscript(final Manuscript theManuscript) {
 		checkConnection();
 		try {
-			System.out.println("I'm updating the manuscript with ID= "
-					+ theManuscript.getId());
 			// Update the manuscript within the database
 			PreparedStatement pstmt = connection.prepareStatement("UPDATE manuscripts SET "
 					+ "author=?, conference=?, submitted=?, file_name=?, file_blob=? "
@@ -345,7 +340,6 @@ public class ManuscriptControl {
 						statement.setQueryTimeout(30);  
 						ResultSet rs = statement.executeQuery("SELECT CHANGES()");
 						int changes = rs.getInt("CHANGES()");
-						System.out.println(changes);
 						if (changes != 0) break;
 					}
 				}
@@ -466,7 +460,6 @@ public class ManuscriptControl {
 					statement.setQueryTimeout(30);  
 					ResultSet rs = statement.executeQuery("SELECT CHANGES()");
 					int changes = rs.getInt("CHANGES()");
-					//	System.out.println(changes);
 					if (changes != 0) break;
 				}
 			}

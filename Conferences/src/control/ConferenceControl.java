@@ -354,7 +354,6 @@ public class ConferenceControl {
 			ResultSet rs = statement.executeQuery("SELECT access_level FROM users_conferences "
 					+ "WHERE conference_id=" + conferenceID + " AND user_id=" + userID);
 			
-			System.out.println("The value is: " + rs.getInt("access_level"));
 			AccessLevel al = AccessLevel.accessLevelOf(rs.getInt("access_level"));
 			
 			return al;
