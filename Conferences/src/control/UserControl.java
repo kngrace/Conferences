@@ -157,6 +157,11 @@ public class UserControl {
 		return arr;
 	}
 	
+	public User getUser(final int the_id) {
+		return User.getUser(the_id);
+	}
+	
+	
 	/**
 	 * Private helper method that establishes a connection to the database
 	 * if one does not already exist.
