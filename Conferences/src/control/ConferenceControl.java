@@ -180,7 +180,6 @@ public class ConferenceControl {
 		}catch(SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
-			e.printStackTrace();
 			// Do not print error if the error is because no results were found
 			if (!e.getMessage().equals("ResultSet closed")){ 
 				System.err.println("SQL Error: " + e.getMessage());
@@ -216,7 +215,6 @@ public class ConferenceControl {
 		} catch(SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
-			e.printStackTrace();
 			// Do not print error if the error is because no results were found
 			if (!e.getMessage().equals("ResultSet closed")){ 
 				System.err.println("SQL Error: " + e.getMessage());
@@ -252,7 +250,6 @@ public class ConferenceControl {
 		} catch(SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
-			e.printStackTrace();
 			// Do not print error if the error is because no results were found
 			if (!e.getMessage().equals("ResultSet closed")){ 
 				System.err.println("SQL Error: " + e.getMessage());
@@ -283,7 +280,6 @@ public class ConferenceControl {
 		}catch(SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
-			e.printStackTrace();
 			// Do not print error if the error is because no results were found
 			if (!e.getMessage().equals("ResultSet closed")){ 
 				System.err.println("SQL Error: " + e.getMessage());
@@ -317,7 +313,6 @@ public class ConferenceControl {
 		}catch(SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
-			e.printStackTrace();
 			// Do not print error if the error is because no results were found
 			if (!e.getMessage().equals("ResultSet closed")){ 
 				System.err.println("SQL Error: " + e.getMessage());
@@ -362,7 +357,6 @@ public class ConferenceControl {
 		}catch(SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
-			e.printStackTrace();
 			// Do not print error if the error is because no results were found
 			if (!e.getMessage().equals("ResultSet closed")){ 
 				System.err.println("SQL Error: " + e.getMessage());
