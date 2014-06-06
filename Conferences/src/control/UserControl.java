@@ -158,7 +158,7 @@ public class UserControl {
 		return arr;
 	}
 	
-	public User getUserByID(final int the_id) {
+	public static User getUserByID(final int the_id) {
 		User u = null;
 		
 		
