@@ -526,7 +526,7 @@ public class ManuscriptControl {
 	 * 
 	 * Returns an empty list if no manuscripts exist for this criteria.
 	 * 
-	 * @param theCon The conference that the requested manuscripts are part of
+	 * @param theConference The conference that the requested manuscripts are part of
 	 * @param theUser The user being used as a filter for the manuscripts
 	 * @return A list of manuscripts the user has access to for this conference
 	 */
@@ -569,7 +569,7 @@ public class ManuscriptControl {
 	 * Returns list of manuscripts in this conference for this user and AccessLevel. 
 	 * Returns an empty list if no manuscripts exist for this criteria.
 	 * 
-	 * @param theCon The conference that the requested manuscripts are part of
+	 * @param theConference The conference that the requested manuscripts are part of
 	 * @param theUser The user being used as a filter for the manuscripts
 	 * @return A list of manuscripts the user has access to for this conference
 	 */
@@ -577,7 +577,7 @@ public class ManuscriptControl {
 		checkConnection();		 
 		
 		int al = theAccessLevel.getValue();	
-		String column = "can_submit";
+		String column = "um.can_submit";
 		switch (al) {
 			case(0) : column = "um.can_submit";
 			case(1) : column = "um.can_review";

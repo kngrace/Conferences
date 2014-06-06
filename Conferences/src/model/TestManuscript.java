@@ -1,148 +1,110 @@
-package view;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.EventQueue;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+package model;
+
+import static org.junit.Assert.*;
+
+import java.io.File;
 import java.sql.Date;
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import java.io.FileNotFoundException;
 
-import model.AccessLevel;
-import model.Conference;
-import model.Session;
-import model.User;
-import control.ConferenceControl;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.Rule;
+import org.junit.rules.ExpectedException;
 
+/**
+ * 
+ * @author Trevor Jennings
+ *
+ */
+public class TestManuscript {
 
-public class AllConferences {
+	private User myUser1;
+	private User myUser2;
+	private Manuscript myManuscript1;
+	private Manuscript myManuscript2;
+	private Manuscript myManuscript3;
+	private Conference myConference1;
+	private Review myReview1;
+	private Review myReview2;
+	Session mySession1;
+	Session mySession2;
 
-	private JFrame frame;
-	
-	
-	private Session session;
-	
-	private JPanel panel;
-	
-	private JPanel panel_1;
-	
+	@Before
+	public void setUp() throws Exception {
+		myUser1 = new User(randomString(), "trevorcarljennings", "tcj12@gmail.com", 
+			"Trevor", "Jennings", "123 N Lane Dr, Tacoma, WA 98406"); 
+		myUser2 = new User(randomString(), "jor18", "jocuz1018@gmail.com", "Jordan", 
+				"Jennings", null);
+		myConference1 = new Conference("Conference A", myUser1, Date.valueOf("2015-04-13"),
+				Date.valueOf("2015-05-13"), Date.valueOf("2015-05-20"), 
+				Date.valueOf("2015-05-22"), "Tacoma, WA", "Description for Conference1");
+		myManuscript1 = new Manuscript(myUser1, myConference1, "sample1.txt", 
+				new File("sample1.txt"));
+		myManuscript2 = new Manuscript(myUser2, myConference1, "sample2.txt",
+				new File("sample2.txt"));
+		myManuscript3 = new Manuscript(myUser2, myConference1, null, new File("sample3.txt"));
+		myReview1 = new Review(myUser2, "review1.txt", new File("review1.txt"), 
+				myManuscript1);
+		//myUser2.setAccess(myConference1, AccessLevel.AUTHOR);
+		//myUser1.setAccess(myConference1, AccessLevel.PROGRAMCHAIR);
+		mySession1 = new Session(myUser1);
+		mySession2 = new Session(myUser2);
+		myManuscript2.submit(mySession2);
 
-	/**
-	 * Create the application.
-	 */
-	public AllConferences(Session the_session) {
-		session = the_session;
-		initialize();
 	}
 
-	/**
-	 * Initialize the contents of the frame.
-	 */
-	@SuppressWarnings("unchecked")
-	private void initialize() {
-		
-		frame = new JFrame();
-		frame.getContentPane().setBackground(Color.ORANGE);
-		frame.setBounds(100, 100, 699, 467);
-		frame.getContentPane().setLayout(null);
-		
-		
-		panel = new JPanel();
-		panel_1 = new JPanel();
-		panel.setBounds(0, 0, 683, 428);
-		panel_1.setBounds(0, 0, 536, 345);
-		frame.getContentPane().add(panel);
-		panel.setLayout(null);
-		panel_1.setLayout(null);
-		panel_1.setBackground(Color.ORANGE);
-		
-		panel.add(panel_1);
-				
-		panel.setLayout(null);
-		
-		final List<Conference> lst = ConferenceControl.getConferences();
-		
-		final JComboBox comboBox = new JComboBox();
-			if(lst != null && !lst.isEmpty()) {
-				String label = "Select a Conference";
-				comboBox.addItem(label);
-				for(int i = 0; i < lst.size(); i++) {
-					comboBox.addItem(lst.get(i).getName());
-				}
-				comboBox.setSelectedItem(0);
-				comboBox.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						System.out.println("comes");
-						@SuppressWarnings("rawtypes")
-						JComboBox cb = (JComboBox)e.getSource();
-						int index = cb.getSelectedIndex();
-						UserScreen tabs = new UserScreen(lst.get(index - 1), session);
-						panel_1.removeAll();
-						panel_1.add(tabs.getTab());
-						panel_1.repaint();	
-					}
-				});
-			} else {
-				comboBox.setEnabled(false);
-			}
-			comboBox.setBounds(21, 22, 174, 23);
-			panel_1.add(comboBox);
-		
-		JButton btnNewButton1 = new JButton("Add A Conference");
-		btnNewButton1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				//new window for adding a conf.
-			}
-		});
-		btnNewButton1.setBounds(283, 22, 174, 23);
-		panel_1.add(btnNewButton1);
-		
-		int x = 27;
-		
-		if(lst != null) {
-			for(int i = 0; i < lst.size(); i++) {
-				
-				JLabel label = new JLabel(lst.get(i).getName());
-				x += 50;
-				label.setBounds(21, x, 400, 20);
-				panel_1.add(label);
-		
-				JLabel dateSub = new JLabel("Open: " + lst.get(i).getPaperStart().toString());
-				
-				dateSub.setBounds(21, x + 20, 100, 20);
-				panel_1.add(dateSub);
-				
-				JLabel dateConf = new JLabel("Deadline: " + lst.get(i).getPaperEnd().toString());
-				
-				dateConf.setBounds(184, x + 20, 200, 20);
-				
-				panel_1.add(dateConf);
-				
-			}
-		} else {
-			JLabel empty = new JLabel("No Conferences Found!");
-			empty.setBounds(27, 80, 400, 20);
-			panel_1.add(empty);
+	public static String randomString() {
+		StringBuilder sb = new StringBuilder(10);
+		for (int i = 0; i < 20; i++) {
+			char c = (char) ((57 * Math.random()) + 65);
+			sb.append(c);
 		}
-		
-		
-		frame.getContentPane().add(panel);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		
+		return sb.toString();
 	}
-	
-	public JPanel getPanel() {
-		return panel;
+
+
+	@Test
+	public void testGetFinalStatus() {
+		myManuscript1.setFinalStatus(Status.APPROVED, mySession1);
+		assertEquals("Final status should be APPROVED.", myManuscript1.getFinalStatus(mySession1), 
+				Status.APPROVED);
 	}
-	
-	public JPanel getPanel_1() {
-		return panel_1;
+
+	@Rule
+	public ExpectedException exception = ExpectedException.none();
+
+	@Test
+	public void testGetFinalStatusException() {
+		exception.expect(IllegalStateException.class);
+		myManuscript1.setFinalStatus(Status.REJECTED, mySession2);
+		// mySession2 only has the lowest access for myConference1 which myManuscript1 is part of.
+		// Thus, an exception should be thrown.
+		myManuscript1.getFinalStatus(mySession2);
+	}
+
+	@Test
+	public void testSubmit() {
+		myManuscript1.setIsSubmitted(false);
+		try {
+		    myManuscript1.submit(mySession1);
+		} catch (Exception e) {
+			System.err.println("File does not exist!");
+		}
+		assertTrue("Manuscript should now be submitted.", myManuscript1.isSubmitted());
+		exception.expect(Exception.class);
+		try {
+			myManuscript3.submit(mySession1);
+		} catch (FileNotFoundException e) {
+			System.err.println("File does not exist!");
+		} catch (Exception e) {
+			System.err.println("Exception was THROWN: " + mySession1.getCurrentUser() + " is not " + myManuscript3.getAuthor());
+		}	
+	}
+
+	@Test
+	public void testUnsubmit() {
+
 	}
 }
