@@ -15,6 +15,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import model.AccessLevel;
 import model.User;
 
 public class UserControl {
@@ -157,10 +158,42 @@ public class UserControl {
 		return arr;
 	}
 	
-	public User getUser(final int the_id) {
-		return User.getUser(the_id);
+	public User getUserByID(final int the_id) {
+		User u = null;
+		
+		
+		checkConnection();
+		// Request the AccessLevel from the database users_conferences
+		try {
+			Statement statement = connection.createStatement();
+			statement.setQueryTimeout(30);  // set timeout to 30 sec.
+			/*ResultSet rs = statement.executeQuery("SELECT access_level FROM users_conferences "
+					+ "WHERE conference_id=" + conferenceID + " AND user_id=" + userID);
+			
+			System.out.println("The value is: " + rs.getInt("access_level"));
+			AccessLevel al = AccessLevel.accessLevelOf(rs.getInt("access_level"));
+			
+			return al;*/
+			PreparedStatement pstmt = connection.prepareStatement("SELECT * FROM users WHERE id=?");
+			pstmt.setInt(1, the_id);
+			ResultSet rs = pstmt.executeQuery();
+
+			u = User.makeUserID(rs.getInt("id"), rs.getString("username"), rs.getString("password"), 
+									rs.getString("email"), rs.getString("first_name"), rs.getString("last_name"),
+									rs.getString("address"));
+
+		}catch(SQLException e) {
+			// if the error message is "out of memory", 
+			// it probably means no database file is found
+			e.printStackTrace();
+			// Do not print error if the error is because no results were found
+			if (!e.getMessage().equals("ResultSet closed")){ 
+				System.err.println("SQL Error: " + e.getMessage());
+			}
+		}
+		
+		return u;
 	}
-	
 	
 	/**
 	 * Private helper method that establishes a connection to the database
