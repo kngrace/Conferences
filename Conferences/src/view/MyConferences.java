@@ -20,6 +20,7 @@ import control.ConferenceControl;
  * @author Nikhila & Marilyn
  * @version 06.06.2014
  * 
+ */
 public class MyConferences {
 	
 	/**
