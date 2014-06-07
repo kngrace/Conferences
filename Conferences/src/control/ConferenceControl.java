@@ -406,14 +406,8 @@ public class ConferenceControl {
 				Conference c = new Conference(
 						rs.getInt("id"), 
 						rs.getString("name"), 
-						User.makeUserID(
-								rs.getInt("user_id"), 
-								rs.getString("username"),
-								rs.getString("password"),
-								rs.getString("email"), 
-								rs.getString("first_name"), 
-								rs.getString("last_name"), 
-								rs.getString("address")),
+						UserControl.getUserByID(
+								rs.getInt("user_id")),
 						rs.getDate("accept_papers_start"),
 						rs.getDate("accept_papers_end"),
 						rs.getDate("conference_start"),
