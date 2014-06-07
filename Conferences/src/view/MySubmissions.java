@@ -1,39 +1,46 @@
 package view;
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Date;
 import java.util.List;
 
-import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import model.AccessLevel;
 import model.Conference;
 import model.Session;
-import model.User;
 import control.ConferenceControl;
 
-
+/**
+ * Displays all the conferences in which a manuscript was submitted by the user. 
+ * 
+ * @author Nikhila & Marilyn
+ * @version 06.06.2014
+ *
+ */
 public class MySubmissions {
 
-	private JFrame frame;
-	
-	
+	/**
+	 * Session containing the current user.
+	 */
 	private Session session;
-	
+
+	/**
+	 * Panel with all the main information.
+	 */
 	private JPanel panel;
-	
+
+	/**
+	 * panel that can be transported and repainted. 
+	 */
 	private JPanel panel_1;
-	
 
 	/**
 	 * Create the application.
+	 * 
+	 * @param the_session to be assigned to my_session
 	 */
 	public MySubmissions(Session the_session) {
 		session = the_session;
@@ -44,30 +51,25 @@ public class MySubmissions {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		
-		frame = new JFrame();
-		frame.getContentPane().setBackground(Color.ORANGE);
-		frame.setBounds(100, 100, 699, 467);
-		frame.getContentPane().setLayout(null);
-		
-		
+
 		panel = new JPanel();
 		panel_1 = new JPanel();
 		panel.setBounds(0, 0, 683, 428);
 		panel_1.setBounds(0, 0, 536, 345);
-		frame.getContentPane().add(panel);
 		panel.setLayout(null);
 		panel_1.setLayout(null);
-		
+
 		panel.add(panel_1);
-		
+
 		panel_1.setBackground(Color.ORANGE);
-				
+
 		panel.setLayout(null);
-		
+
+		//All the conferences in which the current user is an author. 
 		final List<Conference> lst = 
 				ConferenceControl.getConferences(session.getCurrentUser(), AccessLevel.AUTHOR);
 		
+		//Ability to select a conferences from the list of conferences 
 		final JComboBox comboBox = new JComboBox();
 		if(lst != null && !lst.isEmpty()) {
 			String label = "Select a Conference";
@@ -93,49 +95,55 @@ public class MySubmissions {
 		}
 		comboBox.setBounds(21, 22, 174, 23);
 		panel_1.add(comboBox);
-		
-		
+
+
 		int x = 27;
-		
+
+		// When list is not empty displays all of the conferences and their details
 		if((!lst.isEmpty()) && (lst != null)) {
 			for(int i = 0; i < lst.size(); i++) {
-				
+
 				JLabel label = new JLabel(lst.get(i).getName());
 				x += 50;
 				label.setBounds(21, x, 400, 20);
 				panel_1.add(label);
-		
+
 				JLabel dateSub = new JLabel("Open: " + lst.get(i).getPaperStart().toString());
-				
+
 				dateSub.setBounds(21, x + 20, 100, 20);
 				panel_1.add(dateSub);
-				
+
 				JLabel dateConf = new JLabel("Deadline: " + lst.get(i).getPaperEnd().toString());
-				
+
 				dateConf.setBounds(184, x + 20, 200, 20);
-				
+
 				panel_1.add(dateConf);
-				
-				
-				
+
+
+
 			}
-		} else {
+		} else { //When list is empty then no conferences are found message is displayed.
 			JLabel empty = new JLabel("No Conferences Found!");
 			empty.setBounds(27, 80, 400, 20);
 			panel_1.add(empty);
 		}
-		
-		
-		frame.getContentPane().add(panel);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		
+
 	}
-	
+
+	/**
+	 * Main panel with all of the components. 
+	 * 
+	 * @return panel
+	 */
 	public JPanel getPanel() {
 		return panel;
 	}
-	
+
+	/**
+	 * Panel_1 that can be repainted. 
+	 * 
+	 * @return panel_1
+	 */
 	public JPanel getPanel_1() {
 		return panel_1;
 	}
