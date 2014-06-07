@@ -1,39 +1,39 @@
 package view;
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Date;
 import java.util.List;
 
-import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import model.AccessLevel;
 import model.Conference;
 import model.Session;
-import model.User;
 import control.ConferenceControl;
 
 
 public class MyConferences {
-
-	private JFrame frame;
 	
-	
+	/**
+	 * Session with the current user. 
+	 */
 	private Session session;
 	
+	/**
+	 * Main panel containing all of the components.
+	 */
 	private JPanel panel;
 	
+	/**
+	 * Panel_1 containing the components inside the panel.
+	 */
 	private JPanel panel_1;
 	
-
 	/**
-	 * Create the application.
+	 * Creating the application.
+	 * 
+	 * @param the_session to be assigned to session
 	 */
 	public MyConferences(Session the_session) {
 		session = the_session;
@@ -44,18 +44,11 @@ public class MyConferences {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		
-		frame = new JFrame();
-		frame.getContentPane().setBackground(Color.ORANGE);
-		frame.setBounds(100, 100, 699, 467);
-		frame.getContentPane().setLayout(null);
-		
-		
+
 		panel = new JPanel();
 		panel_1 = new JPanel();
 		panel.setBounds(0, 0, 683, 428);
 		panel_1.setBounds(0, 0, 536, 345);
-		frame.getContentPane().add(panel);
 		panel.setLayout(null);
 		panel_1.setLayout(null);
 		
@@ -64,8 +57,10 @@ public class MyConferences {
 		panel.setLayout(null);
 		panel_1.setBackground(Color.ORANGE);
 		
+		//Gets the list of the conference that the user has a role in and then displays them.
 		final List<Conference> lst = ConferenceControl.getConferences(session.getCurrentUser());
 		
+		//Selects a conference from the drop-down menu. 
 		final JComboBox comboBox = new JComboBox();
 		if(lst != null && !lst.isEmpty()) {
 			String label = "Select a Conference";
@@ -92,8 +87,8 @@ public class MyConferences {
 		comboBox.setBounds(21, 22, 174, 23);
 		panel_1.add(comboBox);
 		
-		int x = 27;
-		
+		int x = 17;
+		//Displays all of the conferences and their submission dates and roles 
 		if(lst != null && !lst.isEmpty()) {
 			for(int i = 0; i < lst.size(); i++) {
 				
@@ -118,23 +113,25 @@ public class MyConferences {
 				
 				panel_1.add(access);
 			}
-		} else {
+		} else { //If the user has no role in any conference then this message is displayed. 
 			JLabel empty = new JLabel("No Conferences Found!");
 			empty.setBounds(27, 80, 400, 20);
 			panel_1.add(empty);
 		}
-		
-		
-		frame.getContentPane().add(panel);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		
 	}
 	
+	/**
+	 * returns the main panel.
+	 * @return panel
+	 */
 	public JPanel getPanel() {
 		return panel;
 	}
 	
+	/**
+	 * Returns the panel_1 that represents this panel. 
+	 * @return panel_1
+	 */
 	public JPanel getPanel_1() {
 		return panel_1;
 	}
