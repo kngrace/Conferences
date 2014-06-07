@@ -271,7 +271,7 @@ public class Manuscript extends Observable {
 	 * false otherwise.
 	 */
 	private boolean sessionHasAccessLevelOf(AccessLevel theAccessLevel, Session theSession) {
-		System.out.println(ConferenceControl.getAccessLevel(this.getConference(), theSession.getCurrentUser()));
+	//	System.out.println(ConferenceControl.getAccessLevel(this.getConference(), theSession.getCurrentUser()));
 		
 		return ConferenceControl.getAccessLevel(this.getConference(), theSession.getCurrentUser()).
 				compareTo(theAccessLevel) >= 0;
