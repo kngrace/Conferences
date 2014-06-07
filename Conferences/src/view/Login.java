@@ -4,8 +4,6 @@ import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.TextEvent;
-import java.awt.event.TextListener;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
@@ -23,24 +21,53 @@ import control.UserControl;
 
 
 /**
+ * Represents the main log-in screen. 
  * 
  * @author Nikhila and Marilyn
- * @version 05/28/2014
+ * @version 06.06.2014
  *
  */
 public class Login {
 
+	/**
+	 * The main window in which the system runs. 
+	 */
 	private JFrame frame;
+	
+	/**
+	 * The user name text field to be authenticated
+	 */
 	private JTextField usernameField;
+	
+	/**
+	 * The password to be authenticated
+	 */
 	private JPasswordField passwordField;
+	
+	/**
+	 * Banner at the top of the window. 
+	 */
 	private JPanel banner;
+	
+	/**
+	 * Panel for all the components. 
+	 */
 	private JPanel panel;
-	private JLabel lblNewLabel;
 	
+	/**
+	 * The message label for wrong authentication.
+	 */
+	private JLabel warninglabel;
+	
+	/**
+	 * The username used for authentication.
+	 */
 	private String username;
-	private String password;
 	
-	private Session session;
+	/**
+	 * password used for authentication.
+	 */
+	private String password;
 
 	/**
 	 * Launch the application.
@@ -81,16 +108,17 @@ public class Login {
 		
 		panel.setBackground(Color.ORANGE);
 		
+		//Login submit button which authorizes the user's username and password
 		JButton loginSubmit = new JButton("Submit");
 		loginSubmit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				System.out.println(username + " " + password);
 				User test = UserControl.authenticate(username, password);
 				if(test == null) {
-					lblNewLabel = new JLabel("The username or password is incorrect please try again!");
-					lblNewLabel.setForeground(Color.RED);
-		          	lblNewLabel.setBounds(227, 128, 322, 14);
-		          	panel.add(lblNewLabel);
+					warninglabel = new JLabel("The username or password is incorrect please try again!");
+					warninglabel.setForeground(Color.RED);
+		          	warninglabel.setBounds(227, 128, 322, 14);
+		          	panel.add(warninglabel);
 		        
 		          	frame.getContentPane().add(panel);
 				  	frame.repaint();
@@ -100,6 +128,7 @@ public class Login {
 				  	final UserHome home = new UserHome(newUser);
 
 				  	
+				  	//Logout button which comes back to the log in page. 
 					JButton logoutButton = new JButton("Logout");
 					logoutButton.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
@@ -125,7 +154,7 @@ public class Login {
 		loginSubmit.setBounds(240, 233, 89, 23);
 		panel.add(loginSubmit);
 		
-		
+		//If user is not in database fills out information and then comes back to login screen
 		JButton newUserButton = new JButton("New User?");
 		newUserButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -138,7 +167,6 @@ public class Login {
 						ArrayList<String> temp = user.getInfo();
 						User new_user = new User(temp.get(0), temp.get(1), temp.get(2), 
 								temp.get(3), temp.get(4), temp.get(5));
-						UserControl.createUser(new_user);
 				
 						frame.remove(user.getPanel_1());
 						frame.getContentPane().add(panel);
@@ -154,6 +182,7 @@ public class Login {
 		newUserButton.setBounds(351, 233, 112, 23);
 		panel.add(newUserButton);
 		
+		//Listens to the text field for username. 
 		usernameField = new JTextField();
 		usernameField.getDocument().addDocumentListener(new DocumentListener() {
 			public void changedUpdate(DocumentEvent e) {
@@ -184,6 +213,7 @@ public class Login {
 		lblPassword.setBounds(252, 187, 66, 14);
 		panel.add(lblPassword);
 		
+		//Listens to password field 
 		passwordField = new JPasswordField();
 		passwordField.getDocument().addDocumentListener(new DocumentListener() {
 			public void changedUpdate(DocumentEvent e) {
@@ -200,12 +230,11 @@ public class Login {
 				password = new String(passwordField.getPassword());	
 			}
 		});
-	
 		passwordField.setBounds(328, 184, 112, 20);
 		panel.add(passwordField);
 		
 		
-		
+		//Banner setup. 
 		banner = new JPanel();
 		banner.setBackground(new Color(176, 196, 222));
 		banner.setBounds(0, 0, 690, 82);
@@ -214,6 +243,11 @@ public class Login {
 	}
 
 
+	/**
+	 * Panel for the log-in window components. 
+	 * 
+	 * @return panel
+	 */
 	public JPanel getPanel() {
 		return panel;
 	}
