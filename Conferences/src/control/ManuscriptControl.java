@@ -1059,14 +1059,7 @@ public class ManuscriptControl {
 
 				Manuscript m = new Manuscript(
 						rs.getInt("manuscript_id"), 
-						User.makeUserID(
-								rs.getInt("user_id"), 
-								rs.getString("username"),
-								rs.getString("password"),
-								rs.getString("email"), 
-								rs.getString("first_name"), 
-								rs.getString("last_name"), 
-								rs.getString("address")), 
+						UserControl.getUserByID(rs.getInt("user_id")),
 						ConferenceControl.getConferenceByID(rs.getInt("conference")), 
 						rs.getString("file_name"), 
 						blobFile, 
