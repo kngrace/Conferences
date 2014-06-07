@@ -13,6 +13,13 @@ import model.Session;
 import control.ConferenceControl;
 
 
+/**
+ * 
+ * Represents all of the conferences that the user has a role in. 
+ * 
+ * @author Nikhila & Marilyn
+ * @version 06.06.2014
+ * 
 public class MyConferences {
 	
 	/**
