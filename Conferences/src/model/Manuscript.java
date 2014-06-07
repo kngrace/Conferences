@@ -82,7 +82,7 @@ public class Manuscript extends Observable {
 		myRecommendStatus = theRecommendStatus;
 		myFinalStatus = theFinalStatus;
 		isSubmitted = theIsSubmitted;
-		myReviews = new ArrayList<Review>();
+		
 	}
 	
 	/**
@@ -107,6 +107,7 @@ public class Manuscript extends Observable {
 		myRecommendStatus = Status.UNDECIDED;
 		myFinalStatus = Status.UNDECIDED;
 		isSubmitted = true;
+		myReviews = new ArrayList<Review>();
 		// assign ID AFTER field have been initialized, so that all fields
 		// get stored in the database.
 		myID = ManuscriptControl.createManuscript(this);
@@ -248,7 +249,7 @@ public class Manuscript extends Observable {
 		    	System.out.println("addReview() failed: Either too many Reviews "
 		    			+ "or this Manuscript already contains this Review!");
 		    	return false;
-		    } 
+		    }
 		} else {
 			throw new IllegalStateException("User does not have access to add Reviewer "
 					+ "to Manuscript!");
