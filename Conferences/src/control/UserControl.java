@@ -52,6 +52,13 @@ public class UserControl {
 		return null; // no error
 	}
 	
+	/**
+	 * Takes a User object and adds them to the database. If the
+	 * process fails a '0' is returned, otherwise the User is added and
+	 * its ID is returned.
+	 * @param theUser User object to save to the database.
+	 * @return Integer representation of User's ID number.
+	 */
 	public static int createUser(User theUser){
 		checkConnection();
 		try {
@@ -84,6 +91,10 @@ public class UserControl {
 		return 0;
 	}
 	
+	/**
+	 * Assembles a list of all users from the database.
+	 * @return All users from the database represented in a list.
+	 */
 	public static List<User> getUsers(){
 		// Establish a connection if one does not exist
 				checkConnection();
@@ -117,6 +128,14 @@ public class UserControl {
 				return null;
 	}
 	
+	/**
+	 * Finds a User with the given username if such a User exists, and checks
+	 * to ensure that the given password matches the User's password. If the two
+	 * strings match, the User is returned, otherwise the method returns null.
+	 * @param the_user String representing the User's unique username.
+	 * @param the_pass String representing a password designed to prevent unauthorized access.
+	 * @return The requested User if authentication is successful, null otherwise.
+	 */
 	public static User authenticate(final String the_user, final String the_pass) {
 		checkConnection();
 		User login = null;
@@ -124,31 +143,16 @@ public class UserControl {
 			PreparedStatement pstmt = connection.prepareStatement("SELECT * FROM users WHERE username=?");
 			pstmt.setString(1, the_user);
 			ResultSet rs = pstmt.executeQuery();
-			
 			if (rs.getString("password").equals(the_pass)) {
-				
-				// Iterate through ResultSet, creating/adding each conference to the List
 							login = User.makeUserID(rs.getInt("id"), rs.getString("username"), rs.getString("password"), 
 									rs.getString("email"), rs.getString("first_name"), rs.getString("last_name"),
 									rs.getString("address"));
-									/*new User(
-										rs.getInt("id"), 
-										rs.getString("username"),
-										rs.getString("password"),
-										rs.getString("email"), 
-										rs.getString("first_name"), 
-										rs.getString("last_name"), 
-										rs.getString("address")
-									);*/
-				
-				
 			}
 		} catch (final SQLException e) {
 			if (!e.getMessage().equals("ResultSet closed")){ 
 				System.err.println("SQL Error: " + e.getMessage());
 			}
 		}
-
 		return login;
 	}
 	
@@ -158,22 +162,18 @@ public class UserControl {
 		return arr;
 	}
 	
+	/**
+	 * Attempts to retrieve a user from the database based on their ID number.
+	 * If no such User exists, this method returns null.
+	 * @param the_id The ID of the User to retrieve.
+	 * @return A user with an ID matching the one requested.
+	 */
 	public static User getUserByID(final int the_id) {
 		User u = null;
-		
-		
 		checkConnection();
-		// Request the AccessLevel from the database users_conferences
 		try {
 			Statement statement = connection.createStatement();
 			statement.setQueryTimeout(30);  // set timeout to 30 sec.
-			/*ResultSet rs = statement.executeQuery("SELECT access_level FROM users_conferences "
-					+ "WHERE conference_id=" + conferenceID + " AND user_id=" + userID);
-			
-			System.out.println("The value is: " + rs.getInt("access_level"));
-			AccessLevel al = AccessLevel.accessLevelOf(rs.getInt("access_level"));
-			
-			return al;*/
 			PreparedStatement pstmt = connection.prepareStatement("SELECT * FROM users WHERE id=?");
 			pstmt.setInt(1, the_id);
 			ResultSet rs = pstmt.executeQuery();
@@ -182,7 +182,7 @@ public class UserControl {
 									rs.getString("email"), rs.getString("first_name"), rs.getString("last_name"),
 									rs.getString("address"));
 
-		}catch(SQLException e) {
+		} catch(SQLException e) {
 			// if the error message is "out of memory", 
 			// it probably means no database file is found
 			e.printStackTrace();
