@@ -8,6 +8,7 @@ package model;
 import java.io.File;
 
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -36,9 +37,8 @@ public class Manuscript extends Observable {
 	private Status myRecommendStatus; // = UNDECIDED
 	private Status myFinalStatus; // = UNDECIDED
 	private User mySPC;
-	private List<User> myReviewers;
 	private List<Review> myReviews;
-	private Map<Review, User> myReviewToReviewer;
+
 	
 	/*
 	 * DEPRECATED
@@ -82,6 +82,7 @@ public class Manuscript extends Observable {
 		myRecommendStatus = theRecommendStatus;
 		myFinalStatus = theFinalStatus;
 		isSubmitted = theIsSubmitted;
+		myReviews = new ArrayList<Review>();
 	}
 	
 	/**
@@ -151,27 +152,19 @@ public class Manuscript extends Observable {
 		}
 	}
 	
-	public List<User> getReviewers(Session theSession) {
-		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)) {
-		    return myReviewers;
-		} else {
-			throw new IllegalStateException("User does not have access to get final status!");
-		}
-	}
-	
 	// Since unsubmit() is an Author action which has the lowest access level clearance,
 	// it does not need security via a Session parameter.
-	public void unsubmit(Session theSession) throws Exception {
+	public void unsubmit(Session theSession) throws IllegalArgumentException {
 		if (myAuthor == theSession.getCurrentUser()) {
 		    isSubmitted = false;
 		    ManuscriptControl.updateManuscript(this);
 		    notifyObservers();
 		} else {
-			throw new Exception("User is not the Author, so cannot unsubmit!");
+			throw new IllegalArgumentException("User is not the Author, so cannot unsubmit!");
 		}
 	}
 	
-	public void submit(Session theSession) throws Exception {
+	public void submit(Session theSession) throws IllegalArgumentException {
 		if (myAuthor == theSession.getCurrentUser()) {
 		    try {
 		        myFile = new File(myFileName);
@@ -182,7 +175,7 @@ public class Manuscript extends Observable {
 		    	System.out.println("File name is null!");
 		    } finally {}
 		} else {
-			throw new Exception("You are not the Author so you can't submit!");
+			throw new IllegalArgumentException("You are not the Author so you can't submit!");
 		}
 	}
 	
@@ -232,6 +225,10 @@ public class Manuscript extends Observable {
 		}
 	}
 	
+	public void setIsSubmitted(boolean submissionStatus) {
+		isSubmitted = submissionStatus;
+	}
+	
 	/**
 	 * Adds a Reviewer to this Manuscript.
 	 * @param theReviewer the User to be added to the list as a reviewer.
@@ -244,8 +241,6 @@ public class Manuscript extends Observable {
 		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)) {
 		    if (myReviews.size() < 4 && !myReviews.contains(theReview)) {
 		    	myReviews.add(theReview);
-		    	myReviewers.add(theReview.getReviewer());
-		    	myReviewToReviewer.put(theReview, theReview.getReviewer());
 			    ManuscriptControl.updateReview(theReview);
 			    notifyObservers();
 			    return true;
