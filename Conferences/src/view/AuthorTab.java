@@ -1,38 +1,56 @@
 package view;
 
 import java.awt.Color;
-import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import control.ManuscriptControl;
+import model.AccessLevel;
 import model.Conference;
 import model.Manuscript;
 import model.Session;
 import model.Status;
+import control.ManuscriptControl;
 
-
+/**
+ * Represents the author view of the conference. 
+ * 
+ * @author Nikhila Potharaj
+ * @version 06.06.2014
+ *
+ */
 public class AuthorTab {
 
-	private JFrame frame;
+	/**
+	 * Main panel containing all of the components. 
+	 */
+	private JPanel my_panel;
 
-	private JPanel panel;
-	
+	/**
+	 * The conference that is currently used for this tab. 
+	 */
 	private Conference my_conference;
-	
+
+	/**
+	 * The current user for this system at this time. 
+	 */
 	private Session my_session;
+
 
 	/**
 	 * Create the application.
+	 * 
+	 * @param the_conference to be assigned to myConference
+	 * @param the_session to be assigned to mySession
 	 */
 	public AuthorTab(Conference the_conference, Session the_session) {
 		my_conference = the_conference;
@@ -44,88 +62,165 @@ public class AuthorTab {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		frame = new JFrame();
-		frame.setBounds(100, 100, 554, 359);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.getContentPane().setLayout(null);
-		
-		panel = new JPanel();
-		panel.setBackground(Color.ORANGE);
-		panel.setBounds(0, 0, 536, 318);
-		frame.getContentPane().add(panel);
-		panel.setLayout(null);
-		
-		List<Manuscript> lst = ManuscriptControl.getManuscripts(my_conference, my_session.getCurrentUser());
+
+		my_panel = new JPanel();
+		my_panel.setBackground(Color.ORANGE);
+		my_panel.setBounds(0, 0, 536, 318);
+		my_panel.setLayout(null);
+
+		//Gets the manuscripts and displays them along with thier own additional functions. 
+		List<Manuscript> lst = ManuscriptControl.getManuscripts(my_conference, my_session.getCurrentUser(), AccessLevel.AUTHOR);
 		int i = 11;
-		for(final Manuscript m: lst) {
-		JLabel title = new JLabel("Title: " + m.getFile().getName());
-		title.setBounds(10, i, 270, 14);
-		panel.add(title);
-		
-		JLabel status = new JLabel(m.getFinalStatus(my_session).toString());
-		status.setBounds(311, i, 156, 14);
-		panel.add(status);
-		
-		JButton resubmit = new JButton("Resubmit");
-		resubmit.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				Date date = new Date();
-				if(my_conference.getPaperStart().before(date) 
-						&& my_conference.getPaperEnd().after(date)) {
-					
-		            final JFileChooser fc = new JFileChooser(); 
-		            int returnVal = fc.showOpenDialog(panel);
-		            if (returnVal == JFileChooser.APPROVE_OPTION) {
-		                File file = fc.getSelectedFile();
-		                Manuscript man = new Manuscript(my_session.getCurrentUser(), 
-		                		my_conference, file.getName(), file);
-		                ManuscriptControl.updateManuscript(man);
-		            } 
-				} else {
-					JLabel deadline = new JLabel("No Submissions Allowed Past Deadline!");
-					deadline.setBounds(10, 5, 300, 23);
-					panel.add(deadline);
-					panel.repaint();
-				}
+		if(lst != null && !lst.isEmpty()) { // displays manuscripts if list is not empty. 
+			for(final Manuscript m: lst) {
 				
-			}
-			
-		});
-		resubmit.setBounds(10, i + 25, 89, 23);
-		panel.add(resubmit);
-		
-		JButton delete = new JButton("Delete");
-		delete.addActionListener(new ActionListener() {
+				//Title of manuscript
+				JLabel title = new JLabel("Title: " + String.valueOf(m.getFile().getName()));
+				title.setBounds(10, i, 270, 14);
+				my_panel.add(title);
 
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				try {
-					m.unsubmit(my_session);
-				} catch (Exception e) {
-					e.printStackTrace();
+				
+				JLabel statusLab = new JLabel("Status: ");
+				statusLab.setBounds(250, i, 100, 14);
+				my_panel.add(statusLab);
+
+				//Current final status of the manuscript 
+				JLabel status = new JLabel(String.valueOf(m.getFinalStatus(my_session)));
+				status.setBounds(311, i, 156, 14);
+				my_panel.add(status);
+
+				//Function to resubmit the manuscript only if before the deadline. 
+				JButton resubmit = new JButton("Resubmit");
+				resubmit.addActionListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent arg0) {
+						Date date = new Date();
+						if(my_conference.getPaperStart().before(date) 
+								&& my_conference.getPaperEnd().after(date)) {
+
+							final JFileChooser fc = new JFileChooser(); 
+							int returnVal = fc.showOpenDialog(my_panel);
+							if (returnVal == JFileChooser.APPROVE_OPTION) {
+								File file = fc.getSelectedFile();
+								File output = new File(file.getName());
+								FileCopier copy = new FileCopier();
+								try {
+									copy.copyFileFrom(file, output);
+									m.submit(my_session);
+									Manuscript man = new Manuscript(my_session.getCurrentUser(), 
+											my_conference, file.getName(), file);
+									if(man.getFile().getName().equals(output.getName())) {
+										JOptionPane.showMessageDialog(my_panel, new JLabel("File has been re-submitted."));
+									}
+								} catch (IOException e) {
+									JOptionPane.showMessageDialog(my_panel, new JLabel("Please choose a valid file .txt"));
+									e.printStackTrace();
+								} catch (Exception e) {
+									JOptionPane.showMessageDialog(my_panel, new JLabel("Please choose a valid file .txt"));
+									e.printStackTrace();
+								}
+
+
+							} 
+						} else { //message if it is past the deadline. 
+							JLabel deadline = new JLabel("No Submissions Allowed Past Deadline!");
+							deadline.setBounds(10, 5, 300, 23);
+							my_panel.add(deadline);
+							my_panel.repaint();
+						}
+
+					}
+
+				});
+				resubmit.setBounds(10, i + 25, 89, 23);
+				my_panel.add(resubmit);
+
+				//function to delete the manuscript if before the deadline. 
+				JButton delete = new JButton("Delete");
+				delete.addActionListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent arg0) {
+						Date date = new Date();
+						if(my_conference.getPaperStart().before(date) 
+								&& my_conference.getPaperEnd().after(date)) {
+							try {
+								int reply = JOptionPane.showConfirmDialog(my_panel, "Are you sure you want to delete this manuscript?");
+								if(reply == JOptionPane.YES_OPTION) {
+									m.unsubmit(my_session);
+
+									JOptionPane.showMessageDialog(my_panel, "Successfully Deleted");
+								}
+								my_panel.repaint();
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						} else { // message if it is past the deadline. 
+							JOptionPane.showMessageDialog(my_panel, "Cannot change submission after Deadline");
+						}
+					} 
+				});
+				delete.setBounds(125, i + 25, 89, 23);
+				my_panel.add(delete);
+
+				//Download button to download the manuscript file. 
+				JButton download = new JButton("Download");
+				download.addActionListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent arg0) {
+						Date date = new Date();
+						if(my_conference.getPaperStart().before(date) 
+								&& my_conference.getPaperEnd().after(date)) {
+
+							final JFileChooser fc = new JFileChooser(); 
+							int returnVal = fc.showSaveDialog(my_panel);
+							if (returnVal == JFileChooser.APPROVE_OPTION) {
+								File input = new File(m.getFile().getName());
+								FileCopier copy = new FileCopier();
+								try {
+									copy.copyFileTo(m.getFile(), input);
+
+									if(m.getFile().getName().equals(input.getName())) {
+										JOptionPane.showMessageDialog(my_panel, new JLabel("File has been saved."));
+									}
+								} catch (IOException e) {
+									JOptionPane.showMessageDialog(my_panel, new JLabel("No File Found"));
+									e.printStackTrace();
+								} catch (Exception e) {
+									JOptionPane.showMessageDialog(my_panel, new JLabel("No File Found"));
+									e.printStackTrace();
+								}
+
+
+							} 
+						} 
+
+					}
+
+				});
+				download.setBounds(238, i + 25, 108, 23);
+				my_panel.add(download);
+
+				//If a final decision has been made other than Undecided the authors can see the reviews
+				if(m.getFinalStatus(my_session) != Status.UNDECIDED) { 
+					JButton reviews = new JButton("Download Reviews");
+					reviews.setBounds(370, 35, 143, 23);
+					my_panel.add(reviews);
 				}
+				i += 64;
 			}
-		});
-		delete.setBounds(125, i + 25, 89, 23);
-		panel.add(delete);
-		
-		JButton download = new JButton("Download");
-		download.setBounds(238, i + 25, 108, 23);
-		panel.add(download);
-		
-		if(m.getFinalStatus(my_session) == Status.APPROVED) { 
-			JButton reviews = new JButton("Download Reviews");
-			reviews.setBounds(370, 35, 143, 23);
-			panel.add(reviews);
-		}
-		 i += 64;
-		}
+		} 
 	}
-	
+
+	/**
+	 * Returns the panel with all of the manuscripts displayed and their functions. 
+	 * 
+	 * @return the panel. 
+	 */
 	public JPanel getPanel() {
-		return panel;
+		return my_panel;
 	}
 
 }
