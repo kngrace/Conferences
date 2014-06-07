@@ -4,7 +4,6 @@ import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -12,11 +11,17 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-
 import control.UserControl;
 import model.User;
 
 /**
+ * 
+ * This is the NewUser class.
+ * When a New User is created, the 
+ * program must go through the 
+ * necessary process to find out what
+ * kind of user he or she is, and then 
+ * the apprpriate allowances.
  * 
  * @author Nikhila and Marilyn
  * @version 05/28/2014
@@ -44,6 +49,8 @@ public class NewUser {
 	private JLabel lblNewLabel;
 
 	/**
+	 * This is the main method of New
+	 * User class.
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
@@ -60,6 +67,8 @@ public class NewUser {
 	}
 
 	/**
+	 * This is the initializations of 
+	 * NewUser class.
 	 * Create the application.
 	 */
 	public NewUser() {
