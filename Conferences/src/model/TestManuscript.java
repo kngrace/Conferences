@@ -47,6 +47,7 @@ public class TestManuscript {
 		myManuscript3 = new Manuscript(myUser2, myConference1, null, new File("sample3.txt"));
 		myReview1 = new Review(myUser2, "review1.txt", new File("review1.txt"), 
 				myManuscript1);
+		myReview2 = new Review(myUser1, "review2.txt", new File("review2.txt"), myManuscript1);
 		//myUser2.setAccess(myConference1, AccessLevel.AUTHOR);
 		//myUser1.setAccess(myConference1, AccessLevel.PROGRAMCHAIR);
 		mySession1 = new Session(myUser1);
@@ -93,18 +94,82 @@ public class TestManuscript {
 			System.err.println("File does not exist!");
 		}
 		assertTrue("Manuscript should now be submitted.", myManuscript1.isSubmitted());
-		exception.expect(Exception.class);
-		try {
-			myManuscript3.submit(mySession1);
-		} catch (FileNotFoundException e) {
-			System.err.println("File does not exist!");
-		} catch (Exception e) {
-			System.err.println("Exception was THROWN: " + mySession1.getCurrentUser() + " is not " + myManuscript3.getAuthor());
-		}	
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testSubmitException() {
+	      myManuscript3.submit(mySession1);	
 	}
 
 	@Test
 	public void testUnsubmit() {
-
+		myManuscript2.setIsSubmitted(true);
+		assertTrue("Manuscript should be submitted", myManuscript2.isSubmitted());
+		try {
+		    myManuscript2.unsubmit(mySession2);
+		} catch (Exception e) {
+			System.err.println("Cannot unsubmit: you are not the author!");
+		}
+		assertFalse("Manuscript should now be unsubmitted.", myManuscript2.isSubmitted());
+	}
+	
+	@Test (expected = IllegalArgumentException.class)
+	public void testUnsubmitException() {
+		myManuscript2.unsubmit(mySession1);
+	}
+	
+	@Test
+	public void testGetReviews() {
+		assertEquals("myManuscript2 should have no reviews.", 
+				myManuscript2.getReviews(mySession1).size(), 0);
+		assertEquals("myManuscript1 should have 1 review.", 
+				myManuscript1.getReviews(mySession1).size(), 1);
+	}
+	
+	@Test (expected = IllegalStateException.class)
+	public void testGetReviewsException() {
+		List<Review> myReviews = myManuscript1.getReviews(mySession2);
+	}
+	
+	@Test
+	public void testSetRecommendStatus() {
+		myManuscript2.setRecommendStatus(Status.APPROVED, mySession1);
+		assertEquals("Manuscript 2's recommend status should be approved.", 
+				myManuscript2.getRecommendStatus(), Status.APPROVED);
+		myManuscript2.setRecommendStatus(Status.REJECTED, mySession1);
+		assertEquals("Manuscript 2's recommend status now should be rejected.", 
+				myManuscript2.getRecommendStatus(), Status.REJECTED);
+	}
+	
+	@Test (expected = IllegalStateException.class)
+	public void testSetRecommendStatusException() {
+		// mySession2's current user does not have access to set a new recommendation in
+		// conference1
+		myManuscript2.setRecommendStatus(Status.APPROVED, mySession2);
+	}
+	
+	@Test 
+	public void testAssignSPC() {
+		myManuscript2.assignSPC(myUser2, mySession1);
+		assertEquals("myUser2 should now be SPC to myManuscript2", 
+				myManuscript2.getSPC(mySession1), myUser2);
+		myManuscript2.assignSPC(myUser1, mySession1);
+		assertEquals("myUser1 should now be SPC to myManuscript2", 
+				myManuscript2.getSPC(mySession1), myUser1);
+	}
+	
+	@Test (expected = IllegalStateException.class)
+	public void testAssignSPCException() {
+		// mySession2's current user does not have access to assign SPCs.
+		myManuscript2.assignSPC(myUser1, mySession2);
+	}
+	
+	@Test
+	public void testAddReview() {
+		assertEquals("Manuscript should have no reviews yet.", 
+				myManuscript2.getReviews(mySession1).size(), 0);
+		myManuscript2.addReview(myReview1, mySession1);
+		assertEquals("Manuscript should now have 1 review.", 
+				myManuscript2.getReviews(mySession1).size(), 1);
 	}
 }
