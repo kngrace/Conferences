@@ -584,10 +584,10 @@ public class ManuscriptControl {
 				+ " is returning as: " + al);
 		String column = "um.can_submit";
 		switch (al) {
-			case(0) : column = "um.can_submit";
-			case(1) : column = "um.can_review";
-			case(2) : column = "um.can_recommend";
-			case(3) : column = "um.can_final";
+			case 0 : column = "um.can_submit"; break;
+			case 1 : column = "um.can_review"; break;
+			case 2 : column = "um.can_recommend"; break;
+			case 3 : column = "um.can_final"; break;
 		}
 			
 		try {
