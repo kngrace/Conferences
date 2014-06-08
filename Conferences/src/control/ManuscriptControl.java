@@ -868,8 +868,8 @@ public class ManuscriptControl {
 			dis.readFully(fileData);  // read from file into byte[] array
 			dis.close();
 			
-			pstmt.setBytes(5, fileData);
-			pstmt.setInt(6, theReview.getID());
+			pstmt.setBytes(4, fileData);
+			pstmt.setInt(5, theReview.getID());
 			pstmt.executeUpdate();
 			
 		} catch(SQLException e) {
