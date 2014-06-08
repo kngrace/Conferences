@@ -598,6 +598,11 @@ public class ManuscriptControl {
 					+ " AND m.conference=" + Integer.toString(theConference.getId()) 
 					+ " AND " + column + "=1");
 			
+			System.out.println("User is: " + theUser.getFirstName()
+					+ ", Conference is: " + theConference.getName()
+					+ ", The Access Level is: " + theAccessLevel.name()
+					+ ", Which is for column: " + column);
+			
 			return iterateManuscripts(rs);
 
 		}catch(SQLException e) {
