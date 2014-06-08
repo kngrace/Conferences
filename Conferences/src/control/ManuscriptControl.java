@@ -572,6 +572,7 @@ public class ManuscriptControl {
 	 * 
 	 * @param theConference The conference that the requested manuscripts are part of
 	 * @param theUser The user being used as a filter for the manuscripts
+	 * @param theAccessLevel The access level being used as a filter for the manuscripts
 	 * @return A list of manuscripts the user has access to for this conference
 	 */
 	public static List<Manuscript> getManuscripts(final Conference theConference, 
@@ -579,6 +580,8 @@ public class ManuscriptControl {
 		checkConnection();		 
 		
 		int al = theAccessLevel.getValue();	
+		System.out.println("The value for " + theAccessLevel.name() 
+				+ " is returning as: " + al);
 		String column = "um.can_submit";
 		switch (al) {
 			case(0) : column = "um.can_submit";
