@@ -143,7 +143,8 @@ public class Manuscript extends Observable {
 	}
 	
 	public Status getFinalStatus(Session theSession) {
-		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)) {
+		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)
+				|| theSession.getCurrentUser() == myAuthor) {
 		    return myFinalStatus;
 		} else {
 			throw new IllegalStateException("User does not have access to get final status!");
