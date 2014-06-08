@@ -530,7 +530,8 @@ public class ManuscriptControl {
 	 * @param theUser The user being used as a filter for the manuscripts
 	 * @return A list of manuscripts the user has access to for this conference
 	 */
-	public static List<Manuscript> getManuscripts(final Conference theConference, final User theUser){
+	public static List<Manuscript> getManuscripts(final Conference theConference, 
+			final User theUser){
 		checkConnection();		 
 		try {
 			Statement statement = connection.createStatement();
@@ -573,7 +574,8 @@ public class ManuscriptControl {
 	 * @param theUser The user being used as a filter for the manuscripts
 	 * @return A list of manuscripts the user has access to for this conference
 	 */
-	public static List<Manuscript> getManuscripts(final Conference theConference, final User theUser, final AccessLevel theAccessLevel){
+	public static List<Manuscript> getManuscripts(final Conference theConference, 
+			final User theUser, final AccessLevel theAccessLevel){
 		checkConnection();		 
 		
 		int al = theAccessLevel.getValue();	
@@ -1057,6 +1059,15 @@ public class ManuscriptControl {
 				outStream.write(buffer); 
 				outStream.close(); 
 
+				// Check for an SPC before it is assigned
+				User spc;
+				int spcID = rs.getInt("spc");
+				if (spcID == 0) {
+					spc = null;
+				} else {
+					spc = UserControl.getUserByID(spcID);
+				}
+				
 				Manuscript m = new Manuscript(
 						rs.getInt("manuscript_id"), 
 						UserControl.getUserByID(rs.getInt("user_id")),
@@ -1065,7 +1076,8 @@ public class ManuscriptControl {
 						blobFile, 
 						Status.getStatus(rs.getInt("rec_status")), 
 						Status.getStatus(rs.getInt("final_status")), 
-						rs.getBoolean("submitted"));
+						rs.getBoolean("submitted"),
+						spc);
 				manuscriptMap.put(rs.getInt("manuscript_id"), m);
 				result.add(m);
 			}

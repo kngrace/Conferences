@@ -74,7 +74,8 @@ public class Manuscript extends Observable {
 	 * @param theSPC the User Sub-Program Chair this Manuscript is assigned to.
 	 */
 	public Manuscript(int theID, User theAuthor, Conference theConference, String theFileName,
-			File theFile, Status theRecommendStatus, Status theFinalStatus, boolean theIsSubmitted) {
+			File theFile, Status theRecommendStatus, Status theFinalStatus, boolean theIsSubmitted, 
+			User theSPC) {
 		myID = theID;
 		myAuthor = theAuthor;
 		myConference = theConference;
@@ -83,6 +84,7 @@ public class Manuscript extends Observable {
 		myRecommendStatus = theRecommendStatus;
 		myFinalStatus = theFinalStatus;
 		isSubmitted = theIsSubmitted;
+		mySPC = theSPC;
 		myReviews = ManuscriptControl.getReviews(this);
 		myReviewers = ManuscriptControl.getReviewers(this);
 	}
