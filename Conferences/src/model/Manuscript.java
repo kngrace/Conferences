@@ -74,8 +74,7 @@ public class Manuscript extends Observable {
 	 * @param theSPC the User Sub-Program Chair this Manuscript is assigned to.
 	 */
 	public Manuscript(int theID, User theAuthor, Conference theConference, String theFileName,
-			File theFile, Status theRecommendStatus, Status theFinalStatus, boolean theIsSubmitted,
-			List<Review> theReviews, List<User> theReviewers) {
+			File theFile, Status theRecommendStatus, Status theFinalStatus, boolean theIsSubmitted) {
 		myID = theID;
 		myAuthor = theAuthor;
 		myConference = theConference;
@@ -84,8 +83,8 @@ public class Manuscript extends Observable {
 		myRecommendStatus = theRecommendStatus;
 		myFinalStatus = theFinalStatus;
 		isSubmitted = theIsSubmitted;
-		myReviews = theReviews;
-		myReviewers = theReviewers;
+		myReviews = ManuscriptControl.getReviews(this);
+		myReviewers = ManuscriptControl.getReviewers(this);
 	}
 	
 	/**
@@ -185,15 +184,24 @@ public class Manuscript extends Observable {
 	}
 	
 	/**
-	 * @return A list of the Reviews for this Manuscript.
-	 * ATTN: I changed this methods signature, removing the User parameter.
-	 *       Class Diagram should be updated.
+	 * @param theSession the User's current Session.
+	 * @return Returns the Manuscript's Reviews. ProgramChairs always have access, 
+	 * SubprogramChairs have access is they are assigned to this Manuscript (this
+	 * case is handled by ManuscriptControl.getReviews()), Reviewers have access if
+	 * they are a Reviewer to this Manuscript (again, handled by ManuscriptControl),
+	 * and finally, author's have access only when a final decision has been made on 
+	 * this Manuscript by the Conference's ProgramChair (this case is handled by this
+	 * method).
 	 */
 	public List<Review> getReviews(Session theSession) {
-		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)) {
+		if (sessionHasAccessLevelOf(AccessLevel.REVIEWER, theSession)) {
 		    return ManuscriptControl.getReviews(this, theSession.getCurrentUser());
+		} else if (sessionHasAccessLevelOf(AccessLevel.AUTHOR, theSession)
+				&& this.getFinalStatus(theSession).compareTo(Status.UNDECIDED) != 0) {
+			// if the final decision is no longer undecided, then the author has access to the reviews
+			return ManuscriptControl.getReviews(this, theSession.getCurrentUser());	
 		} else {
-			throw new IllegalStateException("User does not have access to get reviews!");
+			throw new IllegalStateException("User does not have access to the Reviews!");
 		}
 	}
 	
