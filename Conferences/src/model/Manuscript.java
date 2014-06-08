@@ -38,6 +38,7 @@ public class Manuscript extends Observable {
 	private Status myFinalStatus; // = UNDECIDED
 	private User mySPC;
 	private List<Review> myReviews;
+	private List<User> myReviewers;
 
 	
 	/*
@@ -73,7 +74,8 @@ public class Manuscript extends Observable {
 	 * @param theSPC the User Sub-Program Chair this Manuscript is assigned to.
 	 */
 	public Manuscript(int theID, User theAuthor, Conference theConference, String theFileName,
-			File theFile, Status theRecommendStatus, Status theFinalStatus, boolean theIsSubmitted) {
+			File theFile, Status theRecommendStatus, Status theFinalStatus, boolean theIsSubmitted,
+			List<Review> theReviews, List<User> theReviewers) {
 		myID = theID;
 		myAuthor = theAuthor;
 		myConference = theConference;
@@ -82,7 +84,8 @@ public class Manuscript extends Observable {
 		myRecommendStatus = theRecommendStatus;
 		myFinalStatus = theFinalStatus;
 		isSubmitted = theIsSubmitted;
-		
+		myReviews = theReviews;
+		myReviewers = theReviewers;
 	}
 	
 	/**
@@ -108,6 +111,7 @@ public class Manuscript extends Observable {
 		myFinalStatus = Status.UNDECIDED;
 		isSubmitted = true;
 		myReviews = new ArrayList<Review>();
+		myReviewers = new ArrayList<User>();
 		// assign ID AFTER field have been initialized, so that all fields
 		// get stored in the database.
 		myID = ManuscriptControl.createManuscript(this);
@@ -197,7 +201,7 @@ public class Manuscript extends Observable {
 	public void setRecommendStatus(Status theStatus, Session theSession) {
 		if (sessionHasAccessLevelOf(AccessLevel.SUBPROGRAMCHAIR, theSession)) {
 		    myRecommendStatus = theStatus;
-		    ManuscriptControl.updateManuscript(this);
+		    ManuscriptControl.updateRecommend(this, theStatus);
 		    notifyObservers();
 		} else {
 			throw new IllegalStateException("User does not have access to recommend a manuscript!");
@@ -207,7 +211,7 @@ public class Manuscript extends Observable {
 	public void setFinalStatus(Status theStatus, Session theSession) {
 		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)) {
 		    myFinalStatus = theStatus;
-		    ManuscriptControl.updateManuscript(this);
+		    ManuscriptControl.updateFinal(this, theStatus);
 		    notifyObservers();
 		} else {
 			throw new IllegalStateException("User does not have access to set final status"
@@ -218,7 +222,18 @@ public class Manuscript extends Observable {
 	public void assignSPC(User theSPC, Session theSession) {
 		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)) {
 		    mySPC = theSPC;
-		    ManuscriptControl.updateManuscript(this);
+		    ManuscriptControl.updateSPC(this, theSPC);
+		    notifyObservers();
+		} else {
+			throw new IllegalStateException("User does not have access to set subprogramchair"
+					+ "to a manuscript!");
+		}
+	}
+	
+	public void assignReviewer(User theReviewer, Session theSession) {
+		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)) {
+		    myReviewers.add(theReviewer);
+		    ManuscriptControl.addReviewer(this, theReviewer);
 		    notifyObservers();
 		} else {
 			throw new IllegalStateException("User does not have access to set subprogramchair"
