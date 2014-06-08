@@ -197,7 +197,7 @@ public class Manuscript extends Observable {
 		if (sessionHasAccessLevelOf(AccessLevel.REVIEWER, theSession)) {
 		    return ManuscriptControl.getReviews(this, theSession.getCurrentUser());
 		} else if (sessionHasAccessLevelOf(AccessLevel.AUTHOR, theSession)
-				&& this.getFinalStatus(theSession).compareTo(Status.UNDECIDED) != 0) {
+				&& myFinalStatus.compareTo(Status.UNDECIDED) != 0) {
 			// if the final decision is no longer undecided, then the author has access to the reviews
 			return ManuscriptControl.getReviews(this, theSession.getCurrentUser());	
 		} else {
