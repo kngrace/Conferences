@@ -3,12 +3,15 @@ package view;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -17,6 +20,7 @@ import javax.swing.JPanel;
 import model.AccessLevel;
 import model.Conference;
 import model.Manuscript;
+import model.Review;
 import model.Session;
 import model.Status;
 import control.ManuscriptControl;
@@ -61,6 +65,7 @@ public class AuthorTab {
 	/**
 	 * Initialize the contents of the frame.
 	 */
+	@SuppressWarnings("unchecked")
 	private void initialize() {
 
 		my_panel = new JPanel();
@@ -109,7 +114,7 @@ public class AuthorTab {
 									FileCopier copy = new FileCopier();
 									try {
 										copy.copyFileFrom(file, output);
-										m.submit(my_session);
+										m.unsubmit(my_session);
 										Manuscript man = new Manuscript(my_session.getCurrentUser(), 
 												my_conference, file.getName(), file);
 										if(man.getFile().getName().equals(output.getName())) {
@@ -176,29 +181,23 @@ public class AuthorTab {
 							if(my_conference.getPaperStart().before(date) 
 									&& my_conference.getPaperEnd().after(date)) {
 
-								File input = new File(m.getFile().getName());
+								
 								FileCopier copy = new FileCopier();
 								final JFileChooser fc = new JFileChooser(); 
-								fc.setSelectedFile(input);
-								int returnVal = fc.showSaveDialog(my_panel);
-								if (returnVal == JFileChooser.APPROVE_OPTION) {
+								try {
 									
-									try {
+									int result = fc.showSaveDialog(my_panel);
+									File input = fc.getSelectedFile();
+									if(result == JFileChooser.APPROVE_OPTION) {
 										copy.copyFileTo(m.getFile(), input);
-										
-										if(m.getFile().getName().equals(input.getName())) {
-											JOptionPane.showMessageDialog(my_panel, new JLabel("File has been saved."));
-										}
-									} catch (IOException e) {
-										JOptionPane.showMessageDialog(my_panel, new JLabel("No File Found"));
-										e.printStackTrace();
-									} catch (Exception e) {
-										JOptionPane.showMessageDialog(my_panel, new JLabel("No File Found"));
-										e.printStackTrace();
+										JOptionPane.showMessageDialog(my_panel, new JLabel("File has been saved."));
 									}
-
-
-								} 
+								} catch (IOException e) {
+									JOptionPane.showMessageDialog(my_panel, new JLabel("No File Found"));
+								} catch (Exception e) {
+									JOptionPane.showMessageDialog(my_panel, new JLabel("No File Found"));
+								}
+								
 							} 
 
 						}
@@ -209,13 +208,54 @@ public class AuthorTab {
 
 					//If a final decision has been made other than Undecided the authors can see the reviews
 					if(m.getFinalStatus(my_session) != Status.UNDECIDED) { 
-						JButton reviews = new JButton("Download Reviews");
-						reviews.setBounds(370, 35, 143, 23);
+						final List<Review> r = m.getReviews(my_session);
+						final JComboBox reviews = new JComboBox();
+						reviews.setSelectedIndex(0);
+						reviews.addItem("Select a Review");
+						if(r != null && !r.isEmpty()) {
+							
+							for(int k = 0; k < r.size(); k++) {
+								reviews.addItem("Review " + k);
+							}
+							
+					
+							reviews.addActionListener(new ActionListener() {
+	
+								@Override
+								public void actionPerformed(ActionEvent e) {
+									
+									JComboBox cb = (JComboBox)e.getSource();
+									int index = cb.getSelectedIndex();
+									
+									if(index != 0) {
+										FileCopier copy = new FileCopier();
+										final JFileChooser fc = new JFileChooser(); 
+										try {
+											
+											int result = fc.showSaveDialog(my_panel);
+											File input = fc.getSelectedFile();
+											if(result == JFileChooser.APPROVE_OPTION) {
+												copy.copyFileTo(r.get(index - 1).getFile(), input);
+												JOptionPane.showMessageDialog(my_panel, new JLabel("File has been saved."));
+											}
+										} catch (IOException e1) {
+											JOptionPane.showMessageDialog(my_panel, new JLabel("No File Found"));
+										} catch (Exception e2) {
+											JOptionPane.showMessageDialog(my_panel, new JLabel("No File Found"));
+										}
+									}
+								
+								
+								
+							}
+							
+						});
+						reviews.setBounds(370, i + 24, 143, 23);
 						my_panel.add(reviews);
 					}
 					i += 64;
 				}
-			}
+			}}
 		} else { // If there are no manuscripts 
 			JLabel none = new JLabel("No Manuscripts Submitted");
 			none.setBounds(15, 15, 200, 20);
