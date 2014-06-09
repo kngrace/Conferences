@@ -1,5 +1,6 @@
 package view;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -8,6 +9,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
 import model.Session;
@@ -67,14 +69,14 @@ public class UserHome {
 
 		panel = new JPanel();
 		panel.setBackground(Color.ORANGE);
-		panel.setBounds(0, 0, 683, 428);
+		panel.setBounds(0, 0, 715, 500);
 		panel.setLayout(null);
 
 		panel.setBackground(Color.ORANGE);
 
 		//Top border of the panel.
 		JPanel panel_1 = new JPanel();
-		panel_1.setBounds(0, 83, 148, 345);
+		panel_1.setBounds(0, 83, 148, 400);
 		panel.add(panel_1);
 		panel_1.setBackground(new Color(176, 196, 222));
 		panel_1.setLayout(null);
@@ -96,7 +98,7 @@ public class UserHome {
 				panel_3.removeAll();
 				panel_3.setLayout(null);
 				MySubmissions mySub = new MySubmissions(session);
-				sub_panel = mySub.getPanel_1();
+				sub_panel = mySub.getPanel();
 				panel_3.add(sub_panel);
 				panel_3.repaint();
 
@@ -112,7 +114,7 @@ public class UserHome {
 				MyConferences myConf = new MyConferences(session);
 				panel_3.removeAll();
 				panel_3.setLayout(null);
-				conf_panel = myConf.getPanel_1();
+				conf_panel = myConf.getPanel();
 				panel_3.add(conf_panel);
 				panel_3.repaint();
 			}
@@ -127,7 +129,7 @@ public class UserHome {
 				AllConferences allconf = new AllConferences(session);
 				panel_3.removeAll();
 				panel_3.setLayout(null);
-				confs_panel = allconf.getPanel_1();
+				confs_panel = allconf.getPanel();
 				panel_3.add(confs_panel);
 				panel_3.repaint();
 			}
@@ -137,14 +139,17 @@ public class UserHome {
 		//Panel at the top.
 		JPanel panel_2 = new JPanel();
 		panel_2.setBackground(new Color(176, 196, 222));
-		panel_2.setBounds(0, 0, 690, 82);
+		panel_2.setBounds(0, 0, 715, 82);
 		panel.add(panel_2);
 
 		panel_3 = new JPanel();
-		panel_3.setBounds(147, 83, 536, 345);
+		panel_3.setBounds(147, 83, 600, 400);
+
 		panel_3.setLayout(null);
-		panel.add(panel_3);
 		panel_3.setBackground(Color.ORANGE);
+		panel.add(panel_3);
+		
+		
 	}
 
 	/**
