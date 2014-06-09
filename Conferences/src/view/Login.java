@@ -1,6 +1,7 @@
 package view;
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -97,7 +98,8 @@ public class Login {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 706, 476);
+		frame.setPreferredSize(new Dimension(706, 486));
+		frame.setBounds(100, 100, 715, 486);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new CardLayout(0, 0));
 		frame.setBackground(Color.ORANGE);
@@ -237,7 +239,7 @@ public class Login {
 		//Banner setup. 
 		banner = new JPanel();
 		banner.setBackground(new Color(176, 196, 222));
-		banner.setBounds(0, 0, 690, 82);
+		banner.setBounds(0, 0, 715, 82);
 		panel.add(banner);
 		
 	}
