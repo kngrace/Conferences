@@ -1,5 +1,6 @@
 package view;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -9,6 +10,8 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 
 import model.Conference;
 import model.Session;
@@ -57,13 +60,12 @@ public class AllConferences {
 
 		panel = new JPanel();
 		panel_1 = new JPanel();
-		panel.setBounds(0, 0, 683, 428);
-		panel_1.setBounds(0, 0, 536, 345);
+		panel.setBounds(0, 0, 600, 400);
+		panel_1.setPreferredSize(new Dimension(600, 1000));
 		panel.setLayout(null);
 		panel_1.setLayout(null);
 		panel_1.setBackground(Color.ORANGE);
 
-		panel.add(panel_1);
 
 		panel.setLayout(null);
 
@@ -85,9 +87,9 @@ public class AllConferences {
 					JComboBox cb = (JComboBox)e.getSource();
 					int index = cb.getSelectedIndex();
 					UserScreen tabs = new UserScreen(lst.get(index - 1), session);
-					panel_1.removeAll();
-					panel_1.add(tabs.getTab());
-					panel_1.repaint();	
+					panel.removeAll();
+					panel.add(tabs.getTab());
+					panel.repaint();	
 				}
 			});
 		} else {
@@ -100,7 +102,11 @@ public class AllConferences {
 		JButton btnNewButton1 = new JButton("Add A Conference");
 		btnNewButton1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				//new window for adding a conf.
+				panel_1.removeAll();
+				AddConference ac = new AddConference(session); 
+				panel_1.add(ac.getPanel_1());
+				panel_1.repaint();
+				
 			}
 		});
 		btnNewButton1.setBounds(283, 22, 174, 23);
@@ -134,6 +140,19 @@ public class AllConferences {
 			empty.setBounds(27, 80, 400, 20);
 			panel_1.add(empty);
 		}
+		
+		
+
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+		scrollPane.setBounds(0, 0, 550, 360);
+		scrollPane.setViewportView(panel_1);
+		
+		panel.add(scrollPane);
+		
+
+		
 	}
 	
 	/**
