@@ -1,5 +1,6 @@
 package view;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -7,6 +8,8 @@ import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 
 import model.AccessLevel;
 import model.Conference;
@@ -54,8 +57,8 @@ public class MySubmissions {
 
 		panel = new JPanel();
 		panel_1 = new JPanel();
-		panel.setBounds(0, 0, 683, 428);
-		panel_1.setBounds(0, 0, 536, 345);
+		panel.setBounds(0, 0, 600, 400);
+		panel_1.setPreferredSize(new Dimension(600, 1000));
 		panel.setLayout(null);
 		panel_1.setLayout(null);
 
@@ -127,6 +130,14 @@ public class MySubmissions {
 			empty.setBounds(27, 80, 400, 20);
 			panel_1.add(empty);
 		}
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollPane.setBounds(0, 0, 550, 360);
+		scrollPane.setViewportView(panel_1);
+		
+		panel.add(scrollPane);
 
 	}
 
