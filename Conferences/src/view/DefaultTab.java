@@ -56,11 +56,9 @@ public class DefaultTab extends Observable {
 	 */
 	private void initialize() {
 		
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(0, 0, 531, 318);
 		
 		panel = new JPanel();
-		scrollPane.setViewportView(panel);
+		panel.setBounds(0, 0, 560, 330);
 		panel.setBackground(Color.ORANGE);
 		panel.setLayout(null);
 		
