@@ -1,6 +1,9 @@
 package view;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -15,13 +18,17 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 
 import model.AccessLevel;
 import model.Conference;
 import model.Manuscript;
+import model.Review;
 import model.Session;
 import model.Status;
 import model.User;
+import control.ConferenceControl;
 import control.ManuscriptControl;
 import control.UserControl;
 
@@ -34,17 +41,22 @@ import control.UserControl;
  *
  */
 public class PCTab {
-	
+
+	/**
+	 * Panel containing all of the components.
+	 */
+	private JPanel out_panel;
+
 	/**
 	 * Panel containing all of the components.
 	 */
 	private JPanel panel;
-	
+
 	/**
 	 * The conference for this tab.
 	 */
 	private Conference my_conference;
-	
+
 	/**
 	 * The user using the system. 
 	 */
@@ -67,171 +79,236 @@ public class PCTab {
 	 */
 	@SuppressWarnings("unchecked")
 	private void initialize() {
-		
+
+		out_panel = new JPanel();
+
 		panel = new JPanel();
 		panel.setBackground(Color.ORANGE);
-		panel.setBounds(0, 0, 537, 318);
+		out_panel.setPreferredSize(new Dimension(550, 400));
 		panel.setLayout(null);
-		
+
+		panel.setPreferredSize(new Dimension(550, 400));
+
+
+
 		List<Manuscript> lst = ManuscriptControl.getManuscripts(my_conference, 
 				my_session.getCurrentUser(), AccessLevel.PROGRAMCHAIR);
-		
+
 		int i = 11;
-		
-		
+
+
 		// Adds in all of the components needed for one manuscript.
 		if(lst != null && !lst.isEmpty()) {
-		for(final Manuscript m: lst) {
-			
-			//title
-			JLabel title = new JLabel("Title: " + m.getFile().getName());
-			title.setBounds(10, i, 264, 14);
-			panel.add(title);
-			
-			//Author of the manuscript.
-			JLabel author = new JLabel("Author: " 
-					+ m.getAuthor().getFirstName() + " " 
-					+ m.getAuthor().getLastName());
-			author.setBounds(284, i, 159, 14);
-			panel.add(author);
-			
-			//Download button to download the manuscript
-			JButton download = new JButton("Download");
-			download.addActionListener(new ActionListener() {
+			for(final Manuscript m: lst) {
+				if(m.isSubmitted()) {
 
-				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					Date date = new Date();
-					if(my_conference.getPaperStart().before(date) 
-							&& my_conference.getPaperEnd().after(date)) {
-						
-			            final JFileChooser fc = new JFileChooser(); 
-			            int returnVal = fc.showSaveDialog(panel);
-			            if (returnVal == JFileChooser.APPROVE_OPTION) {
-			                File input = new File(m.getFile().getName());
-			                FileCopier copy = new FileCopier();
-			                try {
-								copy.copyFileTo(m.getFile(), input);
+					panel.setPreferredSize(new Dimension(550, i + 100));
 
-				                if(m.getFile().getName().equals(input.getName())) {
-									JOptionPane.showMessageDialog(panel, new JLabel("File has been saved."));
+
+					//title
+					JLabel title = new JLabel("Title: " + m.getFile().getName());
+					title.setBounds(10, i, 264, 14);
+					panel.add(title);
+
+					//Author of the manuscript.
+					JLabel author = new JLabel("Author: " 
+							+ m.getAuthor().getFirstName() + " " 
+							+ m.getAuthor().getLastName());
+					author.setBounds(284, i, 159, 14);
+					panel.add(author);
+
+					//Download button to download the manuscript
+					JButton download = new JButton("Download");
+					download.addActionListener(new ActionListener() {
+
+						@Override
+						public void actionPerformed(ActionEvent arg0) {
+							Date date = new Date();
+							if(my_conference.getPaperStart().before(date) 
+									&& my_conference.getPaperEnd().after(date)) {
+
+
+
+								FileCopier copy = new FileCopier();
+								final JFileChooser fc = new JFileChooser(); 
+								try {
+
+									int result = fc.showSaveDialog(panel);
+									File input = fc.getSelectedFile();
+									if(result == JFileChooser.APPROVE_OPTION) {
+										copy.copyFileTo(m.getFile(), input);
+										JOptionPane.showMessageDialog(panel, new JLabel("File has been saved."));
+									}
+								}  catch (IOException e) {
+									JOptionPane.showMessageDialog(panel, new JLabel("No File Found"));
+								} catch (Exception e) {
+									JOptionPane.showMessageDialog(panel, new JLabel("No File Found"));
 								}
-							} catch (IOException e) {
-								JOptionPane.showMessageDialog(panel, new JLabel("No File Found"));
-								e.printStackTrace();
-							} catch (Exception e) {
-								JOptionPane.showMessageDialog(panel, new JLabel("No File Found"));
-								e.printStackTrace();
-							}
-			                
-			                
-			            } 
-					} 
-					
-				}
-			});
-			download.setBounds(425, i, 100, 23);
-			panel.add(download);
-			
-			
-			JLabel spc = new JLabel("SubProgram Chair: ");
-			spc.setBounds(10, i + 21, 114, 14);
-			panel.add(spc);
-			
-			//If there is no SPC then the PC can choose an SPC drop down of users and 
-			// warnings when necessary. If there is an SPC name is displayed.
-			if(m.getSPC(my_session) != null) {
-				JLabel spc_name = new JLabel(m.getSPC(my_session).getFirstName() + " " 
-						+ m.getSPC(my_session).getLastName());
-				
-				spc_name.setBounds(134, i + 18, 150, 20);
-				panel.add(spc_name);
-				
-			} else {
-				final List<User> users = UserControl.getUsers();
-				
-				String[] us = new String[users.size() + 1];
-				us[0] = "Select a User";
-				for(int j = 0; i < users.size(); i++) {
-					us[j + 1] = users.get(j).getFirstName() + " " + users.get(j).getLastName();
-				}
-				
-				JComboBox comboBox = new JComboBox(us);
-				comboBox.setSelectedIndex(0);
-				comboBox.addActionListener(new ActionListener() {
+							} 
 
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						JComboBox cb = (JComboBox)e.getSource();
-						int index = cb.getSelectedIndex();
-						if(((ManuscriptControl.getManuscripts(my_conference, users.get(index - 1), AccessLevel.SUBPROGRAMCHAIR) != null) 
-								&& (ManuscriptControl.getManuscripts(my_conference, users.get(index - 1), AccessLevel.SUBPROGRAMCHAIR).size() < 4)) 
-								&& (!m.getAuthor().equals(users.get(index - 1)))) {
-							(users.get(index - 1)).setAccess(my_conference, AccessLevel.SUBPROGRAMCHAIR);
-						} else if(m.getAuthor().equals(users.get(index - 1))) {
-							JDialog something  = new JDialog();
-							JDialog warning = new JDialog(something, "User is an author for this manuscript!");
-							panel.add(warning);
-						} else {
-							JDialog something  = new JDialog();
-							JDialog warning = new JDialog(something, "User is already a SubProgram Chair for 4 Manuscripts!");
-							panel.add(warning);
 						}
-						
-					}
-					
-				});
-				comboBox.setBounds(134, i + 18, 126, 20);
-				panel.add(comboBox);
-			}
-			
-			//Reviews submitted for the manuscript
-			JLabel reviews = new JLabel("Reviews: ");
-			if(m.getReviews(my_session).isEmpty()) {
-				reviews.setText("Reviews: NONE");
-			}
-			reviews.setBounds(10, i + 42, 78, 14);
-			panel.add(reviews);
-			
-			JLabel rec = new JLabel(m.getRecommendStatus().toString());
-			rec.setBounds(284, i + 21, 126, 14);
-			panel.add(rec);
-			
-			//Final decision drop down 
-			JComboBox comboBox = new JComboBox();
-			comboBox.addItem("Undecided");
-			comboBox.addItem("Approved");
-			comboBox.addItem("Rejected");
-			comboBox.setSelectedIndex(0);
-			comboBox.addActionListener(new ActionListener() {
+					});
+					download.setBounds(425, i, 100, 23);
+					panel.add(download);
 
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					JComboBox cb = (JComboBox)e.getSource();
-					int index = cb.getSelectedIndex();
-					if(index == 1) {
-						m.setFinalStatus(Status.APPROVED, my_session);
+
+					JLabel spc = new JLabel("SubProgram Chair: ");
+					spc.setBounds(10, i + 21, 114, 14);
+					panel.add(spc);
+
+					//If there is no SPC then the PC can choose an SPC drop down of users and 
+					// warnings when necessary. If there is an SPC name is displayed.
+					if(m.getSPC(my_session) != null) {
+						System.out.println("came in" );
+						JLabel spc_name = new JLabel(m.getSPC(my_session).getFirstName() + " " 
+								+ m.getSPC(my_session).getLastName());
+						System.out.println(m.getSPC(my_session).getFirstName() + " " 
+								+ m.getSPC(my_session).getLastName());
+						spc_name.setBounds(134, i + 18, 150, 20);
+						panel.add(spc_name);
+
 					} else {
-						m.setFinalStatus(Status.REJECTED, my_session);
+						final List<User> users = UserControl.getUsers();
+
+						String[] us = new String[users.size() + 1];
+						us[0] = "Select a User";
+						for(int j = 0; j < users.size(); j++) {
+							us[j + 1] = users.get(j).getFirstName() + " " + users.get(j).getLastName();
+						}
+
+						final JComboBox comboBox = new JComboBox(us);
+						comboBox.setSelectedIndex(0);
+						comboBox.addActionListener(new ActionListener() {
+
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								JComboBox cb = (JComboBox)e.getSource();
+								int index = cb.getSelectedIndex();
+								if(((ManuscriptControl.getManuscripts(my_conference, users.get(index - 1), AccessLevel.SUBPROGRAMCHAIR) != null) 
+										&& (ManuscriptControl.getManuscripts(my_conference, users.get(index - 1), AccessLevel.SUBPROGRAMCHAIR).size() < 4)) 
+										&& (!m.getAuthor().equals(users.get(index - 1)))) {
+									m.assignSPC(users.get(index - 1), my_session);
+									System.out.println(m.getSPC(my_session));
+									JOptionPane.showMessageDialog(panel, "Sub-Program Chair has been added");
+								} else if(m.getAuthor().equals(users.get(index - 1))) {
+									JOptionPane.showMessageDialog(panel, "User is an author for this manuscript!");
+								} else {
+									JOptionPane.showMessageDialog(panel, "User is already a SubProgram Chair for 4 Manuscripts!");
+								}
+
+
+
+							}
+
+						});
+						comboBox.setBounds(134, i + 18, 126, 20);
+						panel.add(comboBox);
 					}
+
+					//Reviews submitted for the manuscript
+					JLabel reviews = new JLabel("Reviews: ");
+					if(m.getReviews(my_session).isEmpty()) {
+						reviews.setText("Reviews: NONE");
+					}
+					reviews.setBounds(10, i + 42, 78, 14);
+					panel.add(reviews);
+
+					JLabel rec = new JLabel(m.getRecommendStatus().toString());
+					rec.setBounds(284, i + 21, 126, 14);
+					panel.add(rec);
+
+					//Final decision drop down 
+					JComboBox comboBox = new JComboBox();
+					comboBox.addItem("Undecided");
+					comboBox.addItem("Approved");
+					comboBox.addItem("Rejected");
+					comboBox.setSelectedIndex(0);
+					comboBox.addActionListener(new ActionListener() {
+
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							JComboBox cb = (JComboBox)e.getSource();
+							int index = cb.getSelectedIndex();
+							if(index == 1) {
+								m.setFinalStatus(Status.APPROVED, my_session);
+							} else if(index == 2){
+								m.setFinalStatus(Status.REJECTED, my_session);
+							}
+						}
+
+					});
+					comboBox.setBounds(284, i + 39, 126, 20);
+					panel.add(comboBox);
+
+					final List<Review> r1 = m.getReviews(my_session);
+					final JComboBox reviews1 = new JComboBox();
+					reviews1.addItem("Select a Review");
+					reviews1.setSelectedIndex(0);
+
+					if(r1 != null && !r1.isEmpty()) {
+
+						for(int k = 0; k < r1.size(); k++) {
+							reviews1.addItem(r1.get(k).getReviewer().getFirstName() + " " + (r1.get(k).getReviewer().getLastName()));
+						}
+
+
+						reviews1.addActionListener(new ActionListener() {
+
+							@Override
+							public void actionPerformed(ActionEvent e) {
+
+								JComboBox cb = (JComboBox)e.getSource();
+								int index = cb.getSelectedIndex();
+
+								if(index != 0) {
+									FileCopier copy = new FileCopier();
+									final JFileChooser fc = new JFileChooser(); 
+									try {
+
+										int result = fc.showSaveDialog(panel);
+										File input = fc.getSelectedFile();
+										if(result == JFileChooser.APPROVE_OPTION) {
+											copy.copyFileTo(r1.get(index - 1).getFile(), input);
+											JOptionPane.showMessageDialog(panel, new JLabel("File has been saved."));
+										}
+									} catch (IOException e1) {
+										JOptionPane.showMessageDialog(panel, new JLabel("No File Found"));
+									} catch (Exception e2) {
+										JOptionPane.showMessageDialog(panel, new JLabel("No File Found"));
+									}
+								}
+
+
+
+							}
+
+						});
+					}
+
+					reviews1.setBounds(134, i + 39, 126, 20);
+					panel.add(reviews1);
+
+
+					i += 77;
 				}
-				
-			});
-			comboBox.setBounds(284, i + 39, 126, 20);
-			panel.add(comboBox);
-			
-			
-			i += 77;
-		}
+			}
 		} else { // If there are no manuscripts 
 			JLabel none = new JLabel("No Manuscripts Submitted");
 			none.setBounds(15, 15, 200, 20);
 			panel.add(none);
-			
+
 		}
-		
+
+		JScrollPane scrollPane = new JScrollPane(panel);
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollPane.getViewport().setBackground(Color.ORANGE);
+		scrollPane.setPreferredSize(new Dimension(550, 340));
+		out_panel.add(scrollPane);
+
+
 	}
-	
+
 	/**
 	 * Returns the panel with all of the components. 
 	 * 
@@ -240,4 +317,14 @@ public class PCTab {
 	public JPanel getPanel() {
 		return panel;
 	}
+
+	/**
+	 * Returns the panel with all of the components. 
+	 * 
+	 * @return panel 
+	 */
+	public JPanel getPanel_1() {
+		return out_panel;
+	}
+
 }
