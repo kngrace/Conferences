@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Date;
 import java.util.ArrayList;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -12,7 +13,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener; 
+
 import control.UserControl;
+import model.Session;
 import model.User;
 
 /**
@@ -27,45 +30,50 @@ import model.User;
  *
  */
 public class AddConference {
-
-	private JFrame frame;
-
+	
+	
 	private JButton submitButton;
+	
+	private Session session;
 
 	private JPanel panel_1;
-	private JLabel UserFirstName;
-	private JLabel UserLastName;
-	private JLabel ConfTitleLabel;
-	private JTextField textField;
-	private JTextField textField_1;
-	private JTextField textField_2;
-	private JTextField textField_3;
-	private JTextField textField_4;
-	private JTextField textField_5;
-	private JTextField textField_6;
+	
+	private String conf_title;
 
-	/**
-	 * Launches the application.
-	 * This is the main method.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					AddConference window = new AddConference();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+	private String conf_des;
+	
+	private String conf_loc;
+	
+	private String yps;
+	
+	private String mps;
+	
+	private String dps;
+	
+	private String ype;
+	
+	private String mpe;
+	
+	private String dpe;
+	
+	private String ycs;
+	
+	private String mcs;
+	
+	private String dcs;
+	
+	private String yce;
+	
+	private String mce;
+	
+	private String dce;
 
 	/**
 	 * Creates the application for AddConference, 
 	 * and constructor. 
 	 */
-	public AddConference() {
+	public AddConference(Session the_session) {
+		session = the_session;
 		initialize();
 	}
 
@@ -73,93 +81,374 @@ public class AddConference {
 	 * This method Initialize the contents of the frame. 
 	 */
 	private void initialize() {
-		frame = new JFrame();
-		frame.getContentPane().setBackground(Color.ORANGE);
-		frame.setBounds(100, 100, 706, 476);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.getContentPane().setLayout(null);
+
 		panel_1 = new JPanel();
 		panel_1.setBackground(Color.ORANGE);
-		panel_1.setBounds(0, 0, 690, 437);
-		frame.getContentPane().add(panel_1);
+		panel_1.setBounds(0, 0, 600, 400);
 		panel_1.setLayout(null);
 		
-		JLabel lblPleaseFillIn = new JLabel("Please Add a Conference");
+		JLabel lblPleaseFillIn = new JLabel("Add a Conference");
 		lblPleaseFillIn.setBounds(12, 28, 275, 14);
 		panel_1.add(lblPleaseFillIn);
 		
 		JLabel pChairLabel = new JLabel("Program Chair");
-		pChairLabel.setBounds(22, 69, 103, 20);
+		pChairLabel.setBounds(10, 69, 91, 20);
 		panel_1.add(pChairLabel);
 		
-		UserFirstName = new JLabel("First Name");
-		UserFirstName.setBounds(181, 69, 110, 20);
-		panel_1.add(UserFirstName);
+		JLabel UserName = new JLabel(session.getCurrentUser().getFirstName() + " " + session.getCurrentUser().getLastName());
+		UserName.setBounds(111, 69, 200, 20);
+		panel_1.add(UserName);
 		
-		UserLastName = new JLabel("Last Name");
-		UserLastName.setBounds(463, 69, 103, 20);
-		panel_1.add(UserLastName);
 		
-		ConfTitleLabel = new JLabel("Conference Title");
-		ConfTitleLabel.setBounds(22, 173, 133, 20);
-		panel_1.add(ConfTitleLabel);
+		JLabel ConfDisLabel = new JLabel("Conference Description");
+		ConfDisLabel.setBounds(12, 176, 133, 20);
+		panel_1.add(ConfDisLabel);
 		
-		textField = new JTextField();
-		textField.setBounds(181, 173, 146, 26);
-		panel_1.add(textField);
-		textField.setColumns(10);
+		final JTextField conf_titleTxt = new JTextField();
+		conf_titleTxt.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				//do nothing
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent arg0) {
+				conf_title = conf_titleTxt.getText();
+				
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent arg0) {
+				conf_title = conf_titleTxt.getText();
+				
+			}
+		});
 		
-		JLabel ConfStartLabel = new JLabel("Conference Start");
-		ConfStartLabel.setBounds(15, 256, 133, 20);
-		panel_1.add(ConfStartLabel);
+		conf_titleTxt.setBounds(115, 119, 186, 26);
+		panel_1.add(conf_titleTxt);
+		conf_titleTxt.setColumns(10);
 		
-		textField_1 = new JTextField();
-		textField_1.setBounds(181, 253, 110, 26);
-		panel_1.add(textField_1);
-		textField_1.setColumns(10);
+		JLabel PaperStrtLAb = new JLabel("Paper Start");
+		PaperStrtLAb.setBounds(12, 221, 103, 20);
+		panel_1.add(PaperStrtLAb);
 		
-		textField_2 = new JTextField();
-		textField_2.setBounds(320, 253, 54, 26);
-		panel_1.add(textField_2);
-		textField_2.setColumns(10);
 		
-		textField_3 = new JTextField();
-		textField_3.setBounds(463, 253, 103, 26);
-		panel_1.add(textField_3);
-		textField_3.setColumns(10);
+		final JTextField txtpapstrtY = new JTextField();
+		txtpapstrtY.setText("YYYY");
+		txtpapstrtY.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				//do nothing
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent arg0) {
+				yps = txtpapstrtY.getText();
+				
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent arg0) {
+				yps = txtpapstrtY.getText();
+				
+			}
+		});
+		txtpapstrtY.setBounds(115, 215, 62, 26);
+		panel_1.add(txtpapstrtY);
+		txtpapstrtY.setColumns(10);
 		
-		JLabel lblNewLabel = new JLabel("Conference End");
-		lblNewLabel.setBounds(15, 297, 118, 20);
-		panel_1.add(lblNewLabel);
+		final JTextField papstrtM = new JTextField();
+		papstrtM.setText("MM");
+		papstrtM.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				//do nothing
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent arg0) {
+				mps = papstrtM.getText();
+				
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent arg0) {
+				mps = papstrtM.getText();
+				
+			}
+		});
+		papstrtM.setBounds(181, 215, 54, 26);
+		panel_1.add(papstrtM);
+		papstrtM.setColumns(10);
 		
-		textField_4 = new JTextField();
-		textField_4.setBounds(181, 310, 110, 26);
-		panel_1.add(textField_4);
-		textField_4.setColumns(10);
+		final JTextField papstrtD = new JTextField();
+		papstrtD.setText("DD");
+		papstrtD.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				//do nothing
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent arg0) {
+				dps = papstrtD.getText();
+				
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent arg0) {
+				dps = papstrtD.getText();
+			
+			}
+		});
+		papstrtD.setBounds(239, 215, 62, 26);
+		panel_1.add(papstrtD);
+		papstrtD.setColumns(10);
 		
-		textField_5 = new JTextField();
-		textField_5.setBounds(320, 310, 54, 26);
-		panel_1.add(textField_5);
-		textField_5.setColumns(10);
+		JLabel conf_titlelab = new JLabel("Conference Title");
+		conf_titlelab.setBounds(12, 122, 91, 20);
+		panel_1.add(conf_titlelab);
 		
-		textField_6 = new JTextField();
-		textField_6.setBounds(463, 310, 103, 26);
-		panel_1.add(textField_6);
-		textField_6.setColumns(10);
+		JTextField desc_confTxt = new JTextField();
+		desc_confTxt.setBounds(168, 156, 358, 49);
+		panel_1.add(desc_confTxt);
+		desc_confTxt.setColumns(10);
+		
+		JLabel lblPaperend = new JLabel("Paper End");
+		lblPaperend.setBounds(311, 221, 91, 20);
+		panel_1.add(lblPaperend);
+		
+		final JTextField papendY = new JTextField();
+		papendY.setText("YYYY");
+		papendY.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				//do nothing
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent arg0) {
+				ype = papendY.getText();
+				
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent arg0) {
+				ype = papendY.getText();
+			
+			}
+		});
+		papendY.setColumns(10);
+		papendY.setBounds(406, 218, 62, 26);
+		panel_1.add(papendY);
+		
+		final JTextField papendM = new JTextField();
+		papendM.setText("MM");
+		papendM.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				//do nothing
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent arg0) {
+				mpe = papendM.getText();
+				
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent arg0) {
+				mpe = papendM.getText();
+			
+			}
+		});
+		papendM.setColumns(10);
+		papendM.setBounds(472, 218, 54, 26);
+		panel_1.add(papendM);
+		
+		final JTextField papendD = new JTextField();
+		papendD.setText("DD");
+		papendD.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				//do nothing
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent arg0) {
+				dpe = papendD.getText();
+				
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent arg0) {
+				dpe = papendD.getText();
+			
+			}
+		});
+		papendD.setColumns(10);
+		papendD.setBounds(530, 218, 62, 26);
+		panel_1.add(papendD);
+		
+		JLabel conf_strtLab = new JLabel("Conference Start");
+		conf_strtLab.setBounds(12, 265, 103, 20);
+		panel_1.add(conf_strtLab);
+		
+		final JTextField confstrtY = new JTextField();
+		confstrtY.setText("YYYY");
+		confstrtY.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				//do nothing
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent arg0) {
+				ycs = confstrtY.getText();
+				
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent arg0) {
+				ycs = confstrtY.getText();
+			
+			}
+		});
+		confstrtY.setColumns(10);
+		confstrtY.setBounds(115, 259, 62, 26);
+		panel_1.add(confstrtY);
+		
+		final JTextField confstrtM = new JTextField();
+		confstrtM.setText("MM");
+		confstrtM.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				//do nothing
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent arg0) {
+				mcs = confstrtM.getText();
+				
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent arg0) {
+				mcs = confstrtM.getText();
+			
+			}
+		});
+		confstrtM.setColumns(10);
+		confstrtM.setBounds(181, 259, 54, 26);
+		panel_1.add(confstrtM);
+		
+		final JTextField confstrtD = new JTextField();
+		confstrtD.setText("DD");
+		confstrtD.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				//do nothing
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent arg0) {
+				dcs = confstrtD.getText();
+				
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent arg0) {
+				dcs = confstrtD.getText();
+			
+			}
+		});
+		confstrtD.setColumns(10);
+		confstrtD.setBounds(239, 259, 62, 26);
+		panel_1.add(confstrtD);
+		
+		JLabel lblConferenceEnd = new JLabel("Conference End");
+		lblConferenceEnd.setBounds(311, 265, 85, 20);
+		panel_1.add(lblConferenceEnd);
+		
+		final JTextField confendY = new JTextField();
+		confendY.setText("YYYY");
+		confendY.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				//do nothing
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent arg0) {
+				yce = confendY.getText();
+				
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent arg0) {
+				yce = confendY.getText();
+			
+			}
+		});
+		confendY.setColumns(10);
+		confendY.setBounds(406, 262, 62, 26);
+		panel_1.add(confendY);
+		
+		final JTextField confendM = new JTextField();
+		confendM.setText("MM");
+		confendM.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				//do nothing
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent arg0) {
+				mce = confendM.getText();
+				
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent arg0) {
+				mce = confendM.getText();
+			
+			}
+		});
+		confendM.setColumns(10);
+		confendM.setBounds(472, 262, 54, 26);
+		panel_1.add(confendM);
+		
+		final JTextField confendD = new JTextField();
+		confendD.setText("DD");
+		confendY.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				//do nothing
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent arg0) {
+				dce = confendD.getText();
+				
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent arg0) {
+				dce = confendD.getText();
+			
+			}
+		});
+		confendD.setColumns(10);
+		confendD.setBounds(530, 262, 62, 26);
+		panel_1.add(confendD);
+		
+		JButton submit = new JButton("Submit");
+		submit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//TODO
+			}
+		});
+		submit.setBounds(292, 337, 129, 23);
+		panel_1.add(submit);
+		
+		JLabel lblConferenceLocation = new JLabel("Conference Location");
+		lblConferenceLocation.setBounds(311, 122, 136, 20);
+		panel_1.add(lblConferenceLocation);
+		
+		JTextField conf_locTxt = new JTextField();
+		conf_locTxt.setColumns(10);
+		conf_locTxt.setBounds(445, 119, 146, 26);
+		panel_1.add(conf_locTxt);
+	}
+	public JPanel getPanel_1() {
+		return panel_1;
 	}
 }
 		
-//public Conference(int theID, String theName, User theProgramChair, Date thePaperStart,
-//		Date thePaperEnd, Date theConferenceStart, Date theConferenceEnd,
-//		String theLocation, String theDescription) {
-//
-//		myID = theID;
-//		myName = theName;
-//		myProgramChair = theProgramChair;
-//		myPaperStart = thePaperStart;
-//		myPaperEnd = thePaperEnd;
-//		myConferenceStart = theConferenceStart;
-//		myConferenceEnd = theConferenceEnd;
-//		myLocation = theLocation;
-//		myDescription = theDescription;
-//}
