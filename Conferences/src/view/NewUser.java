@@ -245,8 +245,17 @@ public class NewUser {
 		frame.getContentPane().add(panel_1);
 		
 		panel = new JPanel();
-		panel.setBackground(new Color(176, 196, 222));
-		panel.setBounds(0, 0, 690, 82);
+		panel.setBackground(new Color(130, 75, 207));
+		panel.setBounds(0, 0, 715, 82);
+		BufferedImage myPicture = null;
+		try {
+			myPicture = ImageIO.read(new File("TCSBanner2.png"));
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		JLabel picLabel = new JLabel(new ImageIcon(myPicture));
+		panel.add(picLabel);
 		panel_1.add(panel);
 			
 	
