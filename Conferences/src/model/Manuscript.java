@@ -220,14 +220,9 @@ public class Manuscript extends Observable {
 	}
 	
 	public void setFinalStatus(Status theStatus, Session theSession) {
-		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)) {
 		    myFinalStatus = theStatus;
 		    ManuscriptControl.updateFinal(this, theStatus);
 		    notifyObservers();
-		} else {
-			throw new IllegalStateException("User does not have access to set final status"
-					+ "to a manuscript!");
-		}
 	}
 	
 	public void assignSPC(User theSPC, Session theSession) {
