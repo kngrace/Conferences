@@ -242,7 +242,7 @@ public class Manuscript extends Observable {
 	}
 	
 	public void assignReviewer(User theReviewer, Session theSession) {
-		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)) {
+		if (sessionHasAccessLevelOf(AccessLevel.SUBPROGRAMCHAIR, theSession)) {
 		    myReviewers.add(theReviewer);
 		    ManuscriptControl.addReviewer(this, theReviewer);
 		    notifyObservers();
