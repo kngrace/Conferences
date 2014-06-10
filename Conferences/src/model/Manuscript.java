@@ -143,20 +143,20 @@ public class Manuscript extends Observable {
 	}
 	
 	public Status getFinalStatus(Session theSession) {
-		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)
-				|| theSession.getCurrentUser() == myAuthor) {
+//		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)
+//				|| theSession.getCurrentUser() == myAuthor) {
 		    return myFinalStatus;
-		} else {
-			throw new IllegalStateException("User does not have access to get final status!");
-		}
+//		} else {
+//			throw new IllegalStateException("User does not have access to get final status!");
+//		}
 	}
 	
 	public User getSPC(Session theSession) {
-		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)) {
+	//	if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)) {
 		    return mySPC;
-		} else {
-			throw new IllegalStateException("User does not have access to get final status!");
-		}
+//		} else {
+//			throw new IllegalStateException("User does not have access to get the SPC!");
+//		}
 	}
 	
 	// Since unsubmit() is an Author action which has the lowest access level clearance,
@@ -265,7 +265,7 @@ public class Manuscript extends Observable {
 	 */
 	public boolean addReview(Review theReview, Session theSession) {
 		
-		if (sessionHasAccessLevelOf(AccessLevel.PROGRAMCHAIR, theSession)) {
+		if (sessionHasAccessLevelOf(AccessLevel.REVIEWER, theSession)) {
 		    if (myReviews.size() < 4 && !myReviews.contains(theReview)) {
 		    	myReviews.add(theReview);
 			    ManuscriptControl.updateReview(theReview);
