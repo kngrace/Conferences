@@ -181,7 +181,7 @@ public class SPCTab {
 					if(r1 != null && !r1.isEmpty()) {
 
 						for(int k = 0; k < r1.size(); k++) {
-							reviews1.addItem("Review " + k);
+							reviews1.addItem(r1.get(k).getReviewer().getFirstName());
 						}
 
 
