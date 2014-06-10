@@ -1,4 +1,5 @@
 package view;
+
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -10,7 +11,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -21,7 +21,6 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-
 import model.Session;
 import model.User;
 import control.UserControl;
@@ -116,7 +115,9 @@ public class Login {
 		
 		panel.setBackground(Color.ORANGE);
 		
-		//Login submit button which authorizes the user's username and password
+		/** Login submit button which authorizes the
+		 * user's username and password
+		 */
 		JButton loginSubmit = new JButton("Submit");
 		loginSubmit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -136,7 +137,9 @@ public class Login {
 				  	final UserHome home = new UserHome(newUser);
 
 				  	
-				  	//Logout button which comes back to the log in page. 
+				  	/**
+				  	 * Logout button which comes back to the log in page. 
+				  	 */
 					JButton logoutButton = new JButton("Logout");
 					logoutButton.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
@@ -191,7 +194,9 @@ public class Login {
 		newUserButton.setBounds(351, 233, 112, 23);
 		panel.add(newUserButton);
 		
-		//Listens to the text field for username. 
+		/** 
+		 * Listens to the text field for username. 
+		 */
 		usernameField = new JTextField();
 		usernameField.getDocument().addDocumentListener(new DocumentListener() {
 			public void changedUpdate(DocumentEvent e) {
