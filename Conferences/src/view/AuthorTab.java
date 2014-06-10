@@ -181,11 +181,11 @@ public class AuthorTab {
 							if(my_conference.getPaperStart().before(date) 
 									&& my_conference.getPaperEnd().after(date)) {
 
-								
+
 								FileCopier copy = new FileCopier();
 								final JFileChooser fc = new JFileChooser(); 
 								try {
-									
+
 									int result = fc.showSaveDialog(my_panel);
 									File input = fc.getSelectedFile();
 									if(result == JFileChooser.APPROVE_OPTION) {
@@ -197,7 +197,7 @@ public class AuthorTab {
 								} catch (Exception e) {
 									JOptionPane.showMessageDialog(my_panel, new JLabel("No File Found"));
 								}
-								
+
 							} 
 
 						}
@@ -213,25 +213,25 @@ public class AuthorTab {
 						reviews.setSelectedIndex(0);
 						reviews.addItem("Select a Review");
 						if(r != null && !r.isEmpty()) {
-							
+
 							for(int k = 0; k < r.size(); k++) {
 								reviews.addItem("Review " + k);
 							}
-							
-					
+
+
 							reviews.addActionListener(new ActionListener() {
-	
+
 								@Override
 								public void actionPerformed(ActionEvent e) {
-									
+
 									JComboBox cb = (JComboBox)e.getSource();
 									int index = cb.getSelectedIndex();
-									
+
 									if(index != 0) {
 										FileCopier copy = new FileCopier();
 										final JFileChooser fc = new JFileChooser(); 
 										try {
-											
+
 											int result = fc.showSaveDialog(my_panel);
 											File input = fc.getSelectedFile();
 											if(result == JFileChooser.APPROVE_OPTION) {
@@ -244,18 +244,19 @@ public class AuthorTab {
 											JOptionPane.showMessageDialog(my_panel, new JLabel("No File Found"));
 										}
 									}
-								
-								
-								
-							}
-							
-						});
-						reviews.setBounds(370, i + 24, 143, 23);
-						my_panel.add(reviews);
+
+
+
+								}
+
+							});
+							reviews.setBounds(370, i + 24, 143, 23);
+							my_panel.add(reviews);
+						}
 					}
 					i += 64;
 				}
-			}}
+			}
 		} else { // If there are no manuscripts 
 			JLabel none = new JLabel("No Manuscripts Submitted");
 			none.setBounds(15, 15, 200, 20);
