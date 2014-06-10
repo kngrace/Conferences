@@ -1,10 +1,10 @@
 package view;
+
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -12,11 +12,13 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-
 import control.UserControl;
 import model.User;
 
 /**
+ * This is the NewUser class that allows
+ * for a new user to take part in the 
+ * program.
  * 
  * @author Nikhila and Marilyn
  * @version 05/28/2014
