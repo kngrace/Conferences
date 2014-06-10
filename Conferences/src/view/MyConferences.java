@@ -103,6 +103,8 @@ public class MyConferences {
 		if(lst != null && !lst.isEmpty()) {
 			for(int i = 0; i < lst.size(); i++) {
 				
+				panel_1.setPreferredSize(new Dimension(600, Math.max((i*50 + 250), 1000)));
+				
 				JLabel label = new JLabel(lst.get(i).getName());
 				x += 70;
 				label.setBounds(21, x, 400, 20);
