@@ -580,8 +580,6 @@ public class ManuscriptControl {
 		checkConnection();		 
 		
 		int al = theAccessLevel.getValue();	
-		System.out.println("The value for " + theAccessLevel.name() 
-				+ " is returning as: " + al);
 		String column = "um.can_submit";
 		switch (al) {
 			case 0 : column = "um.can_submit"; break;
@@ -600,11 +598,6 @@ public class ManuscriptControl {
 					+ "ON um.manuscript_id=m.id	WHERE user_id=" + Integer.toString(theUser.getId())
 					+ " AND m.conference=" + Integer.toString(theConference.getId()) 
 					+ " AND " + column + "=1");
-			
-			System.out.println("User is: " + theUser.getFirstName()
-					+ ", Conference is: " + theConference.getName()
-					+ ", The Access Level is: " + theAccessLevel.name()
-					+ ", Which is for column: " + column);
 			
 			return iterateManuscripts(rs);
 
@@ -1118,7 +1111,7 @@ public class ManuscriptControl {
 
 				Review r = new Review(
 						rs.getInt("review_id"), 
-						UserControl.getUserByID(rs.getInt("r.reviewer")), 
+						UserControl.getUserByID(rs.getInt("reviewer")), 
 						filename,
 						blobFile, 
 						getManuscriptByID(rs.getInt("manuscript")));			
