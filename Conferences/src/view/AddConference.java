@@ -1,5 +1,6 @@
 package view;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -105,28 +106,39 @@ public class AddConference {
 
 	protected Conference Conference;
 
+//	/**
+//	 * Creates the application for AddConference, 
+//	 * and constructor. 
+//	 */
+//	public AddConference(Session the_session, String theName, User theProgramChair, Date thePaperStart,
+//			   Date thePaperEnd, Date theConferenceStart, Date theConferenceEnd,
+//			   String theLocation, String theDescription) {
+//		
+//		session = the_session;
+//		
+//		name = theName;
+//		progChair = theProgramChair;
+//		startDatePaper = thePaperStart;
+//		endDatePaper = thePaperEnd;
+//		confStartDate = theConferenceStart;
+//		confEndDate = theConferenceEnd;
+//		confLocation = theLocation;
+//		confDescription = theDescription;
+//	
+//		initialize();
+//	}
+
 	/**
 	 * Creates the application for AddConference, 
 	 * and constructor. 
 	 */
-	public AddConference(Session the_session, String theName, User theProgramChair, Date thePaperStart,
-			   Date thePaperEnd, Date theConferenceStart, Date theConferenceEnd,
-			   String theLocation, String theDescription) {
+	public AddConference(Session the_session) {
 		
 		session = the_session;
-		
-		name = theName;
-		progChair = theProgramChair;
-		startDatePaper = thePaperStart;
-		endDatePaper = thePaperEnd;
-		confStartDate = theConferenceStart;
-		confEndDate = theConferenceEnd;
-		confLocation = theLocation;
-		confDescription = theDescription;
-	
 		initialize();
 	}
-
+	
+	
 	/**
 	 * This method Initialize the contents of the frame. 
 	 */
@@ -134,7 +146,8 @@ public class AddConference {
 
 		panel_1 = new JPanel();
 		panel_1.setBackground(Color.ORANGE);
-		panel_1.setBounds(0, 0, 600, 400);
+		panel_1.setBounds(0, 0, 700, 400);
+		panel_1.setPreferredSize(new Dimension(1000, 1000));
 		panel_1.setLayout(null);
 		
 		JLabel lblPleaseFillIn = new JLabel("Add a Conference");
@@ -145,7 +158,8 @@ public class AddConference {
 		pChairLabel.setBounds(10, 69, 91, 20);
 		panel_1.add(pChairLabel);
 		
-		JLabel UserName = new JLabel(session.getCurrentUser().getFirstName() + " " + session.getCurrentUser().getLastName());
+		JLabel UserName = new JLabel(session.getCurrentUser().getFirstName() + " " 
+		+ session.getCurrentUser().getLastName());
 		UserName.setBounds(111, 69, 200, 20);
 		panel_1.add(UserName);
 		
@@ -173,7 +187,7 @@ public class AddConference {
 			}
 		});
 		
-		conf_titleTxt.setBounds(115, 119, 186, 26);
+		conf_titleTxt.setBounds(15, 119, 186, 26);
 		panel_1.add(conf_titleTxt);
 		conf_titleTxt.setColumns(10);
 		
@@ -252,7 +266,7 @@ public class AddConference {
 		papstrtD.setColumns(10);
 		
 		JLabel conf_titlelab = new JLabel("Conference Title");
-		conf_titlelab.setBounds(12, 122, 91, 20);
+		conf_titlelab.setBounds(12, 95, 120, 20);
 		panel_1.add(conf_titlelab);
 		
 		JTextField desc_confTxt = new JTextField();
@@ -494,19 +508,35 @@ public class AddConference {
 			public void actionPerformed(ActionEvent e) {
 				//create conference object
 				panel_1.repaint();
+				
+				Conference c = new Conference(
+						confDescription, 
+						progChair, 
+						confEndDate, 
+						confEndDate, 
+						confEndDate, 
+						confEndDate, 
+						confDescription, 
+						confDescription);
+				
+				
 			}
 		});
 		submit.setBounds(292, 337, 129, 23);
 		panel_1.add(submit);
 		
 		JLabel lblConferenceLocation = new JLabel("Conference Location");
-		lblConferenceLocation.setBounds(311, 122, 136, 20);
+		lblConferenceLocation.setBounds(230, 95, 136, 20);
 		panel_1.add(lblConferenceLocation);
 		
 		JTextField conf_locTxt = new JTextField();
 		conf_locTxt.setColumns(10);
-		conf_locTxt.setBounds(445, 119, 146, 26);
+		conf_locTxt.setBounds(230, 119, 146, 26);
 		panel_1.add(conf_locTxt);
+		
+		
+		
+		panel_1.validate();
 	}
 	public JPanel getPanel_1() {
 		return panel_1;
