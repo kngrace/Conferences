@@ -25,8 +25,8 @@ public class FileCopier {
 	}
 	
 	/**
-	 * Copies from the input file to the output file so that it can be saved to the project
-	 * folder. 
+	 * Copies from the input file to the output file so that it can 
+	 * be saved to the project folder. 
 	 * 
 	 * @param input file given by the user. 
 	 * @param output file that is in the database. 
