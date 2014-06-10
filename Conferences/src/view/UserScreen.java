@@ -4,12 +4,10 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.util.Observable;
 import java.util.Observer;
-
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.ScrollPaneConstants;
-
 import model.AccessLevel;
 import model.Conference;
 import model.Session;
