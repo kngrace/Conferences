@@ -85,8 +85,8 @@ public class Manuscript extends Observable {
 		myFinalStatus = theFinalStatus;
 		isSubmitted = theIsSubmitted;
 		mySPC = theSPC;
-		myReviews = ManuscriptControl.getReviews(this);
-		myReviewers = ManuscriptControl.getReviewers(this);
+		//myReviews = ManuscriptControl.getReviews(this);
+		//myReviewers = ManuscriptControl.getReviewers(this);
 	}
 	
 	/**
@@ -237,6 +237,7 @@ public class Manuscript extends Observable {
 	}
 	
 	public void assignReviewer(User theReviewer, Session theSession) {
+		myReviewers = ManuscriptControl.getReviewers(this);
 		if (sessionHasAccessLevelOf(AccessLevel.SUBPROGRAMCHAIR, theSession)) {
 		    myReviewers.add(theReviewer);
 		    ManuscriptControl.addReviewer(this, theReviewer);
@@ -259,6 +260,9 @@ public class Manuscript extends Observable {
 	 * addReviewer() added to ManuscriptControl.
 	 */
 	public boolean addReview(Review theReview, Session theSession) {
+		
+		myReviews = ManuscriptControl.getReviews(this);
+	
 		
 		if (sessionHasAccessLevelOf(AccessLevel.REVIEWER, theSession)) {
 		    if (myReviews.size() < 4 && !myReviews.contains(theReview)) {
