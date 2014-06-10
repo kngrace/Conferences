@@ -157,12 +157,15 @@ public class DefaultTab extends Observable {
 							
 						}
 		            } 
+				} else if ((ManuscriptControl.getManuscripts(myConference, session.getCurrentUser(), AccessLevel.AUTHOR).size() == 4)) {
+					
+					JOptionPane.showMessageDialog(panel, new JLabel("Cannot submit more than four manuscripts to a conference!"));
 				} else { // Warning if adding a manuscript after deadline. 
 					JLabel deadline = new JLabel("No Submissions Allowed Past Deadline!");
 					deadline.setBounds(23, 285, 300, 23);
 					panel.add(deadline);
 					panel.repaint();
-				}
+				} 
 
 			}
 		});
