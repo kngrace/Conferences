@@ -30,7 +30,7 @@ import control.ManuscriptControl;
  * Represents the author view of the conference. 
  * 
  * @author Nikhila Potharaj, Eric Miller
- * @version 06.06.2014
+ * @version 06.09.2014
  *
  */
 public class ReviewerTab {
