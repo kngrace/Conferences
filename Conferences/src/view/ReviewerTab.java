@@ -9,14 +9,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-
 import model.AccessLevel;
 import model.Conference;
 import model.Manuscript;
