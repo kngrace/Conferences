@@ -9,12 +9,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+
 import model.AccessLevel;
 import model.Conference;
 import model.Manuscript;
@@ -87,16 +89,6 @@ public class ReviewerTab {
 					title.setBounds(10, i, 270, 14);
 					my_panel.add(title);
 
-
-					JLabel statusLab = new JLabel("Status: ");
-					statusLab.setBounds(250, i, 100, 14);
-					my_panel.add(statusLab);
-
-					//Current final status of the manuscript 
-					JLabel status = new JLabel(String.valueOf(m.getFinalStatus(my_session)));
-					status.setBounds(311, i, 156, 14);
-					my_panel.add(status);
-
 					//Function to resubmit the manuscript only if before the deadline. 
 					JButton submit = new JButton("Review");
 					submit.addActionListener(new ActionListener() {
@@ -137,10 +129,8 @@ public class ReviewerTab {
 										}
 									} catch (IOException e) {
 										JOptionPane.showMessageDialog(my_panel, new JLabel("Please choose a valid file .txt"));
-										e.printStackTrace();
 									} catch (Exception e) {
-										JOptionPane.showMessageDialog(my_panel, new JLabel("Please choose a valid file .txt"));
-										e.printStackTrace();
+										JOptionPane.showMessageDialog(my_panel, new JLabel("Please choose a valid file .txt"));;
 									}
 
 
@@ -162,7 +152,7 @@ public class ReviewerTab {
 					
 					//TO DO *************
 					
-					JButton delete = new JButton("Delete");
+					//JButton delete = new JButton("Delete");
 					/*delete.addActionListener(new ActionListener() {
 
 						@Override
@@ -187,9 +177,9 @@ public class ReviewerTab {
 						} 
 					});*/
 					
-					/*
-					delete.setBounds(125, i + 25, 89, 23);
-					my_panel.add(delete);
+					
+					//delete.setBounds(125, i + 25, 89, 23);
+					//my_panel.add(delete);
 
 					//Download button to download the manuscript file. 
 					JButton download = new JButton("Download");
@@ -235,7 +225,7 @@ public class ReviewerTab {
 
 					});
 					download.setBounds(238, i + 25, 108, 23);
-					my_panel.add(download);*/
+					my_panel.add(download);
 
 					
 					//V   Probably not needed for this class.    V
