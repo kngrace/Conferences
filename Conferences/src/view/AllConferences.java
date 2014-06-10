@@ -1,10 +1,10 @@
 package view;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
-
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -12,7 +12,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
-
 import model.Conference;
 import model.Session;
 import control.ConferenceControl;
@@ -24,12 +23,13 @@ import control.ConferenceControl;
  * @version 06.06.2014
  * 
  * Displays all of the conferences that are in the database.
- *
+ * This is the page that shows every Conference.
  */
 public class AllConferences {
 
 	/**
-	 * The current session containing the user that is currently using the system. 
+	 * The current session containing the user that is currently using 
+	 * the system. Session of user.
 	 */
 	private Session session;
 
@@ -45,7 +45,8 @@ public class AllConferences {
 
 
 	/**
-	 * Create the application.
+	 * Create the application. this is the 
+	 * Initialize part of the project.
 	 */
 	public AllConferences(Session the_session) {
 		session = the_session;
@@ -71,7 +72,9 @@ public class AllConferences {
 
 		final List<Conference> lst = ConferenceControl.getConferences();
 
-		//Creates a drop-down for all of the conferences to be selected. 
+		/**
+		 * Creates a drop-down for all of the conferences to be selected. 
+		 */
 		final JComboBox comboBox = new JComboBox();
 		if(lst != null && !lst.isEmpty()) {
 			String label = "Select a Conference";
