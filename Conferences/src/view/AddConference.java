@@ -15,6 +15,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener; 
 
 import control.UserControl;
+import model.Conference;
 import model.Session;
 import model.User;
 
@@ -31,17 +32,35 @@ import model.User;
  */
 public class AddConference {
 	
-	
+	/**
+	 * This is the JButton that submits the 
+	 * new added conference.
+	 */
 	private JButton submitButton;
 	
+	/**
+	 * This is the Session created.
+	 */
 	private Session session;
 
+	/**
+	 * This is the first panel for the GUI.
+	 */
 	private JPanel panel_1;
 	
+	/**
+	 * This is the conference title.
+	 */
 	private String conf_title;
 
+	/**
+	 * This is the conference description.
+	 */
 	private String conf_des;
 	
+	/**
+	 * This is the conference location.
+	 */
 	private String conf_loc;
 	
 	private String yps;
@@ -68,12 +87,43 @@ public class AddConference {
 	
 	private String dce;
 
+	private String name;
+
+	private User progChair;
+
+	private Date startDatePaper;
+
+	private Date endDatePaper;
+
+	private Date confStartDate;
+
+	private Date confEndDate;
+
+	private String confLocation;
+
+	private String confDescription;
+
+	protected Conference Conference;
+
 	/**
 	 * Creates the application for AddConference, 
 	 * and constructor. 
 	 */
-	public AddConference(Session the_session) {
+	public AddConference(Session the_session, String theName, User theProgramChair, Date thePaperStart,
+			   Date thePaperEnd, Date theConferenceStart, Date theConferenceEnd,
+			   String theLocation, String theDescription) {
+		
 		session = the_session;
+		
+		name = theName;
+		progChair = theProgramChair;
+		startDatePaper = thePaperStart;
+		endDatePaper = thePaperEnd;
+		confStartDate = theConferenceStart;
+		confEndDate = theConferenceEnd;
+		confLocation = theLocation;
+		confDescription = theDescription;
+	
 		initialize();
 	}
 
@@ -429,10 +479,21 @@ public class AddConference {
 		confendD.setBounds(530, 262, 62, 26);
 		panel_1.add(confendD);
 		
+		/**
+		 * This is the Submit button for the 
+		 * adding of the conferences.
+		 * 
+		 * Date.getValue("yyyy-mm-dd") returns a Date object
+		 * 
+		 *  java.util.Date utilDate = new java.util.Date();
+    	 *  java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+		 */
 		JButton submit = new JButton("Submit");
 		submit.addActionListener(new ActionListener() {
+
 			public void actionPerformed(ActionEvent e) {
-				//TODO
+				//create conference object
+				panel_1.repaint();
 			}
 		});
 		submit.setBounds(292, 337, 129, 23);
