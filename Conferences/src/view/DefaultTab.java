@@ -8,14 +8,12 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Observable;
-
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-
 import model.AccessLevel;
 import model.Conference;
 import model.Manuscript;
@@ -23,6 +21,11 @@ import model.Session;
 import control.ManuscriptControl;
 
 
+/**
+ * This is the DeafultTab class that comes up
+ * as the default user, before a user session is
+ * out in place.
+ */
 public class DefaultTab extends Observable {
 
 	/**
@@ -63,7 +66,9 @@ public class DefaultTab extends Observable {
 		panel.setBackground(Color.ORANGE);
 		panel.setLayout(null);
 		
-		// Title of conference
+		/**
+		 * Title of conference
+		 */
 		JLabel title = new JLabel(String.valueOf(myConference.getName()));
 		title.setBounds(114, 32, 336, 14);
 		panel.add(title);
@@ -72,7 +77,9 @@ public class DefaultTab extends Observable {
 		titleLab.setBounds(22, 32, 46, 14);
 		panel.add(titleLab);
 		
-		// Description for conference
+		/**
+		 * Description for conference
+		 */
 		JLabel desc = new JLabel(String.valueOf(myConference.getDescription()));
 		desc.setBounds(114, 57, 322, 69);
 		panel.add(desc);
@@ -81,7 +88,9 @@ public class DefaultTab extends Observable {
 		conf_descLab.setBounds(22, 84, 71, 14);
 		panel.add(conf_descLab);
 		
-		// Program manager for conference		
+		/**
+		 * Program manager for conference
+		 */
 		JLabel prog_chair = new JLabel(String.valueOf(myConference.getProgramChair().getFirstName()) 
 				+ " " + String.valueOf(myConference.getProgramChair().getLastName()));
 		prog_chair.setBounds(193, 137, 137, 14);
