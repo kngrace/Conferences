@@ -25,6 +25,13 @@ public class Review {
 		myManuscript = theManuscript;
 	}
 	
+	/**
+	 * Construct a review without an ID known.
+	 * @param theReviewer User creating the review.
+	 * @param theFileName The name of the file for the review.
+	 * @param theFile The physical file being used as the review.
+	 * @param theManuscript The Manuscript tied to this Review.
+	 */
 	public Review(final User theReviewer, final String theFileName, 
 			final File theFile, final Manuscript theManuscript) {
 		myReviewer = theReviewer;
