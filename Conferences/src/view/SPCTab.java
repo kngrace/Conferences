@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -13,6 +14,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+
 import model.AccessLevel;
 import model.Conference;
 import model.Manuscript;
@@ -24,9 +26,7 @@ import control.ManuscriptControl;
 import control.UserControl;
 
 /**
- * Represents the sub-program chair view of a 
- * particular conference. The sub program chair
- * plays a vital role in the system;
+ * Represents the sub-program chair view of a particular conference. 
  * 
  * @author Nikhila Potharaj
  * @version 06.06.2014
@@ -72,9 +72,7 @@ public class SPCTab {
 		my_panel.setBounds(0, 0, 560, 330);
 		my_panel.setLayout(null);
 
-		/**
-		 * List of manuscripts assigned to this SPC. 
-		 */
+		//List of manuscripts assigned to this SPC. 
 		List<Manuscript> list = ManuscriptControl.getManuscripts(my_conference, my_session.getCurrentUser(), AccessLevel.SUBPROGRAMCHAIR);
 		int i = 11;
 		if(list != null && !list.isEmpty()) { 
@@ -120,9 +118,7 @@ public class SPCTab {
 					download.setBounds(343, i - 4, 150, 23);
 					my_panel.add(download);
 
-					/**
-					 * Reviewers assigned to a particular mansucript m. 
-					 */
+					//Reviewers assigned to a particular mansucript m. 
 					List<User> r = ManuscriptControl.getReviewers(m);
 					String concat = "Reviewers: ";
 					if(r == null || r.isEmpty()) { //displays none if none. 
@@ -153,17 +149,19 @@ public class SPCTab {
 						public void actionPerformed(ActionEvent e) {
 							JComboBox cb = (JComboBox)e.getSource();
 							int index = cb.getSelectedIndex();
-							List<Manuscript> reviewers = ManuscriptControl.getManuscripts(my_conference, u.get(index - 1), AccessLevel.REVIEWER);
-
-							//only if that reviewer has less than four manuscripts and is not author of the manuscript
-							if(((reviewers != null && !reviewers.isEmpty()) && reviewers.size() < 4)
+							if(((ManuscriptControl.getManuscripts(my_conference, u.get(index - 1), AccessLevel.REVIEWER) != null) 
+									&& (ManuscriptControl.getManuscripts(my_conference, u.get(index - 1), AccessLevel.REVIEWER).size() < 4)) 
 									&& (!m.getAuthor().equals(u.get(index - 1)))) {
-								(u.get(index - 1)).setAccess(my_conference, AccessLevel.REVIEWER);
-							} else if (m.getAuthor().equals(u.get(index - 1))){ // if reviewer is an author the throws a message
-								JDialog something  = new JDialog();
-								JDialog warning = new JDialog(something, "User is an author for this manuscript!");
-								my_panel.add(warning);
-							} 
+								m.assignReviewer(u.get(index - 1), my_session);
+								System.out.println(m.getSPC(my_session));
+								JOptionPane.showMessageDialog(my_panel, "Reviewer has been added");
+							} else if(m.getAuthor().equals(u.get(index - 1))) {
+								JOptionPane.showMessageDialog(my_panel, "User is an author for this manuscript!");
+							} else {
+								JOptionPane.showMessageDialog(my_panel, "User is already a Reviewer for 4 Manuscripts!");
+							}
+
+
 
 						}
 
