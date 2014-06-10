@@ -9,14 +9,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-
 import model.AccessLevel;
 import model.Conference;
 import model.Manuscript;
@@ -27,6 +25,7 @@ import control.ManuscriptControl;
 
 /**
  * Represents the author view of the conference. 
+ * This is the entire view of the author user.
  * 
  * @author Nikhila Potharaj
  * @version 06.06.2014
@@ -36,6 +35,7 @@ public class AuthorTab {
 
 	/**
 	 * Main panel containing all of the components. 
+	 * Main JPanel 
 	 */
 	private JPanel my_panel;
 
@@ -143,7 +143,10 @@ public class AuthorTab {
 					resubmit.setBounds(10, i + 25, 89, 23);
 					my_panel.add(resubmit);
 
-					//function to delete the manuscript if before the deadline. 
+					/** 
+					 * function to delete the manuscript if before the deadline. 
+					 *
+					 */
 					JButton delete = new JButton("Delete");
 					delete.addActionListener(new ActionListener() {
 
@@ -171,7 +174,9 @@ public class AuthorTab {
 					delete.setBounds(125, i + 25, 89, 23);
 					my_panel.add(delete);
 
-					//Download button to download the manuscript file. 
+					/**
+					 * Download button to download the manuscript file. 
+					 */
 					JButton download = new JButton("Download");
 					download.addActionListener(new ActionListener() {
 
@@ -206,7 +211,10 @@ public class AuthorTab {
 					download.setBounds(238, i + 25, 108, 23);
 					my_panel.add(download);
 
-					//If a final decision has been made other than Undecided the authors can see the reviews
+					/**
+					 * If a final decision has been made other than Undecided 
+					 * the authors can see the reviews
+					 */
 					if(m.getFinalStatus(my_session) != Status.UNDECIDED) { 
 						final List<Review> r = m.getReviews(my_session);
 						final JComboBox reviews = new JComboBox();
@@ -244,9 +252,6 @@ public class AuthorTab {
 											JOptionPane.showMessageDialog(my_panel, new JLabel("No File Found"));
 										}
 									}
-
-
-
 								}
 
 							});
