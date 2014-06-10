@@ -4,20 +4,19 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
-
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
-
 import model.AccessLevel;
 import model.Conference;
 import model.Session;
 import control.ConferenceControl;
 
 /**
- * Displays all the conferences in which a manuscript was submitted by the user. 
+ * Displays all the conferences in which a manuscript 
+ * was submitted by the user. 
  * 
  * @author Nikhila & Marilyn
  * @version 06.06.2014
