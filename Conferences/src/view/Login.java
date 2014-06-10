@@ -3,10 +3,16 @@ import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -144,10 +150,11 @@ public class Login {
 					});
 					logoutButton.setBounds(20, 350, 103, 23);
 					home.getPanel().add(logoutButton);
+					logoutButton.validate();
 					frame.getContentPane().add(home.getPanel());
+					home.getPanel().validate();
 				  	frame.repaint();
-				
-					
+				  	frame.setVisible(true);
 				  }
 			
 			}
@@ -236,10 +243,19 @@ public class Login {
 		panel.add(passwordField);
 		
 		
-		//Banner setup. 
+		//Banner setup. (Kirsten edited this banner)
 		banner = new JPanel();
-		banner.setBackground(new Color(176, 196, 222));
+		banner.setBackground(new Color(130, 75, 207));
 		banner.setBounds(0, 0, 715, 82);
+		BufferedImage myPicture = null;
+		try {
+			myPicture = ImageIO.read(new File("TCSBanner2.png"));
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		JLabel picLabel = new JLabel(new ImageIcon(myPicture));
+		banner.add(picLabel);
 		panel.add(banner);
 		
 	}

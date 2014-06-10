@@ -4,7 +4,11 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -100,6 +104,7 @@ public class UserHome {
 				MySubmissions mySub = new MySubmissions(session);
 				sub_panel = mySub.getPanel();
 				panel_3.add(sub_panel);
+				panel_3.validate();
 				panel_3.repaint();
 
 			}
@@ -116,6 +121,7 @@ public class UserHome {
 				panel_3.setLayout(null);
 				conf_panel = myConf.getPanel();
 				panel_3.add(conf_panel);
+				panel_3.validate();
 				panel_3.repaint();
 			}
 		});
@@ -131,15 +137,25 @@ public class UserHome {
 				panel_3.setLayout(null);
 				confs_panel = allconf.getPanel();
 				panel_3.add(confs_panel);
+				panel_3.validate();
 				panel_3.repaint();
 			}
 		});
 		panel_1.add(allConfButton);
 
-		//Panel at the top.
+		//Panel at the top. (Kirsten edited this banner)
 		JPanel panel_2 = new JPanel();
-		panel_2.setBackground(new Color(176, 196, 222));
+		panel_2.setBackground(new Color(130, 75, 207));
 		panel_2.setBounds(0, 0, 715, 82);
+		BufferedImage myPicture = null;
+		try {
+			myPicture = ImageIO.read(new File("TCSBanner2.png"));
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		JLabel picLabel = new JLabel(new ImageIcon(myPicture));
+		panel_2.add(picLabel);
 		panel.add(panel_2);
 
 		panel_3 = new JPanel();
