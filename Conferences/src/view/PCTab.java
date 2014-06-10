@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -20,7 +19,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
-
 import model.AccessLevel;
 import model.Conference;
 import model.Manuscript;
@@ -38,7 +36,8 @@ import control.UserControl;
  * @version 06.06.2014
  * 
  * Represents the PC tab for a conference. 
- *
+ * The Program Chair is a vital important
+ * user in this program.
  */
 public class PCTab {
 
@@ -97,7 +96,9 @@ public class PCTab {
 		int i = 11;
 
 
-		// Adds in all of the components needed for one manuscript.
+		/**
+		 * Adds in all of the components needed for one manuscript.
+		 */
 		if(lst != null && !lst.isEmpty()) {
 			for(final Manuscript m: lst) {
 				if(m.isSubmitted()) {
@@ -105,12 +106,16 @@ public class PCTab {
 					panel.setPreferredSize(new Dimension(550, i + 100));
 
 
-					//title
+					/**
+					 * title for the JLabel
+					 */
 					JLabel title = new JLabel("Title: " + m.getFile().getName());
 					title.setBounds(10, i, 264, 14);
 					panel.add(title);
 
-					//Author of the manuscript.
+					/**
+					 * Author of the manuscript.
+					 */
 					JLabel author = new JLabel("Author: " 
 							+ m.getAuthor().getFirstName() + " " 
 							+ m.getAuthor().getLastName());
@@ -156,8 +161,9 @@ public class PCTab {
 					spc.setBounds(10, i + 21, 114, 14);
 					panel.add(spc);
 
-					//If there is no SPC then the PC can choose an SPC drop down of users and 
+					/**If there is no SPC then the PC can choose an SPC drop down of users and 
 					// warnings when necessary. If there is an SPC name is displayed.
+					*/
 					if(m.getSPC(my_session) != null) {
 						System.out.println("came in" );
 						JLabel spc_name = new JLabel(m.getSPC(my_session).getFirstName() + " " 
@@ -205,7 +211,9 @@ public class PCTab {
 						panel.add(comboBox);
 					}
 
-					//Reviews submitted for the manuscript
+					/**
+					 * Reviews submitted for the manuscript
+					 */
 					JLabel reviews = new JLabel("Reviews: ");
 					if(m.getReviews(my_session).isEmpty()) {
 						reviews.setText("Reviews: NONE");
@@ -217,7 +225,9 @@ public class PCTab {
 					rec.setBounds(284, i + 21, 126, 14);
 					panel.add(rec);
 
-					//Final decision drop down 
+					/**
+					 * Final decision drop down 
+					 */
 					JComboBox comboBox = new JComboBox();
 					comboBox.addItem("Undecided");
 					comboBox.addItem("Approved");
