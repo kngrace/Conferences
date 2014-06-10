@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.Observable;
 
 import javax.swing.JButton;
@@ -132,11 +133,17 @@ public class DefaultTab extends Observable {
 		add_manuscript.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				Date date = new Date();
-				
+				int submitted = 0;
+				List<Manuscript> mans = (ManuscriptControl.getManuscripts(myConference, session.getCurrentUser(), AccessLevel.AUTHOR));
+				for(Manuscript m: mans) {
+					if(m.isSubmitted()) {
+						submitted++;
+					}
+				}
 				//Can only add a 4 manuscripts, and within the date of submissions.
 				if((myConference.getPaperStart().before(date) 
 						&& myConference.getPaperEnd().after(date)) 
-						&& (ManuscriptControl.getManuscripts(myConference, session.getCurrentUser(), AccessLevel.AUTHOR).size() < 4)) {
+						&& (submitted < 4)) {
 					
 		            final JFileChooser fc = new JFileChooser(); 
 		            int returnVal = fc.showOpenDialog(panel);
@@ -157,12 +164,15 @@ public class DefaultTab extends Observable {
 							
 						}
 		            } 
+				} else if (submitted == 4) {
+					
+					JOptionPane.showMessageDialog(panel, new JLabel("Cannot submit more than four manuscripts to a conference!"));
 				} else { // Warning if adding a manuscript after deadline. 
 					JLabel deadline = new JLabel("No Submissions Allowed Past Deadline!");
 					deadline.setBounds(23, 285, 300, 23);
 					panel.add(deadline);
 					panel.repaint();
-				}
+				} 
 
 			}
 		});
