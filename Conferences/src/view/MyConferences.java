@@ -4,13 +4,11 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
-
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
-
 import model.Conference;
 import model.Session;
 import control.ConferenceControl;
@@ -18,7 +16,8 @@ import control.ConferenceControl;
 
 /**
  * 
- * Represents all of the conferences that the user has a role in. 
+ * Represents all of the conferences that the user 
+ * has a role in. Every user is given  session.
  * 
  * @author Nikhila & Marilyn
  * @version 06.06.2014
