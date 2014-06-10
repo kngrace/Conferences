@@ -187,11 +187,11 @@ public class ReviewerTab {
 							if(my_conference.getPaperStart().before(date) 
 									&& my_conference.getPaperEnd().after(date)) {
 
-								
+
 								FileCopier copy = new FileCopier();
 								final JFileChooser fc = new JFileChooser(); 
 								try {
-									
+
 									int result = fc.showSaveDialog(my_panel);
 									File input = fc.getSelectedFile();
 									if(result == JFileChooser.APPROVE_OPTION) {
@@ -203,7 +203,7 @@ public class ReviewerTab {
 								} catch (Exception e) {
 									JOptionPane.showMessageDialog(my_panel, new JLabel("No File Found"));
 								}
-								
+
 							} 
 
 						}
@@ -263,13 +263,13 @@ public class ReviewerTab {
 						my_panel.add(reviews);
 					}
 					i += 64;
-				}
+				}*/
 			}}
 		} else { // If there are no reviews 
 			JLabel none = new JLabel("No Reviews Submitted");
 			none.setBounds(15, 15, 200, 20);
 			my_panel.add(none);
-		}*/
+		}
 	}
 
 
