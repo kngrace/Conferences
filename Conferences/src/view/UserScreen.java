@@ -4,10 +4,12 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.util.Observable;
 import java.util.Observer;
+
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.ScrollPaneConstants;
+
 import model.AccessLevel;
 import model.Conference;
 import model.Session;
@@ -63,9 +65,6 @@ public class UserScreen implements Observer {
 		myTabbedPane.setBounds(0, 0, 564, 370);
 		myTabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 
-		myReviewerTab = new JPanel();
-		myReviewerTab.setBounds(0, 0, 550, 400);
-
 		//Default tab before the user is an author. 
 		myTabbedPane.addTab("Default ", null, new DefaultTab(myConference, mySession).getPanel(), null);
 		
@@ -80,17 +79,17 @@ public class UserScreen implements Observer {
 			} else if(access == AccessLevel.REVIEWER) { // when access level is up to a reviewer
 				myTabbedPane.addTab("Author", null, 
 						new AuthorTab(myConference, mySession).getPanel(), null);	
-				myTabbedPane.addTab("Reviewer", null, myReviewerTab, null);
+				myTabbedPane.addTab("Reviewer", null, new ReviewerTab(myConference, mySession).getPanel(), null);
 			} else if(access == AccessLevel.SUBPROGRAMCHAIR) { // access level to an SPC
 				myTabbedPane.addTab("Author", null, 
 						new AuthorTab(myConference, mySession).getPanel(), null);	
-				myTabbedPane.addTab("Reviewer", null, myReviewerTab, null);
+				myTabbedPane.addTab("Reviewer", null, new ReviewerTab(myConference, mySession).getPanel(), null);
 				myTabbedPane.addTab("Sub-Program Chair", null, 
 						new SPCTab(myConference, mySession).getPanel(), null);
 			} else if(access == AccessLevel.PROGRAMCHAIR) { //access level of a PC
 				myTabbedPane.addTab("Author", null, 
 						new AuthorTab(myConference, mySession).getPanel(), null);	
-				myTabbedPane.addTab("Reviewer", null, myReviewerTab, null);
+				myTabbedPane.addTab("Reviewer", null, new ReviewerTab(myConference, mySession).getPanel(), null);
 				myTabbedPane.addTab("Sub-Program Chair", null, 
 						new SPCTab(myConference, mySession).getPanel(), null);
 				myTabbedPane.addTab("Program Chair", null, 
