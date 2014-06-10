@@ -210,8 +210,8 @@ public class AuthorTab {
 					if(m.getFinalStatus(my_session) != Status.UNDECIDED) { 
 						final List<Review> r = m.getReviews(my_session);
 						final JComboBox reviews = new JComboBox();
-						reviews.setSelectedIndex(0);
 						reviews.addItem("Select a Review");
+						reviews.setSelectedIndex(0);
 						if(r != null && !r.isEmpty()) {
 
 							for(int k = 0; k < r.size(); k++) {
