@@ -114,14 +114,28 @@ public class ReviewerTab {
 								if (returnVal == JFileChooser.APPROVE_OPTION) {
 									File file = fc.getSelectedFile();
 									File output = new File(file.getName());
-									FileCopier copy = new FileCopier();
+									FileCopier copy = new FileCopier();	
 									try {
 										copy.copyFileFrom(file, output);
-										Review rev = new Review(my_session.getCurrentUser(), 
-												file.getName(), output, m);
-										if(rev.getFile().getName().equals(output.getName())) {
-											m.addReview(rev, my_session);
-											JOptionPane.showMessageDialog(my_panel, new JLabel("Review has been re-submitted."));
+										
+										List<Review> revs = m.getReviews(my_session);
+										Review the_rev = null;
+										for (Review r : revs) {
+											if (r.getReviewer().equals(my_session.getCurrentUser())) {
+												the_rev = r;
+												break;
+											}
+										}
+										if (the_rev == null) {		
+											Review rev = new Review(my_session.getCurrentUser(), 
+													file.getName(), output, m);
+											if(rev.getFile().getName().equals(output.getName())) {
+												m.addReview(rev, my_session);
+												JOptionPane.showMessageDialog(my_panel, new JLabel("Review has been submitted."));
+											}
+										} else {
+											the_rev.setFile(output);
+											JOptionPane.showMessageDialog(my_panel, new JLabel("Review has been re-ubmitted."));
 										}
 									} catch (IOException e) {
 										JOptionPane.showMessageDialog(my_panel, new JLabel("Please choose a valid file .txt"));
@@ -173,7 +187,9 @@ public class ReviewerTab {
 								JOptionPane.showMessageDialog(my_panel, "Cannot change submission after Deadline");
 							}
 						} 
-					});***************************/
+					});*/
+					
+					/*
 					delete.setBounds(125, i + 25, 89, 23);
 					my_panel.add(delete);
 
@@ -185,32 +201,43 @@ public class ReviewerTab {
 						public void actionPerformed(ActionEvent arg0) {
 							Date date = new Date();
 							if(my_conference.getPaperStart().before(date) 
-									&& my_conference.getPaperEnd().after(date)) {
+									&& my_conference.getConferenceStart().after(date)) {
 
-
-								FileCopier copy = new FileCopier();
-								final JFileChooser fc = new JFileChooser(); 
-								try {
-
-									int result = fc.showSaveDialog(my_panel);
-									File input = fc.getSelectedFile();
-									if(result == JFileChooser.APPROVE_OPTION) {
-										copy.copyFileTo(m.getFile(), input);
-										JOptionPane.showMessageDialog(my_panel, new JLabel("File has been saved."));
+								List<Review> revs = m.getReviews(my_session);
+								Review the_rev = null;
+								for (Review r : revs) {
+									if (r.getReviewer().equals(my_session.getCurrentUser())) {
+										the_rev = r;
+										break;
 									}
-								} catch (IOException e) {
-									JOptionPane.showMessageDialog(my_panel, new JLabel("No File Found"));
-								} catch (Exception e) {
-									JOptionPane.showMessageDialog(my_panel, new JLabel("No File Found"));
 								}
-
+								
+								if (the_rev == null) {
+									JOptionPane.showMessageDialog(my_panel, new JLabel("No review found!"));
+								} else {	
+									FileCopier copy = new FileCopier();
+									final JFileChooser fc = new JFileChooser(); 
+									try {
+		
+										int result = fc.showSaveDialog(my_panel);
+										File input = fc.getSelectedFile();
+										if(result == JFileChooser.APPROVE_OPTION) {
+											copy.copyFileTo(the_rev.getFile(), input);
+											JOptionPane.showMessageDialog(my_panel, new JLabel("File has been saved."));
+										}
+									} catch (IOException e) {
+										JOptionPane.showMessageDialog(my_panel, new JLabel("No File Found"));
+									} catch (Exception e) {
+										JOptionPane.showMessageDialog(my_panel, new JLabel("No File Found"));
+									}
+								}
 							} 
 
 						}
 
 					});
 					download.setBounds(238, i + 25, 108, 23);
-					my_panel.add(download);
+					my_panel.add(download);*/
 
 					
 					//V   Probably not needed for this class.    V
