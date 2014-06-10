@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
@@ -64,29 +65,29 @@ public class AddConference {
 	 */
 	private String conf_loc;
 	
-	private String yps;
+	private String yearPaperStart;
 	
-	private String mps;
+	private String monthPaperStart;
 	
-	private String dps;
+	private String dayPaperStart;
 	
-	private String ype;
+	private String yearPaperEnd;
 	
-	private String mpe;
+	private String monthPaperEnd;
 	
-	private String dpe;
+	private String dayPaperEnd;
 	
-	private String ycs;
+	private String yearConferenceStart;
 	
-	private String mcs;
+	private String monthConferenceStart;
 	
-	private String dcs;
+	private String dayConferenceStart;
 	
-	private String yce;
+	private String yearConferenceEnd;
 	
-	private String mce;
+	private String monthConferenceEnd;
 	
-	private String dce;
+	private String dayConferenceEnd;
 
 	private String name;
 
@@ -205,13 +206,13 @@ public class AddConference {
 
 			@Override
 			public void insertUpdate(DocumentEvent arg0) {
-				yps = txtpapstrtY.getText();
+				yearPaperStart = txtpapstrtY.getText();
 				
 			}
 
 			@Override
 			public void removeUpdate(DocumentEvent arg0) {
-				yps = txtpapstrtY.getText();
+				yearPaperStart = txtpapstrtY.getText();
 				
 			}
 		});
@@ -228,13 +229,13 @@ public class AddConference {
 
 			@Override
 			public void insertUpdate(DocumentEvent arg0) {
-				mps = papstrtM.getText();
+				monthPaperStart = papstrtM.getText();
 				
 			}
 
 			@Override
 			public void removeUpdate(DocumentEvent arg0) {
-				mps = papstrtM.getText();
+				monthPaperStart = papstrtM.getText();
 				
 			}
 		});
@@ -251,13 +252,13 @@ public class AddConference {
 
 			@Override
 			public void insertUpdate(DocumentEvent arg0) {
-				dps = papstrtD.getText();
+				dayPaperStart = papstrtD.getText();
 				
 			}
 
 			@Override
 			public void removeUpdate(DocumentEvent arg0) {
-				dps = papstrtD.getText();
+				dayPaperStart = papstrtD.getText();
 			
 			}
 		});
@@ -269,7 +270,24 @@ public class AddConference {
 		conf_titlelab.setBounds(12, 95, 120, 20);
 		panel_1.add(conf_titlelab);
 		
-		JTextField desc_confTxt = new JTextField();
+		final JTextField desc_confTxt = new JTextField();
+		desc_confTxt.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				//do nothing
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent arg0) {
+				conf_des = desc_confTxt.getText();
+				
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent arg0) {
+				conf_des = desc_confTxt.getText();
+				
+			}
+		});
 		desc_confTxt.setBounds(168, 156, 358, 49);
 		panel_1.add(desc_confTxt);
 		desc_confTxt.setColumns(10);
@@ -287,13 +305,13 @@ public class AddConference {
 
 			@Override
 			public void insertUpdate(DocumentEvent arg0) {
-				ype = papendY.getText();
+				yearPaperEnd = papendY.getText();
 				
 			}
 
 			@Override
 			public void removeUpdate(DocumentEvent arg0) {
-				ype = papendY.getText();
+				yearPaperEnd = papendY.getText();
 			
 			}
 		});
@@ -310,13 +328,13 @@ public class AddConference {
 
 			@Override
 			public void insertUpdate(DocumentEvent arg0) {
-				mpe = papendM.getText();
+				monthPaperEnd = papendM.getText();
 				
 			}
 
 			@Override
 			public void removeUpdate(DocumentEvent arg0) {
-				mpe = papendM.getText();
+				monthPaperEnd = papendM.getText();
 			
 			}
 		});
@@ -333,13 +351,13 @@ public class AddConference {
 
 			@Override
 			public void insertUpdate(DocumentEvent arg0) {
-				dpe = papendD.getText();
+				dayPaperEnd = papendD.getText();
 				
 			}
 
 			@Override
 			public void removeUpdate(DocumentEvent arg0) {
-				dpe = papendD.getText();
+				dayPaperEnd = papendD.getText();
 			
 			}
 		});
@@ -360,13 +378,13 @@ public class AddConference {
 
 			@Override
 			public void insertUpdate(DocumentEvent arg0) {
-				ycs = confstrtY.getText();
+				yearConferenceStart = confstrtY.getText();
 				
 			}
 
 			@Override
 			public void removeUpdate(DocumentEvent arg0) {
-				ycs = confstrtY.getText();
+				yearConferenceStart = confstrtY.getText();
 			
 			}
 		});
@@ -383,13 +401,13 @@ public class AddConference {
 
 			@Override
 			public void insertUpdate(DocumentEvent arg0) {
-				mcs = confstrtM.getText();
+				monthConferenceStart = confstrtM.getText();
 				
 			}
 
 			@Override
 			public void removeUpdate(DocumentEvent arg0) {
-				mcs = confstrtM.getText();
+				monthConferenceStart = confstrtM.getText();
 			
 			}
 		});
@@ -406,13 +424,13 @@ public class AddConference {
 
 			@Override
 			public void insertUpdate(DocumentEvent arg0) {
-				dcs = confstrtD.getText();
+				dayConferenceStart = confstrtD.getText();
 				
 			}
 
 			@Override
 			public void removeUpdate(DocumentEvent arg0) {
-				dcs = confstrtD.getText();
+				dayConferenceStart = confstrtD.getText();
 			
 			}
 		});
@@ -433,13 +451,13 @@ public class AddConference {
 
 			@Override
 			public void insertUpdate(DocumentEvent arg0) {
-				yce = confendY.getText();
+				yearConferenceEnd = confendY.getText();
 				
 			}
 
 			@Override
 			public void removeUpdate(DocumentEvent arg0) {
-				yce = confendY.getText();
+				yearConferenceEnd = confendY.getText();
 			
 			}
 		});
@@ -456,13 +474,13 @@ public class AddConference {
 
 			@Override
 			public void insertUpdate(DocumentEvent arg0) {
-				mce = confendM.getText();
+				monthConferenceEnd = confendM.getText();
 				
 			}
 
 			@Override
 			public void removeUpdate(DocumentEvent arg0) {
-				mce = confendM.getText();
+				monthConferenceEnd = confendM.getText();
 			
 			}
 		});
@@ -472,20 +490,20 @@ public class AddConference {
 		
 		final JTextField confendD = new JTextField();
 		confendD.setText("DD");
-		confendY.getDocument().addDocumentListener(new DocumentListener() {
+		confendD.getDocument().addDocumentListener(new DocumentListener() {
 			public void changedUpdate(DocumentEvent e) {
 				//do nothing
 			}
 
 			@Override
 			public void insertUpdate(DocumentEvent arg0) {
-				dce = confendD.getText();
+				dayConferenceEnd = confendD.getText();
 				
 			}
 
 			@Override
 			public void removeUpdate(DocumentEvent arg0) {
-				dce = confendD.getText();
+				dayConferenceEnd = confendD.getText();
 			
 			}
 		});
@@ -508,18 +526,27 @@ public class AddConference {
 			public void actionPerformed(ActionEvent e) {
 				//create conference object
 				panel_1.repaint();
-				
+
 				Conference c = new Conference(
-						confDescription, 
-						progChair, 
-						confEndDate, 
-						confEndDate, 
-						confEndDate, 
-						confEndDate, 
-						confDescription, 
-						confDescription);
+						conf_title, 
+						session.getCurrentUser(), 
+						Date.valueOf(yearPaperStart + "-" 
+								+ monthPaperStart + "-" 
+								+ dayPaperStart), 
+								Date.valueOf(yearPaperEnd + "-" 
+										+ monthPaperEnd + "-" 
+										+ dayPaperEnd), 
+										Date.valueOf(yearConferenceStart + "-" 
+												+ monthConferenceStart + "-" 
+												+ dayConferenceStart),
+												Date.valueOf(yearConferenceEnd + "-" 
+														+ monthConferenceEnd + "-" 
+														+ dayConferenceEnd), 
+												conf_loc, 
+												conf_des);
 				
-				
+				JOptionPane.showMessageDialog(null, "Your Conference was submitted!");
+
 			}
 		});
 		submit.setBounds(292, 337, 129, 23);
@@ -529,7 +556,24 @@ public class AddConference {
 		lblConferenceLocation.setBounds(230, 95, 136, 20);
 		panel_1.add(lblConferenceLocation);
 		
-		JTextField conf_locTxt = new JTextField();
+		final JTextField conf_locTxt = new JTextField();
+		conf_locTxt.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				//do nothing
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent arg0) {
+				conf_loc = conf_locTxt.getText();
+				
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent arg0) {
+				conf_loc = conf_locTxt.getText();
+			
+			}
+		});
 		conf_locTxt.setColumns(10);
 		conf_locTxt.setBounds(230, 119, 146, 26);
 		panel_1.add(conf_locTxt);
