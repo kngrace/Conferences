@@ -84,6 +84,7 @@ public class PCTab {
 		panel = new JPanel();
 		panel.setBackground(Color.ORANGE);
 		out_panel.setPreferredSize(new Dimension(550, 400));
+		out_panel.setBackground(Color.ORANGE);
 		panel.setLayout(null);
 
 		panel.setPreferredSize(new Dimension(550, 400));
@@ -103,8 +104,9 @@ public class PCTab {
 			for(final Manuscript m: lst) {
 				if(m.isSubmitted()) {
 
-					panel.setPreferredSize(new Dimension(550, i + 100));
-
+					panel.setPreferredSize(new Dimension(550, i + 1000));
+					out_panel.validate();
+					panel.validate();
 
 					/**
 					 * title for the JLabel
@@ -165,7 +167,7 @@ public class PCTab {
 					// warnings when necessary. If there is an SPC name is displayed.
 					*/
 					if(m.getSPC(my_session) != null) {
-						System.out.println("came in" );
+					//	System.out.println("came in" );
 						JLabel spc_name = new JLabel(m.getSPC(my_session).getFirstName() + " " 
 								+ m.getSPC(my_session).getLastName());
 						System.out.println(m.getSPC(my_session).getFirstName() + " " 
@@ -221,10 +223,23 @@ public class PCTab {
 					reviews.setBounds(10, i + 42, 78, 14);
 					panel.add(reviews);
 
-					JLabel rec = new JLabel(m.getRecommendStatus().toString());
-					rec.setBounds(284, i + 21, 126, 14);
+					JLabel rec = new JLabel("Recommend Status: " 
+					+ m.getRecommendStatus().toString());
+					rec.setBounds(284, i + 21, 250, 14);
 					panel.add(rec);
 
+					
+					if (m.getRecommendStatus() != Status.UNDECIDED){
+						
+						JLabel j = new JLabel("Final Status: " + 
+						m.getFinalStatus(my_session).toString());
+						j.setBounds(284, i + 39, 250, 20);
+						panel.add(j);
+						
+						
+					} else {
+					
+					
 					/**
 					 * Final decision drop down 
 					 */
@@ -244,12 +259,17 @@ public class PCTab {
 							} else if(index == 2){
 								m.setFinalStatus(Status.REJECTED, my_session);
 							}
+							JOptionPane.showMessageDialog(panel, 
+									new JLabel("Final Status Set."));
+							
 						}
 
 					});
 					comboBox.setBounds(284, i + 39, 126, 20);
 					panel.add(comboBox);
 
+					}
+					
 					final List<Review> r1 = m.getReviews(my_session);
 					final JComboBox reviews1 = new JComboBox();
 					reviews1.addItem("Select a Review");

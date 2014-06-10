@@ -279,7 +279,9 @@ public class ReviewerTab {
 					}
 					i += 64;
 				}*/
-			}}
+			} 
+				i += 64;
+				}
 		} else { // If there are no reviews 
 			JLabel none = new JLabel("No Reviews Submitted");
 			none.setBounds(15, 15, 200, 20);

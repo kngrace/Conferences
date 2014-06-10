@@ -221,29 +221,41 @@ public class SPCTab {
 						my_panel.add(reviews1);
 
 
-						//Drop-down menu for the recommendation of a manuscript. 
-						JComboBox comboBox = new JComboBox();
-						comboBox.addItem("Undecided");
-						comboBox.addItem("Approved");
-						comboBox.addItem("Rejected");
-						comboBox.setSelectedIndex(0);
-						comboBox.addActionListener(new ActionListener() {
-
-							@Override
-							public void actionPerformed(ActionEvent e) {
-								JComboBox cb = (JComboBox)e.getSource();
-								int index = cb.getSelectedIndex();
-								if(index == 1) {
-									m.setFinalStatus(Status.APPROVED, my_session);
-								} else {
-									m.setFinalStatus(Status.REJECTED, my_session);
-								}
-							}
-
-						});
-						comboBox.setBounds(343, i + 47, 100, 20);
-						my_panel.add(comboBox);
+						if (m.getRecommendStatus() != Status.UNDECIDED){
+							
+							JLabel j = new JLabel(m.getRecommendStatus().toString());
+							j.setBounds(343, i + 47, 100, 20);
+							my_panel.add(j);
+							
+							
+						} else {
 						
+							//Drop-down menu for the recommendation of a manuscript. 
+							JComboBox comboBox = new JComboBox();
+							comboBox.addItem("Undecided");
+							comboBox.addItem("Approved");
+							comboBox.addItem("Rejected");
+							comboBox.setSelectedIndex(0);
+							comboBox.addActionListener(new ActionListener() {
+
+								@Override
+								public void actionPerformed(ActionEvent e) {
+									JComboBox cb = (JComboBox)e.getSource();
+									int index = cb.getSelectedIndex();
+									if(index == 1) {
+										m.setRecommendStatus(Status.APPROVED, my_session);
+									} else {
+										m.setRecommendStatus(Status.REJECTED, my_session);
+									}
+
+									JOptionPane.showMessageDialog(my_panel, 
+											new JLabel("Recommendation Status Set."));
+								}
+
+							});
+							comboBox.setBounds(343, i + 47, 100, 20);
+							my_panel.add(comboBox);
+						}
 						i += 82;
 				}
 

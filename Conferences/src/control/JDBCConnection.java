@@ -39,7 +39,8 @@ public class JDBCConnection {
 			Class.forName("org.sqlite.JDBC");
 
 			// create a database connection
-			connection = DriverManager.getConnection("jdbc:sqlite:ConferenceDB.sqlite");
+		//	connection = DriverManager.getConnection("jdbc:sqlite:ConferenceDB.sqlite");
+			connection = DriverManager.getConnection("jdbc:sqlite:ClassDemoDB.sqlite");
 		}
 		catch(SQLException | ClassNotFoundException e)
 		{

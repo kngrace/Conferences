@@ -62,7 +62,7 @@ public class UserScreen implements Observer {
 	private void initialize() {
 
 		myTabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		myTabbedPane.setBounds(0, 0, 564, 370);
+		myTabbedPane.setBounds(0, 0, 564, 3000);
 		myTabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 
 		//Default tab before the user is an author. 

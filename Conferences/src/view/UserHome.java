@@ -93,6 +93,7 @@ public class UserHome {
 
 		//Submissions button which shows conferences to which papers were submitted. 
 		JButton btnSubmissions = new JButton("Submissions");
+		
 		btnSubmissions.setIcon(new ImageIcon("C:\\Users\\pothnik\\Pictures\\leaf.jpg"));
 		btnSubmissions.setBounds(10, 59, 128, 23);
 		btnSubmissions.addActionListener(new ActionListener() {
@@ -162,6 +163,18 @@ public class UserHome {
 
 		panel_3.setLayout(null);
 		panel_3.setBackground(Color.ORANGE);
+		
+		
+		BufferedImage myPicture2 = null;
+		try {
+			myPicture = ImageIO.read(new File("welcome.png"));
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		JLabel picLabel2 = new JLabel(new ImageIcon(myPicture));
+		panel_3.add(picLabel2);
+		
 		panel.add(panel_3);
 		
 		
